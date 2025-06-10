@@ -2,30 +2,95 @@ import './App.css'
 import Button from './components/Button'
 import Input from './components/Input'
 import Text from './components/Text'
+import usersData from '../users.json'
+
+import { SetStateAction, useState } from 'react'
 
 function App() {
+  const [email, setEmail] = useState('')
+  const [subtitle, setSubtitle] = useState('Veuillez renseigner votre email pour vous connecter ou vous inscrire.')
+  const [buttonText, setButtonText] = useState('Vérifier')
+  const [title, setTitle] = useState('Connexion / Inscription')
+  const [mode, setMode] = useState<'initial' | 'login' | 'register'>('initial')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  // Validation de l'email
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  const isButtonDisabled =
+    !email ||
+    !isValidEmail(email) ||
+    (mode === 'login' && !password) ||
+    (mode === 'register' && (!password || !confirmPassword))
+
+  const handleCheck = () => {
+    const exists = usersData.users.some(user => user.email === email)
+    if (exists) {
+      setButtonText('Connexion')
+      setSubtitle('Bienvenue ! Nous sommes ravis de vous revoir !')
+      setTitle('Connexion')
+      setMode('login')
+    } else {
+      setButtonText('Inscription')
+      setSubtitle('Bienvenue ! Veuillez remplir les informations pour vous inscrire.')
+      setTitle('Inscription')
+      setMode('register')
+    }
+  }
+
   return (
     <div className="split-container">
       <div className="split-left">
-        {/* Contenu de la partie gauche */}
         <Text size={32} bold color="primary">
-          Connexion / Inscription
+          {title}
         </Text>
         <Text size={16} color="secondary">
-          Veuillez renseigner votre email pour vous connecter ou vous inscrire.
+          {subtitle}
         </Text>
 
         <div className="form">
           <Input
-            header={'Adresse email'}>
-          </Input>
+            header={'Adresse email'}
+            value={email}
+            onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
+            disabled={mode !== 'initial'}
+          />
+          {mode === 'login' && (
+            <Input
+              header={'Mot de passe'}
+              type="password"
+              value={password}
+              onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
+            />
+          )}
+          {mode === 'register' && (
+            <>
+              <Input
+                header={'Définir un mot de passe'}
+                type="password"
+                value={password}
+                onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
+              />
+              <Input
+                header={'Confirmer le mot de passe'}
+                type="password"
+                value={confirmPassword}
+                onChange={(e: { target: { value: SetStateAction<string> } }) => setConfirmPassword(e.target.value)}
+              />
+            </>
+          )}
         </div>
 
-        <Button text="Valider" variant="primary" />
-
+        <Button
+          text={buttonText}
+          variant="primary"
+          onClick={handleCheck}
+          disabled={isButtonDisabled}
+        />
       </div>
       <div className="split-right">
-        {/* Contenu de la partie droite */}
         <h2>Partie droite</h2>
       </div>
     </div>

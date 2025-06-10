@@ -49,3 +49,13 @@
     filter 0.2s,
     transform 0.15s;
 }
+
+.button.disabled,
+.button:disabled {
+  background: #bdbdbd !important;
+  color: #888 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
