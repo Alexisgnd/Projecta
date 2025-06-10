@@ -1,4 +1,6 @@
 import './App.css'
+import Button from './components/Button'
+import Input from './components/Input'
 import Text from './components/Text'
 
 function App() {
@@ -12,6 +14,15 @@ function App() {
         <Text size={16} color="secondary">
           Veuillez renseigner votre email pour vous connecter ou vous inscrire.
         </Text>
+
+        <div className="form">
+          <Input
+            header={'Adresse email'}>
+          </Input>
+        </div>
+
+        <Button text="Valider" variant="primary" />
+
       </div>
       <div className="split-right">
         {/* Contenu de la partie droite */}

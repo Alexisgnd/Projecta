@@ -8,7 +8,6 @@
   width: 50vw;
   display: flex;
   flex-direction: column;
-  align-items: left;
   justify-content: center;
   background: linear-gradient(180deg, #ffffff 0%, #b6b6b6 100%);
   padding-left: 140px;
@@ -26,4 +25,9 @@
   width: 50vw;
   background: linear-gradient(180deg, #3730A3 0%, #312E81 100%);
   color: #fff;
+}
+
+.form {
+  margin-top: 45px;
+  margin-block-end: 45px;
 }
