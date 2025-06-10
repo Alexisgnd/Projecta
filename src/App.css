@@ -7,8 +7,12 @@
 .split-left {
   width: 50vw;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: left;
   justify-content: center;
+  background: linear-gradient(180deg, #ffffff 0%, #b6b6b6 100%);
+  padding-left: 48px;
+  padding-right: 48px;
 }
 
 .split-right {

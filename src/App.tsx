@@ -1,11 +1,17 @@
 import './App.css'
+import Text from './components/Text'
 
 function App() {
   return (
     <div className="split-container">
       <div className="split-left">
         {/* Contenu de la partie gauche */}
-        <h2>Partie gauche</h2>
+        <Text size={32} bold color="primary">
+          Connexion / Inscription
+        </Text>
+        <Text size={16} color="secondary">
+          Veuillez renseigner votre email pour vous connecter ou vous inscrire.
+        </Text>
       </div>
       <div className="split-right">
         {/* Contenu de la partie droite */}
