@@ -23,7 +23,11 @@ function App() {
     !email ||
     !isValidEmail(email) ||
     (mode === 'login' && !password) ||
-    (mode === 'register' && (!password || !confirmPassword))
+    (mode === 'register' && (
+      !password ||
+      !confirmPassword ||
+      password !== confirmPassword
+    ))
 
   const handleCheck = () => {
     const exists = usersData.users.some(user => user.email === email)
@@ -37,6 +41,27 @@ function App() {
       setSubtitle('Bienvenue ! Veuillez remplir les informations pour vous inscrire.')
       setTitle('Inscription')
       setMode('register')
+    }
+  }
+
+  const handleSubmit = () => {
+    if (mode === 'login') {
+      const user = usersData.users.find(user => user.email === email)
+      if (user && user.password === password) {
+        console.log('Connexion réussie pour', user.email)
+      } else {
+        console.log('Mot de passe incorrect pour', email)
+      }
+    } else if (mode === 'register') {
+      const newUser = {
+        id: usersData.users.length + 1,
+        email,
+        password,
+        name: email.split('@')[0]
+      }
+      console.log('Nouvel utilisateur inscrit:', newUser)
+    } else {
+      handleCheck()
     }
   }
 
@@ -86,7 +111,7 @@ function App() {
         <Button
           text={buttonText}
           variant="primary"
-          onClick={handleCheck}
+          onClick={handleSubmit}
           disabled={isButtonDisabled}
         />
       </div>
