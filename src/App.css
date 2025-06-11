@@ -31,6 +31,9 @@
 .form {
   margin-top: 45px;
   margin-block-end: 45px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
 }
 
 .form-row {
@@ -41,5 +44,4 @@
 
 .form-row > .input-container {
   flex: 1;
-  margin-bottom: 0;
 }
