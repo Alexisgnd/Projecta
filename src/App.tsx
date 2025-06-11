@@ -81,8 +81,18 @@ function App() {
       }
     } else if (mode === 'register') {
       setLoading(true)
-      // Inscription via Supabase Auth
-      const { error: signUpError } = await supabase.auth.signUp({ email, password })
+      // Inscription via Supabase Auth avec display name
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: `${firstName} ${lastName}`,
+            first_name: firstName,
+            last_name: lastName
+          }
+        }
+      })
       if (signUpError) {
         setLoading(false)
         setError("Erreur lors de l'inscription")
@@ -93,8 +103,8 @@ function App() {
         .from('users')
         .insert([{ 
           email,
-          first_name: firstName, // Modifié
-          last_name: lastName    // Modifié
+          first_name: firstName,
+          last_name: lastName
         }])
       setLoading(false)
       if (insertError) {
