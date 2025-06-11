@@ -12,7 +12,8 @@
   background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
   padding-left: 80px;
   padding-right: 80px;
-  box-sizing: border-box; /* ajoute cette ligne */
+  box-sizing: border-box;
+  /* ajoute cette ligne */
 }
 
 .split-right {
@@ -42,6 +43,6 @@
   width: 100%;
 }
 
-.form-row > .input-container {
+.form-row>.input-container {
   flex: 1;
 }
