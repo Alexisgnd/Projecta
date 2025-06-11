@@ -1,10 +1,32 @@
-.dashboard-container {
+.dashboard-root {
+    display: flex;
     min-height: 100vh;
-    width: 100vw;
-    background: linear-gradient(180deg, #f3f4f6 0%, #e0e7ff 100%);
+}
+
+.dashboard-container {
+    flex: 1;
+    min-height: 100vh;
+    background: linear-gradient(270deg, #f8fafc, #e0e7ff, #c7d2fe, #f8fafc);
+    background-size: 600% 600%;
+    animation: gradientMove 24s ease-in-out infinite;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start; /* alignement à gauche */
+    justify-content: flex-start; /* alignement en haut */
     gap: 32px;
+    padding: 64px 48px; /* Ajoute du padding pour l'espace autour du contenu */
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
