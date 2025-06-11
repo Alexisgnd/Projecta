@@ -2,9 +2,14 @@ import './App.css'
 import Button from './components/Button'
 import Input from './components/Input'
 import Text from './components/Text'
-import usersData from '../users.json'
-
+import { createClient } from '@supabase/supabase-js'
 import { SetStateAction, useState } from 'react'
+
+// Initialisation de Supabase
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_KEY
+)
 
 function App() {
   const [email, setEmail] = useState('')
@@ -14,6 +19,8 @@ function App() {
   const [mode, setMode] = useState<'initial' | 'login' | 'register'>('initial')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   // Validation de l'email
   const isValidEmail = (email: string) =>
@@ -29,9 +36,21 @@ function App() {
       password !== confirmPassword
     ))
 
-  const handleCheck = () => {
-    const exists = usersData.users.some(user => user.email === email)
-    if (exists) {
+  const handleCheck = async () => {
+    setLoading(true)
+    setError(null)
+    // Vérifie si l'utilisateur existe dans Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle()
+    setLoading(false)
+    if (error) {
+      setError("Erreur lors de la vérification de l'email")
+      return
+    }
+    if (data) {
       setButtonText('Connexion')
       setSubtitle('Bienvenue ! Nous sommes ravis de vous revoir !')
       setTitle('Connexion')
@@ -44,22 +63,37 @@ function App() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError(null)
     if (mode === 'login') {
-      const user = usersData.users.find(user => user.email === email)
-      if (user && user.password === password) {
-        console.log('Connexion réussie pour', user.email)
+      setLoading(true)
+      // Connexion via Supabase Auth
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      setLoading(false)
+      if (!error) {
+        console.log('Connexion réussie pour', email)
       } else {
-        console.log('Mot de passe incorrect pour', email)
+        setError('Mot de passe incorrect ou utilisateur inexistant')
       }
     } else if (mode === 'register') {
-      const newUser = {
-        id: usersData.users.length + 1,
-        email,
-        password,
-        name: email.split('@')[0]
+      setLoading(true)
+      // Inscription via Supabase Auth
+      const { error: signUpError } = await supabase.auth.signUp({ email, password })
+      if (signUpError) {
+        setLoading(false)
+        setError("Erreur lors de l'inscription")
+        return
       }
-      console.log('Nouvel utilisateur inscrit:', newUser)
+      // Ajout dans la table users
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([{ email, password, name: email.split('@')[0] }])
+      setLoading(false)
+      if (insertError) {
+        setError("Erreur lors de l'ajout dans la base")
+      } else {
+        console.log('Nouvel utilisateur inscrit:', email)
+      }
     } else {
       handleCheck()
     }
@@ -74,7 +108,7 @@ function App() {
         <Text size={16} color="secondary">
           {subtitle}
         </Text>
-
+        {error && <Text size={14} color="danger">{error}</Text>}
         <div className="form">
           <Input
             header={'Adresse email'}
@@ -107,12 +141,11 @@ function App() {
             </>
           )}
         </div>
-
         <Button
-          text={buttonText}
+          text={loading ? 'Chargement...' : buttonText}
           variant="primary"
           onClick={handleSubmit}
-          disabled={isButtonDisabled}
+          disabled={isButtonDisabled || loading}
         />
       </div>
       <div className="split-right">
