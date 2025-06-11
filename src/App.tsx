@@ -5,13 +5,14 @@ import Text from './components/Text'
 import { createClient } from '@supabase/supabase-js'
 import { SetStateAction, useState } from 'react'
 
-// Initialisation de Supabase
+// Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_KEY
 )
 
 function App() {
+  // États pour les champs du formulaire et l'interface
   const [email, setEmail] = useState('')
   const [subtitle, setSubtitle] = useState('Veuillez renseigner votre email pour vous connecter ou vous inscrire.')
   const [buttonText, setButtonText] = useState('Vérifier')
@@ -19,31 +20,32 @@ function App() {
   const [mode, setMode] = useState<'initial' | 'login' | 'register'>('initial')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [firstName, setFirstName] = useState('') // Ajout
-  const [lastName, setLastName] = useState('')   // Ajout
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Validation de l'email
+  // Vérifie si l'email est valide
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
+  // Détermine si le bouton doit être désactivé selon le mode et les champs
   const isButtonDisabled =
     !email ||
     !isValidEmail(email) ||
     (mode === 'login' && !password) ||
     (mode === 'register' && (
-      !firstName || // Ajout
-      !lastName ||  // Ajout
+      !firstName ||
+      !lastName ||
       !password ||
       !confirmPassword ||
       password !== confirmPassword
     ))
 
+  // Vérifie si l'utilisateur existe et adapte le mode (connexion ou inscription)
   const handleCheck = async () => {
     setLoading(true)
     setError(null)
-    // Vérifie si l'utilisateur existe dans Supabase
     const { data, error } = await supabase
       .from('users')
       .select('email')
@@ -67,11 +69,11 @@ function App() {
     }
   }
 
+  // Gère la soumission du formulaire selon le mode (connexion ou inscription)
   const handleSubmit = async () => {
     setError(null)
     if (mode === 'login') {
       setLoading(true)
-      // Connexion via Supabase Auth
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (!error) {
@@ -81,7 +83,6 @@ function App() {
       }
     } else if (mode === 'register') {
       setLoading(true)
-      // Inscription via Supabase Auth avec display name
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -98,10 +99,10 @@ function App() {
         setError("Erreur lors de l'inscription")
         return
       }
-      // Ajout dans la table users
+      // Ajoute l'utilisateur dans la table users
       const { error: insertError } = await supabase
         .from('users')
-        .insert([{ 
+        .insert([{
           email,
           first_name: firstName,
           last_name: lastName
@@ -117,6 +118,7 @@ function App() {
     }
   }
 
+  // Affichage du formulaire selon le mode
   return (
     <div className="split-container">
       <div className="split-left">
