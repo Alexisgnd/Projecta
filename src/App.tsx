@@ -126,18 +126,16 @@ function App() {
           />
           {mode === 'register' && (
             <>
-              <div style={{ display: 'flex', gap: 16 }}>
+              <div className="form-row">
                 <Input
                   header={'Prénom'}
                   value={firstName}
                   onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
-                  style={{ flex: 1 }}
                 />
                 <Input
                   header={'Nom'}
                   value={lastName}
                   onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
-                  style={{ flex: 1 }}
                 />
               </div>
               <Input
