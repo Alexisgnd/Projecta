@@ -10,8 +10,9 @@
   flex-direction: column;
   justify-content: center;
   background: linear-gradient(180deg, #ffffff 0%, #b6b6b6 100%);
-  padding-left: 140px;
-  padding-right: 140px;
+  padding-left: 80px;
+  padding-right: 80px;
+  box-sizing: border-box; /* ajoute cette ligne */
 }
 
 .split-right {

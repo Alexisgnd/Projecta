@@ -19,6 +19,8 @@ function App() {
   const [mode, setMode] = useState<'initial' | 'login' | 'register'>('initial')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [firstName, setFirstName] = useState('') // Ajout
+  const [lastName, setLastName] = useState('')   // Ajout
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -31,6 +33,8 @@ function App() {
     !isValidEmail(email) ||
     (mode === 'login' && !password) ||
     (mode === 'register' && (
+      !firstName || // Ajout
+      !lastName ||  // Ajout
       !password ||
       !confirmPassword ||
       password !== confirmPassword
@@ -87,7 +91,11 @@ function App() {
       // Ajout dans la table users
       const { error: insertError } = await supabase
         .from('users')
-        .insert([{ email, password, name: email.split('@')[0] }])
+        .insert([{ 
+          email,
+          first_name: firstName, // Modifié
+          last_name: lastName    // Modifié
+        }])
       setLoading(false)
       if (insertError) {
         setError("Erreur lors de l'ajout dans la base")
@@ -108,7 +116,7 @@ function App() {
         <Text size={16} color="secondary">
           {subtitle}
         </Text>
-        {error && <Text size={14} color="danger">{error}</Text>}
+
         <div className="form">
           <Input
             header={'Adresse email'}
@@ -116,16 +124,22 @@ function App() {
             onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
             disabled={mode !== 'initial'}
           />
-          {mode === 'login' && (
-            <Input
-              header={'Mot de passe'}
-              type="password"
-              value={password}
-              onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
-            />
-          )}
           {mode === 'register' && (
             <>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <Input
+                  header={'Prénom'}
+                  value={firstName}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <Input
+                  header={'Nom'}
+                  value={lastName}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+              </div>
               <Input
                 header={'Définir un mot de passe'}
                 type="password"
@@ -140,7 +154,18 @@ function App() {
               />
             </>
           )}
+          {mode === 'login' && (
+            <Input
+              header={'Mot de passe'}
+              type="password"
+              value={password}
+              onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
+            />
+          )}
         </div>
+
+        {error && <Text size={14} color="danger">{error}</Text>}
+
         <Button
           text={loading ? 'Chargement...' : buttonText}
           variant="primary"
