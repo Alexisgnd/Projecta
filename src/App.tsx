@@ -4,6 +4,8 @@ import Input from './components/Input'
 import Text from './components/Text'
 import { createClient } from '@supabase/supabase-js'
 import { SetStateAction, useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
 
 // Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
@@ -11,7 +13,7 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_KEY
 )
 
-function App() {
+function AuthPage() {
   // États pour les champs du formulaire et l'interface
   const [email, setEmail] = useState('')
   const [subtitle, setSubtitle] = useState('Veuillez renseigner votre email pour vous connecter ou vous inscrire.')
@@ -24,6 +26,7 @@ function App() {
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
   // Vérifie si l'email est valide
   const isValidEmail = (email: string) =>
@@ -77,7 +80,7 @@ function App() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (!error) {
-        console.log('Connexion réussie pour', email)
+        navigate('/dashboard');
       } else {
         setError('Mot de passe incorrect ou utilisateur inexistant')
       }
@@ -111,7 +114,7 @@ function App() {
       if (insertError) {
         setError("Erreur lors de l'ajout dans la base")
       } else {
-        console.log('Nouvel utilisateur inscrit:', email)
+        navigate('/dashboard');
       }
     } else {
       handleCheck()
@@ -184,10 +187,22 @@ function App() {
         />
       </div>
       <div className="split-right">
-        <h2>Partie droite</h2>
+        {/* <h2>Partie droite</h2> */}
       </div>
     </div>
   )
 }
 
-export default App
+// Remplace l'export principal :
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
