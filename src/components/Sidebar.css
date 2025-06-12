@@ -73,8 +73,13 @@
   align-items: center;
   margin-bottom: 16px;
   color: #3730A3;
-  padding: 14px 16px; /* Ajouté pour augmenter la hauteur */
-  border-radius: 12px; /* Optionnel pour un effet arrondi */
+  padding: 14px 16px;
+  border-radius: 12px; 
+}
+
+.sidebar-link:hover {
+  background: #e0e7ff;
+  cursor: pointer;
 }
 
 .sidebar-logout {

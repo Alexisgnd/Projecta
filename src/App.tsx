@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
+import Settings from './pages/Settings'
 
 // Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
@@ -242,6 +243,7 @@ function App() {
       <Routes>
         <Route path="/" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   );

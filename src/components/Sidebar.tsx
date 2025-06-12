@@ -71,7 +71,7 @@ const Sidebar: React.FC = () => {
             <FaQuestionCircle size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">AIDE</Text>
           </div>
-          <div className="sidebar-link">
+          <div className="sidebar-link" onClick={() => navigate('/settings')}>
             <FaCog size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">PARAMÈTRES</Text>
           </div>
