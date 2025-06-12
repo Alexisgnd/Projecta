@@ -16,7 +16,7 @@ const Settings: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
-//   const [mention, setMention] = useState('');
+  //   const [mention, setMention] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -62,9 +62,16 @@ const Settings: React.FC = () => {
 
     // Upload vers Supabase Storage
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) {
+      console.log('Utilisateur non authentifié');
+      setAvatarPreview(null);
+      return;
+    }
+    const fileName = `${authUser.id}_${Date.now()}.${fileExt}`;
+
     const { error: uploadError } = await supabase.storage
-      .from('profiles.pictures')
+      .from('avatars')
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: true,
@@ -76,7 +83,7 @@ const Settings: React.FC = () => {
       return;
     }
     // Récupérer l'URL publique
-    const { data } = supabase.storage.from('profiles.pictures').getPublicUrl(fileName);
+    const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
     setAvatarUrl(data.publicUrl);
     setAvatarPreview(null); // on repasse sur l'URL distante après upload
   };
@@ -89,7 +96,7 @@ const Settings: React.FC = () => {
       first_name: firstName,
       last_name: lastName,
       description: bio,
-    //   special_status: mention,
+      //   special_status: mention,
     };
     if (avatarUrl) updates.picture_url = avatarUrl;
     const { error } = await supabase
@@ -128,8 +135,8 @@ const Settings: React.FC = () => {
                 avatarPreview
                   ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                   : avatarUrl
-                  ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-                  : {}
+                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
               }
             />
             <button
@@ -201,8 +208,8 @@ const Settings: React.FC = () => {
                 avatarPreview
                   ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                   : avatarUrl
-                  ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-                  : {}
+                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
               }
             />
           </div>
