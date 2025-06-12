@@ -12,6 +12,28 @@ const supabase = createClient(
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.email) {
+        // Récupérer le prénom et le nom depuis la table users
+        const { data } = await supabase
+          .from('users')
+          .select('first_name, last_name')
+          .eq('email', user.email)
+          .single();
+
+        if (data && data.first_name && data.last_name) {
+          setDisplayName(`${data.first_name} ${data.last_name}`);
+        } else {
+          setDisplayName('Loading...');
+        }
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -26,7 +48,7 @@ const Sidebar: React.FC = () => {
           <span className="sidebar-status" />
         </div>
         <div>
-          <Text size={20} bold>UserName</Text>
+          <Text size={14} bold>{displayName}</Text>
           <div style={{ color: '#a259ff', fontWeight: 600, fontSize: 14 }}>NOUVEL ARRIVANT</div>
         </div>
       </div>
@@ -34,28 +56,28 @@ const Sidebar: React.FC = () => {
       <div className="sidebar-menu">
         <div className="sidebar-item active">
           <FaHome size={22} className="sidebar-icon" />
-          <Text size={20} color="#3730A3" bold>DASHBOARD</Text>
+          <Text size={16} color="#3730A3" bold>DASHBOARD</Text>
         </div>
         <div className="sidebar-item">
           <FaFolderOpen size={22} className="sidebar-icon" />
-          <Text size={20} color="#757575">PROJETS</Text>
+          <Text size={16} color="#757575">PROJETS</Text>
         </div>
         <div className="sidebar-item" style={{ marginBottom: 24 }}>
           <FaUsers size={22} className="sidebar-icon" />
-          <Text size={20} color="#757575">COMMUNAUTÉ</Text>
+          <Text size={16} color="#757575">COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
           <div className="sidebar-link">
             <FaQuestionCircle size={20} className="sidebar-icon" />
-            <Text size={18} color="#3730A3">AIDE</Text>
+            <Text size={16} color="#3730A3">AIDE</Text>
           </div>
           <div className="sidebar-link">
             <FaCog size={20} className="sidebar-icon" />
-            <Text size={18} color="#3730A3">PARAMÈTRES</Text>
+            <Text size={16} color="#3730A3">PARAMÈTRES</Text>
           </div>
           <div className="sidebar-logout" onClick={handleLogout}>
             <FaSignOutAlt size={22} className="sidebar-icon" />
-            <Text size={20} color="#b91c1c" bold> DÉCONNEXION </Text>
+            <Text size={16} color="#b91c1c" bold> DÉCONNEXION </Text>
           </div>
         </div>
       </div>
