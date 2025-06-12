@@ -1,20 +1,23 @@
 .dashboard-root {
     display: flex;
     min-height: 100vh;
+    width: 100vw;
 }
 
 .dashboard-container {
     flex: 1;
-    min-height: 100vh;
     background: linear-gradient(270deg, #f8fafc, #e0e7ff, #c7d2fe, #f8fafc);
     background-size: 600% 600%;
     animation: gradientMove 24s ease-in-out infinite;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* alignement à gauche */
-    justify-content: flex-start; /* alignement en haut */
-    gap: 32px;
-    padding: 64px 48px; /* Ajoute du padding pour l'espace autour du contenu */
+    align-items: flex-start;
+    /* alignement à gauche */
+    justify-content: flex-start;
+    /* alignement en haut */
+    gap: 4px;
+    padding: 64px 48px;
+    /* Ajoute du padding pour l'espace autour du contenu */
 }
 
 @keyframes gradientMove {
