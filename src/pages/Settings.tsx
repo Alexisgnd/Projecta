@@ -7,6 +7,14 @@ const Settings: React.FC = () => {
         <div className="settings-root">
             <div className="settings-container">
                 <div className="settings-left">
+                    {/* Titre principal */}
+                    <Text size={32} bold color="primary" className="settings-main-title">
+                        Paramètres
+                    </Text>
+                    {/* Titre Médias */}
+                    <div className="settings-section-title">
+                        <Text size={20} bold>Médias</Text>
+                    </div>
                     {/* Avatar et boutons */}
                     <div className="settings-avatar-section">
                         <div className="settings-avatar" />
@@ -18,23 +26,28 @@ const Settings: React.FC = () => {
                         <button className="settings-btn" disabled>Mettre à jour</button>
                         <button className="settings-btn delete" disabled>🗑️ Effacer</button>
                     </div>
+                    {/* Titre Informations */}
+                    <div className="settings-section-title">
+                        <Text size={20} bold>Informations</Text>
+                    </div>
                     {/* Formulaire */}
                     <form className="settings-form">
                         <div className="settings-row">
-                            <Text size={14} bold>Prénom *</Text>
+                            <Text size={14} bold>Prénom</Text>
                             <input type="text" value="Alexis" />
-                            <Text size={14} bold>Nom *</Text>
+                            <Text size={14} bold>Nom</Text>
                             <input type="text" value="GONNEAUD" />
                         </div>
-                        <Text size={14} bold>Mention</Text>
-                        <input type="text" value="NOUVEL ARRIVANT" />
-                        <Text size={14} bold>Bio</Text>
-                        <textarea />
-                        <Text size={14} bold>Adresse e-mail *</Text>
-                        <input type="email" value="alexis.gonneaud@hotmail.fr" />
+                        <div className="settings-row">
+                            <Text size={14} bold>Adresse e-mail</Text>
+                            <input type="email" value="alexis.gonneaud@hotmail.fr" />
+                        </div>
+                        <div className="settings-row">
+                            <Text size={14} bold>Bio</Text>
+                            <textarea />
+                        </div>
                         <div className="settings-actions">
                             <button className="settings-btn primary" type="submit">Valider les changements</button>
-                            <button className="settings-btn" type="button">Annuler</button>
                         </div>
                     </form>
                 </div>
