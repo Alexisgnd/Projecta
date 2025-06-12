@@ -32,11 +32,12 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Récupère la dernière version depuis la table app_version
+    // Récupère la dernière version disponible (Status = 'Available') depuis la table app_version
     const fetchLatestVersion = async () => {
       const { data, error } = await supabase
         .from('app_version')
         .select('version')
+        .eq('Status', 'Available')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
