@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js'
 import { SetStateAction, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import packageJson from '../package.json';
 
 // Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
@@ -121,73 +122,93 @@ function AuthPage() {
     }
   }
 
-  // Affichage du formulaire selon le mode
-  return (
-    <div className="split-container">
-      <div className="split-left">
-        <Text size={32} bold color="primary">
-          {title}
-        </Text>
-        <Text size={16} color="secondary">
-          {subtitle}
-        </Text>
+  // Récupère la version depuis le package.json
+  const version = packageJson.version;
 
-        <div className="form">
-          <Input
-            header={'Adresse email'}
-            value={email}
-            onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
-            disabled={mode !== 'initial'}
-          />
-          {mode === 'register' && (
-            <>
-              <div className="form-row">
+  return (
+    <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
+      {/* Affichage de la version en haut à gauche, hors du container */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 12,
+          left: 24,
+          zIndex: 1000,
+          fontSize: 12,
+          color: '#888',
+          fontStyle: 'italic',
+          fontFamily: 'inherit',
+        }}
+      >
+        v{version}
+      </div>
+      <div className="split-container">
+        <div className="split-left">
+          {/* On retire l'affichage de la version ici */}
+          <Text size={32} bold color="primary">
+            {title}
+          </Text>
+          <Text size={16} color="secondary">
+            {subtitle}
+          </Text>
+
+          <div className="form">
+            <Input
+              header={'Adresse email'}
+              value={email}
+              onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
+              disabled={mode !== 'initial'}
+            />
+            {mode === 'register' && (
+              <>
+                <div className="form-row">
+                  <Input
+                    header={'Prénom'}
+                    value={firstName}
+                    onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    header={'Nom'}
+                    value={lastName}
+                    onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
+                  />
+                </div>
                 <Input
-                  header={'Prénom'}
-                  value={firstName}
-                  onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
+                  header={'Définir un mot de passe'}
+                  type="password"
+                  value={password}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
                 />
                 <Input
-                  header={'Nom'}
-                  value={lastName}
-                  onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
+                  header={'Confirmer le mot de passe'}
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) => setConfirmPassword(e.target.value)}
                 />
-              </div>
+              </>
+            )}
+            {mode === 'login' && (
               <Input
-                header={'Définir un mot de passe'}
+                header={'Mot de passe'}
                 type="password"
                 value={password}
                 onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
               />
-              <Input
-                header={'Confirmer le mot de passe'}
-                type="password"
-                value={confirmPassword}
-                onChange={(e: { target: { value: SetStateAction<string> } }) => setConfirmPassword(e.target.value)}
-              />
-            </>
-          )}
-          {mode === 'login' && (
-            <Input
-              header={'Mot de passe'}
-              type="password"
-              value={password}
-              onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
-            />
-          )}
+            )}
+          </div>
+
+          {error && <Text size={14} color="danger">{error}</Text>}
+
+          <Button
+            text={loading ? 'Chargement...' : buttonText}
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={isButtonDisabled || loading}
+          />
         </div>
-
-        {error && <Text size={14} color="danger">{error}</Text>}
-
-        <Button
-          text={loading ? 'Chargement...' : buttonText}
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={isButtonDisabled || loading}
-        />
-      </div>
-      <div className="split-right">
-        {/* <h2>Partie droite</h2> */}
+        <div className="split-right">
+          {/* <h2>Partie droite</h2> */}
+        </div>
       </div>
     </div>
   )
