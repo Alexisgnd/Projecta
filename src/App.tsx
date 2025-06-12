@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
 import Settings from './pages/Settings'
+import Sidebar from './components/Sidebar';
 
 // Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
@@ -236,14 +237,46 @@ function AuthPage() {
   )
 }
 
+function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw' }}>
+      <Sidebar />
+      <div style={{ flex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
 // Remplace l'export principal :
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route
+          path="/"
+          element={
+            <div className="app-root">
+              {/* AuthPage sans sidebar */}
+              <AuthPage />
+            </div>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <MainLayout>
+              <Settings />
+            </MainLayout>
+          }
+        />
+        {/* Ajoute d'autres routes ici si besoin */}
       </Routes>
     </BrowserRouter>
   );

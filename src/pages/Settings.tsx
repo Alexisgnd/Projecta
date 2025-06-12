@@ -1,12 +1,10 @@
 import React from 'react';
 import './Settings.css';
 import Text from '../components/Text';
-import Sidebar from '../components/Sidebar';
 
 const Settings: React.FC = () => {
     return (
         <div className="settings-root">
-            <Sidebar />
             <div className="settings-container">
                 <div className="settings-left">
                     {/* Avatar et boutons */}

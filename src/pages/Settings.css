@@ -7,8 +7,7 @@
 .settings-container {
     flex: 1;
     display: flex;
-    padding: 40px 60px;
-    gap: 40px;
+    padding: 30px 30px;
     background: #fafbfc;
 }
 
