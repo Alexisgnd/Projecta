@@ -6,7 +6,7 @@
 
 .dashboard-container {
     flex: 1;
-    background: linear-gradient(270deg, #f8fafc, #e0e7ff, #c7d2fe, #f8fafc);
+    background: linear-gradient(270deg, #fafdff, #eef4ff, #e3ecff, #fafdff);
     background-size: 600% 600%;
     animation: gradientMove 24s ease-in-out infinite;
     display: flex;
@@ -16,8 +16,7 @@
     justify-content: flex-start;
     /* alignement en haut */
     gap: 4px;
-    padding: 64px 48px;
-    /* Ajoute du padding pour l'espace autour du contenu */
+    padding: 34px 34px;
 }
 
 @keyframes gradientMove {
