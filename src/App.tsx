@@ -3,10 +3,11 @@ import Button from './components/Button'
 import Input from './components/Input'
 import Text from './components/Text'
 import { createClient } from '@supabase/supabase-js'
-import { SetStateAction, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
 
 // Création du client Supabase avec les variables d'environnement
 const supabase = createClient(
@@ -27,7 +28,24 @@ function AuthPage() {
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Récupère la dernière version depuis la table app_version
+    const fetchLatestVersion = async () => {
+      const { data, error } = await supabase
+        .from('app_version')
+        .select('version')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!error && data && data.version) {
+        setLatestVersion(data.version);
+      }
+    };
+    fetchLatestVersion();
+  }, []);
 
   // Vérifie si l'email est valide
   const isValidEmail = (email: string) =>
@@ -124,24 +142,26 @@ function AuthPage() {
 
   // Récupère la version depuis le package.json
   const version = packageJson.version;
+  const isUpToDate = !!latestVersion && version === latestVersion;
 
   return (
-    <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
+    <div className="app-root">
       {/* Affichage de la version en haut à gauche, hors du container */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 12,
-          left: 24,
-          zIndex: 1000,
-          fontSize: 12,
-          color: '#888',
-          fontStyle: 'italic',
-          fontFamily: 'inherit',
-        }}
-      >
-        v{version}
+      <div className="version-indicator">
+        <span>v{version}</span>
+        {latestVersion && isUpToDate && (
+          <FaCheckCircle className="icon-check" title="À jour" />
+        )}
+        {latestVersion && !isUpToDate && (
+          <FaTimesCircle className="icon-cross" title="Nouvelle version disponible" />
+        )}
       </div>
+      {/* Affiche la nouvelle version en dessous si non à jour */}
+      {latestVersion && !isUpToDate && (
+        <div className="version-warning">
+          Nouvelle version disponible : <b>v{latestVersion}</b>
+        </div>
+      )}
       <div className="split-container">
         <div className="split-left">
           {/* On retire l'affichage de la version ici */}
