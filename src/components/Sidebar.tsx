@@ -2,7 +2,7 @@ import React from 'react';
 import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // Ajout de useLocation
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -12,6 +12,7 @@ const supabase = createClient(
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Récupère la route courante
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
 
   React.useEffect(() => {
@@ -54,24 +55,39 @@ const Sidebar: React.FC = () => {
       </div>
       {/* Menu */}
       <div className="sidebar-menu">
-        <div className="sidebar-item active">
+        <div
+          className={`sidebar-item${location.pathname === '/dashboard' ? ' active' : ''}`}
+          onClick={() => navigate('/dashboard')}
+          style={{ cursor: 'pointer' }}
+        >
           <FaHome size={22} className="sidebar-icon" />
-          <Text size={16} color="#3730A3" bold>DASHBOARD</Text>
+          <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
         </div>
-        <div className="sidebar-item">
+        <div
+          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''}`}
+          onClick={() => navigate('/projects')}
+          style={{ cursor: 'pointer' }}
+        >
           <FaFolderOpen size={22} className="sidebar-icon" />
-          <Text size={16} color="#757575">PROJETS</Text>
+          <Text size={16} color={location.pathname === '/projects' ? "#3730A3" : "#757575"}>PROJETS</Text>
         </div>
-        <div className="sidebar-item" style={{ marginBottom: 24 }}>
+        <div
+          className={`sidebar-item${location.pathname === '/community' ? ' active' : ''}`}
+          onClick={() => navigate('/community')}
+          style={{ marginBottom: 24, cursor: 'pointer' }}
+        >
           <FaUsers size={22} className="sidebar-icon" />
-          <Text size={16} color="#757575">COMMUNAUTÉ</Text>
+          <Text size={16} color={location.pathname === '/community' ? "#3730A3" : "#757575"}>COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
           <div className="sidebar-link">
             <FaQuestionCircle size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">AIDE</Text>
           </div>
-          <div className="sidebar-link" onClick={() => navigate('/settings')}>
+          <div
+            className={`sidebar-link${location.pathname === '/settings' ? ' active' : ''}`}
+            onClick={() => navigate('/settings')}
+          >
             <FaCog size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">PARAMÈTRES</Text>
           </div>
