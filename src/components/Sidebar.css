@@ -26,8 +26,8 @@
 
 .sidebar-status {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 0px;
+  right: 0px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -73,6 +73,8 @@
   align-items: center;
   margin-bottom: 16px;
   color: #3730A3;
+  padding: 14px 16px; /* Ajouté pour augmenter la hauteur */
+  border-radius: 12px; /* Optionnel pour un effet arrondi */
 }
 
 .sidebar-logout {
@@ -80,4 +82,11 @@
   align-items: center;
   color: #b91c1c;
   cursor: pointer;
+  transition: background 0.2s;
+  padding: 14px 16px; /* Ajouté pour augmenter la hauteur */
+  border-radius: 12px; /* Optionnel pour un effet arrondi */
+}
+
+.sidebar-logout:hover {
+  background: #fdeaea;
 }
