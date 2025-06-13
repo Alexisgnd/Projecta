@@ -2,7 +2,7 @@ import React from 'react';
 import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
-import { useNavigate, useLocation } from 'react-router-dom'; // Ajout de useLocation
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -12,9 +12,9 @@ const supabase = createClient(
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Récupère la route courante
+  const location = useLocation();
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
-  const [specialStatus, setSpecialStatus] = React.useState<string>(''); // Ajout
+  const [specialStatus, setSpecialStatus] = React.useState<string>(''); 
 
   React.useEffect(() => {
     const fetchUser = async () => {
