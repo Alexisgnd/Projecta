@@ -2,26 +2,26 @@ import React from 'react';
 import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
-import { useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY
-);
+import { useNavigate, useLocation } from 'react-router-dom';
+import supabase from '../supabaseClient';
+import { useUserUpdate } from '../UserContext';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
+  const [specialStatus, setSpecialStatus] = React.useState<string>('');
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const { userRefreshCount } = useUserUpdate();
 
   React.useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
-        // Récupérer le prénom et le nom depuis la table users
+        // Récupérer le prénom, le nom, le special_status et l'avatar
         const { data } = await supabase
           .from('users')
-          .select('first_name, last_name')
+          .select('first_name, last_name, special_status, picture_url')
           .eq('email', user.email)
           .single();
 
@@ -30,10 +30,20 @@ const Sidebar: React.FC = () => {
         } else {
           setDisplayName('Loading...');
         }
+        if (data && data.special_status) {
+          setSpecialStatus(data.special_status);
+        } else {
+          setSpecialStatus('');
+        }
+        if (data && data.picture_url) {
+          setAvatarUrl(data.picture_url);
+        } else {
+          setAvatarUrl(null);
+        }
       }
     };
     fetchUser();
-  }, []);
+  }, [userRefreshCount]); // <-- Ajoute la dépendance ici
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -44,34 +54,71 @@ const Sidebar: React.FC = () => {
     <div className="sidebar-container">
       {/* Profil */}
       <div className="sidebar-profile">
-        <div className="sidebar-avatar">
+        <div className="sidebar-avatar" style={
+          avatarUrl
+            ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : {}
+        }>
           <span className="sidebar-status" />
         </div>
         <div>
           <Text size={14} bold>{displayName}</Text>
-          <div style={{ color: '#a259ff', fontWeight: 600, fontSize: 14 }}>NOUVEL ARRIVANT</div>
+          <div
+            style={{
+              color:
+                specialStatus?.toLowerCase() === 'fondateur projecta'
+                  ? '#e11d48'
+                  : specialStatus?.toLowerCase() === 'nouvel arrivant'
+                    ? '#a259ff'
+                    : specialStatus?.toLowerCase() === 'développeur projecta'
+                      ? '#2563eb'
+                      : '#757575',
+              fontWeight: 600,
+              fontSize: 14,
+              textTransform: 'none',
+            }}
+          >
+            {specialStatus
+              ? specialStatus.charAt(0).toUpperCase() + specialStatus.slice(1).toLowerCase()
+              : 'Nouvel arrivant'}
+          </div>
         </div>
       </div>
       {/* Menu */}
       <div className="sidebar-menu">
-        <div className="sidebar-item active">
+        <div
+          className={`sidebar-item${location.pathname === '/dashboard' ? ' active' : ''}`}
+          onClick={() => navigate('/dashboard')}
+          style={{ cursor: 'pointer' }}
+        >
           <FaHome size={22} className="sidebar-icon" />
-          <Text size={16} color="#3730A3" bold>DASHBOARD</Text>
+          <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
         </div>
-        <div className="sidebar-item">
+        <div
+          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''}`}
+          onClick={() => navigate('/projects')}
+          style={{ cursor: 'pointer' }}
+        >
           <FaFolderOpen size={22} className="sidebar-icon" />
-          <Text size={16} color="#757575">PROJETS</Text>
+          <Text size={16} color={location.pathname === '/projects' ? "#3730A3" : "#757575"}>PROJETS</Text>
         </div>
-        <div className="sidebar-item" style={{ marginBottom: 24 }}>
+        <div
+          className={`sidebar-item${location.pathname === '/community' ? ' active' : ''}`}
+          onClick={() => navigate('/community')}
+          style={{ marginBottom: 24, cursor: 'pointer' }}
+        >
           <FaUsers size={22} className="sidebar-icon" />
-          <Text size={16} color="#757575">COMMUNAUTÉ</Text>
+          <Text size={16} color={location.pathname === '/community' ? "#3730A3" : "#757575"}>COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
           <div className="sidebar-link">
             <FaQuestionCircle size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">AIDE</Text>
           </div>
-          <div className="sidebar-link">
+          <div
+            className={`sidebar-link${location.pathname === '/settings' ? ' active' : ''}`}
+            onClick={() => navigate('/settings')}
+          >
             <FaCog size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">PARAMÈTRES</Text>
           </div>

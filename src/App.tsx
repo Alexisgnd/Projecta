@@ -2,18 +2,15 @@ import './App.css'
 import Button from './components/Button'
 import Input from './components/Input'
 import Text from './components/Text'
-import { createClient } from '@supabase/supabase-js'
+import supabase from './supabaseClient';
 import { SetStateAction, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
-
-// Création du client Supabase avec les variables d'environnement
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY
-)
+import Settings from './pages/Settings'
+import Sidebar from './components/Sidebar';
+import { UserUpdateProvider } from './UserContext';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -32,11 +29,12 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Récupère la dernière version depuis la table app_version
+    // Récupère la dernière version disponible (Status = 'Available') depuis la table app_version
     const fetchLatestVersion = async () => {
       const { data, error } = await supabase
         .from('app_version')
         .select('version')
+        .eq('Status', 'Available')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -234,14 +232,49 @@ function AuthPage() {
   )
 }
 
+function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw' }}>
+      <Sidebar />
+      <div style={{ flex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
 // Remplace l'export principal :
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+      <UserUpdateProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="app-root">
+                {/* AuthPage sans sidebar */}
+                <AuthPage />
+              </div>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <MainLayout>
+                <Settings />
+              </MainLayout>
+            }
+          />
+          {/* Ajoute d'autres routes ici si besoin */}
+        </Routes>
+      </UserUpdateProvider>
     </BrowserRouter>
   );
 }
