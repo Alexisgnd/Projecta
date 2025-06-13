@@ -11,6 +11,7 @@ import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'imp
 import Settings from './pages/Settings'
 import Sidebar from './components/Sidebar';
 import { UserUpdateProvider } from './UserContext';
+import Alert from './components/Alert';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -24,6 +25,8 @@ function AuthPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  // Ajoute une clé pour forcer le remount de l'alerte
+  const [alertKey, setAlertKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false)
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -99,7 +102,8 @@ function AuthPage() {
       if (!error) {
         navigate('/dashboard');
       } else {
-        setError('Mot de passe incorrect ou utilisateur inexistant')
+        setError('Mot de passe incorrect')
+        setAlertKey(Date.now().toString());
       }
     } else if (mode === 'register') {
       setLoading(true)
@@ -215,7 +219,19 @@ function AuthPage() {
             )}
           </div>
 
+          {/* Remplace ceci :
           {error && <Text size={14} color="danger">{error}</Text>}
+          */}
+          {error && (
+            <Alert
+              key={alertKey}
+              type="error"
+              title="Erreur de connexion"
+              onClose={() => setError(null)}
+            >
+              {error}
+            </Alert>
+          )}
 
           <Button
             text={loading ? 'Chargement...' : buttonText}
