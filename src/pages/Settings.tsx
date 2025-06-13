@@ -11,14 +11,12 @@ const supabase = createClient(
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
-  //   const [mention, setMention] = useState('');
+  const [mention, setMention] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,12 +35,11 @@ const Settings: React.FC = () => {
         .eq('email', user.email)
         .single();
       if (data) {
-        setUser(data);
         setFirstName(data.first_name || '');
         setLastName(data.last_name || '');
         setEmail(data.email || '');
         setBio(data.description || '');
-        // setMention(data.special_status || 'NOUVEL ARRIVANT');
+        setMention(data.special_status || 'NOUVEL ARRIVANT');
         setAvatarUrl(data.picture_url || null);
       }
       setLoading(false);
@@ -54,7 +51,6 @@ const Settings: React.FC = () => {
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setAvatarFile(file);
 
     // Affiche l'aperçu local immédiatement
     const previewUrl = URL.createObjectURL(file);
@@ -96,7 +92,7 @@ const Settings: React.FC = () => {
       first_name: firstName,
       last_name: lastName,
       description: bio,
-      //   special_status: mention,
+      special_status: mention,
     };
     if (avatarUrl) updates.picture_url = avatarUrl;
     const { error } = await supabase
@@ -143,7 +139,7 @@ const Settings: React.FC = () => {
               className="settings-btn"
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled={updating}
+              disabled
             >
               Mettre à jour
             </button>
@@ -151,7 +147,7 @@ const Settings: React.FC = () => {
               className="settings-btn delete"
               type="button"
               disabled={!avatarUrl || updating}
-              onClick={() => { setAvatarUrl(null); setAvatarFile(null); }}
+              onClick={() => { setAvatarUrl(null); }}
             >
               🗑️ Effacer
             </button>
@@ -185,10 +181,10 @@ const Settings: React.FC = () => {
               <Text size={14} bold>Adresse e-mail</Text>
               <input type="email" value={email} disabled />
             </div>
-            {/* <div className="settings-row">
+            <div className="settings-row">
               <Text size={14} bold>Mention</Text>
               <input type="text" value={mention} onChange={e => setMention(e.target.value)} />
-            </div> */}
+            </div>
             <div className="settings-row">
               <Text size={14} bold>Bio</Text>
               <textarea value={bio} onChange={e => setBio(e.target.value)} />
