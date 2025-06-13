@@ -6,7 +6,9 @@
   padding: 24px;
   box-sizing: border-box;
   border-right: 1px solid #eee;
-  min-width: 18%;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
 }
 
 .sidebar-profile {
