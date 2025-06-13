@@ -108,8 +108,8 @@
 .sidebar-status-menu {
   position: absolute;
   top: 110%;
-  left: 70%; /* Était 50% */
-  transform: translateX(-50%);
+  left: 200%;
+  transform: translateX(-90%);
   background: #fff;
   border: 1px solid #eee;
   border-radius: 12px;
@@ -118,6 +118,7 @@
   min-width: 140px;
   padding: 6px;
   margin-top: 4px;
+  color: #111;
 }
 
 .sidebar-status-menu-item {

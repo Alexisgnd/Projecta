@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
@@ -23,6 +23,7 @@ const Sidebar: React.FC = () => {
   const [activityStatus, setActivityStatus] = React.useState<string>('online');
   const [showStatusMenu, setShowStatusMenu] = React.useState(false);
   const { userRefreshCount } = useUserUpdate();
+  const statusBoxRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -84,12 +85,26 @@ const Sidebar: React.FC = () => {
     if (user && user.email) {
       await supabase
         .from('users')
-        .update({ activity_status: status })
+        .update({ status }) // <-- MAJ la colonne "status"
         .eq('email', user.email);
     }
   };
 
   const currentStatus = ACTIVITY_STATUSES.find(s => s.key === activityStatus) || ACTIVITY_STATUSES[0];
+
+  useEffect(() => {
+    if (!showStatusMenu) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        statusBoxRef.current &&
+        !statusBoxRef.current.contains(event.target as Node)
+      ) {
+        setShowStatusMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showStatusMenu]);
 
   return (
     <div className="sidebar-container">
@@ -97,6 +112,7 @@ const Sidebar: React.FC = () => {
       <div className="sidebar-profile">
         <div
           className="sidebar-avatar"
+          ref={statusBoxRef}
           style={
             avatarUrl
               ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
