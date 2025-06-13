@@ -14,15 +14,16 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Récupère la route courante
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
+  const [specialStatus, setSpecialStatus] = React.useState<string>(''); // Ajout
 
   React.useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
-        // Récupérer le prénom et le nom depuis la table users
+        // Récupérer le prénom, le nom et le special_status depuis la table users
         const { data } = await supabase
           .from('users')
-          .select('first_name, last_name')
+          .select('first_name, last_name, special_status')
           .eq('email', user.email)
           .single();
 
@@ -30,6 +31,11 @@ const Sidebar: React.FC = () => {
           setDisplayName(`${data.first_name} ${data.last_name}`);
         } else {
           setDisplayName('Loading...');
+        }
+        if (data && data.special_status) {
+          setSpecialStatus(data.special_status);
+        } else {
+          setSpecialStatus('');
         }
       }
     };
@@ -50,7 +56,9 @@ const Sidebar: React.FC = () => {
         </div>
         <div>
           <Text size={14} bold>{displayName}</Text>
-          <div style={{ color: '#a259ff', fontWeight: 600, fontSize: 14 }}>NOUVEL ARRIVANT</div>
+          <div style={{ color: '#a259ff', fontWeight: 600, fontSize: 14 }}>
+            {specialStatus || 'NOUVEL ARRIVANT'}
+          </div>
         </div>
       </div>
       {/* Menu */}
