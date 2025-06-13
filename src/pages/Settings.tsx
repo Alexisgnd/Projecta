@@ -400,7 +400,11 @@ const Settings: React.FC = () => {
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Mention</Text></span>
-              <input type="text" value={mention} onChange={e => setMention(e.target.value)} />
+              <input
+                type="text"
+                value={mention}
+                disabled
+              />
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Bio</Text></span>
