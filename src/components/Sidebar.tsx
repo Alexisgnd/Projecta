@@ -201,9 +201,23 @@ const Sidebar: React.FC = () => {
           <Text size={16} color="#757575">COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
-          <div className="sidebar-link">
+          {/* Ajout de Relations */}
+          <div
+            className="sidebar-link disabled"
+            style={{ cursor: 'not-allowed', opacity: 0.5 }}
+            title="Fonctionnalité désactivée"
+          >
+            <FaUsers size={20} className="sidebar-icon" />
+            <Text size={16} color="#757575">RELATIONS</Text>
+          </div>
+          {/* AIDE désactivé */}
+          <div
+            className="sidebar-link disabled"
+            style={{ cursor: 'not-allowed', opacity: 0.5 }}
+            title="Fonctionnalité désactivée"
+          >
             <FaQuestionCircle size={20} className="sidebar-icon" />
-            <Text size={16} color="#3730A3">AIDE</Text>
+            <Text size={16} color="#757575">AIDE</Text>
           </div>
           <div
             className={`sidebar-link${location.pathname === '/settings' ? ' active' : ''}`}
