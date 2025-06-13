@@ -180,20 +180,22 @@ const Sidebar: React.FC = () => {
           <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
         </div>
         <div
-          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''}`}
-          onClick={() => navigate('/projects')}
-          style={{ cursor: 'pointer' }}
+          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''} disabled`}
+          // onClick={() => navigate('/projects')}
+          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
         >
           <FaFolderOpen size={22} className="sidebar-icon" />
-          <Text size={16} color={location.pathname === '/projects' ? "#3730A3" : "#757575"}>PROJETS</Text>
+          <Text size={16} color="#757575">PROJETS</Text>
         </div>
         <div
-          className={`sidebar-item${location.pathname === '/community' ? ' active' : ''}`}
-          onClick={() => navigate('/community')}
-          style={{ marginBottom: 24, cursor: 'pointer' }}
+          className={`sidebar-item${location.pathname === '/community' ? ' active' : ''} disabled`}
+          // onClick={() => navigate('/community')}
+          style={{ marginBottom: 24, cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
         >
           <FaUsers size={22} className="sidebar-icon" />
-          <Text size={16} color={location.pathname === '/community' ? "#3730A3" : "#757575"}>COMMUNAUTÉ</Text>
+          <Text size={16} color="#757575">COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
           <div className="sidebar-link">
