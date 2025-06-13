@@ -224,21 +224,23 @@ const Settings: React.FC = () => {
           {/* Formulaire */}
           <form className="settings-form" onSubmit={handleSubmit}>
             <div className="settings-row">
-              <Text size={14} bold>Prénom</Text>
+              <span className="settings-label"><Text size={14} bold>Prénom</Text></span>
               <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
-              <Text size={14} bold>Nom</Text>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Nom</Text></span>
               <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Adresse e-mail</Text>
+              <span className="settings-label"><Text size={14} bold>Adresse e-mail</Text></span>
               <input type="email" value={email} disabled />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Mention</Text>
+              <span className="settings-label"><Text size={14} bold>Mention</Text></span>
               <input type="text" value={mention} onChange={e => setMention(e.target.value)} />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Bio</Text>
+              <span className="settings-label"><Text size={14} bold>Bio</Text></span>
               <textarea value={bio} onChange={e => setBio(e.target.value)} />
             </div>
             <div className="settings-actions">
@@ -250,6 +252,7 @@ const Settings: React.FC = () => {
         </div>
         <div className="settings-right">
           <div className="settings-card">
+            <div className="settings-card-banner" />
             <div
               className="settings-card-avatar"
               style={

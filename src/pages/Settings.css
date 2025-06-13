@@ -86,13 +86,26 @@ body {
 .settings-row {
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: flex-start; /* <-- change from center to flex-start */
+    margin-bottom: 8px;
 }
 
-.settings-form label {
+.settings-form label,
+.settings-row > .settings-label {
+    min-width: 120px;
+    display: inline-block;
     font-weight: bold;
     color: #444;
     margin-bottom: 4px;
+    margin-right: 8px;
+    text-align: left;
+}
+
+/* Ne pas appliquer la largeur fixe à Prénom/Nom */
+.settings-label--inline {
+    min-width: unset;
+    width: auto;
+    margin-bottom: 0;
 }
 
 .settings-form input,
@@ -142,7 +155,20 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 60px;
+    position: relative; /* Ajouté */
+    padding-top: 0;     /* Modifié */
+}
+
+.settings-card-banner {
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(90deg, #a259ff 0%, #fbc531 100%);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
 .settings-card-avatar {
@@ -151,6 +177,17 @@ body {
     border-radius: 50%;
     background: #d3d3d3;
     margin-bottom: 24px;
+    position: absolute;
+    top: 60px; /* Ajuste pour que l'avatar soit centré sur la bannière */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    border: 6px solid #fff; /* Pour un effet "détaché" */
+}
+
+/* Pour garder le contenu centré verticalement sous l'avatar si besoin */
+.settings-card {
+    justify-content: flex-start;
 }
 
 .settings-main-title {
