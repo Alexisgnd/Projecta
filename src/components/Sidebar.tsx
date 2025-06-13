@@ -6,12 +6,22 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
 
+const ACTIVITY_STATUSES = [
+  { key: 'online', label: 'En ligne', color: '#4ade80' },
+  { key: 'busy', label: 'Occupé', color: '#f87171' },
+  { key: 'away', label: 'Absent', color: '#facc15' },
+  { key: 'invisible', label: 'Invisible', color: '#a3a3a3' },
+  { key: 'dnd', label: 'Ne pas déranger', color: '#ef4444' },
+];
+
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
   const [specialStatus, setSpecialStatus] = React.useState<string>('');
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const [activityStatus, setActivityStatus] = React.useState<string>('online');
+  const [showStatusMenu, setShowStatusMenu] = React.useState(false);
   const { userRefreshCount } = useUserUpdate();
 
   React.useEffect(() => {
@@ -45,21 +55,77 @@ const Sidebar: React.FC = () => {
     fetchUser();
   }, [userRefreshCount]); // <-- Ajoute la dépendance ici
 
+  React.useEffect(() => {
+    const fetchStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.email) {
+        const { data } = await supabase
+          .from('users')
+          .select('activity_status')
+          .eq('email', user.email)
+          .single();
+        if (data && data.activity_status) {
+          setActivityStatus(data.activity_status);
+        }
+      }
+    };
+    fetchStatus();
+  }, [userRefreshCount]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
 
+  const handleStatusChange = async (status: string) => {
+    setActivityStatus(status);
+    setShowStatusMenu(false);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && user.email) {
+      await supabase
+        .from('users')
+        .update({ activity_status: status })
+        .eq('email', user.email);
+    }
+  };
+
+  const currentStatus = ACTIVITY_STATUSES.find(s => s.key === activityStatus) || ACTIVITY_STATUSES[0];
+
   return (
     <div className="sidebar-container">
       {/* Profil */}
       <div className="sidebar-profile">
-        <div className="sidebar-avatar" style={
-          avatarUrl
-            ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-            : {}
-        }>
-          <span className="sidebar-status" />
+        <div
+          className="sidebar-avatar"
+          style={
+            avatarUrl
+              ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : {}
+          }
+        >
+          <span
+            className="sidebar-status"
+            style={{ background: currentStatus.color, cursor: 'pointer' }}
+            onClick={() => setShowStatusMenu(v => !v)}
+            title={currentStatus.label}
+          />
+          {showStatusMenu && (
+            <div className="sidebar-status-menu">
+              {ACTIVITY_STATUSES.map(status => (
+                <div
+                  key={status.key}
+                  className={`sidebar-status-menu-item${activityStatus === status.key ? ' selected' : ''}`}
+                  onClick={() => handleStatusChange(status.key)}
+                >
+                  <span
+                    className="sidebar-status-dot"
+                    style={{ background: status.color }}
+                  />
+                  <span style={{ fontSize: 14 }}>{status.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <Text size={14} bold>{displayName}</Text>

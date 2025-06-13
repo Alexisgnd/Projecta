@@ -104,3 +104,42 @@
 .sidebar-logout:hover {
   background: #fdeaea;
 }
+
+.sidebar-status-menu {
+  position: absolute;
+  top: 110%;
+  left: 70%; /* Était 50% */
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0002;
+  z-index: 10;
+  min-width: 140px;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+.sidebar-status-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.sidebar-status-menu-item.selected,
+.sidebar-status-menu-item:hover {
+  background: #f3f4f6;
+}
+
+.sidebar-status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
