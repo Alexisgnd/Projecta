@@ -134,7 +134,10 @@ const Sidebar: React.FC = () => {
                 <div
                   key={status.key}
                   className={`sidebar-status-menu-item${activityStatus === status.key ? ' selected' : ''}`}
-                  onClick={() => handleStatusChange(status.key)}
+                  onClick={e => {
+                    e.stopPropagation(); // <-- Ajoute ceci
+                    handleStatusChange(status.key);
+                  }}
                 >
                   <span
                     className="sidebar-status-dot"
