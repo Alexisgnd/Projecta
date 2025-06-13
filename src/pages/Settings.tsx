@@ -14,9 +14,13 @@ const Settings: React.FC = () => {
   const [mention, setMention] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const { refreshUser } = useUserUpdate();
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Charger les infos utilisateur
   useEffect(() => {
@@ -39,6 +43,7 @@ const Settings: React.FC = () => {
         setBio(data.description || '');
         setMention(data.special_status || 'NOUVEL ARRIVANT');
         setAvatarUrl(data.picture_url || null);
+        setBannerUrl(data.banner_url || null); // <-- Ajouté
       }
       setLoading(false);
     };
@@ -112,6 +117,68 @@ const Settings: React.FC = () => {
     refreshUser(); // Notifie la sidebar
   };
 
+  // Gérer l'upload de la bannière
+  const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBannerUploading(true);
+    const previewUrl = URL.createObjectURL(file);
+    setBannerPreview(previewUrl);
+
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) {
+      setBannerPreview(null);
+      setBannerUploading(false);
+      return;
+    }
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('first_name, last_name, banner_url')
+      .eq('email', authUser.email)
+      .single();
+
+    const firstNameSanitized = (userData?.first_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const lastNameSanitized = (userData?.last_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const fileExt = file.name.split('.').pop();
+    const uniqueSuffix = Date.now();
+    const fileName = `${firstNameSanitized}-${lastNameSanitized}-profile-banner-${uniqueSuffix}.${fileExt}`;
+
+    // Supprime l'ancienne bannière si elle existe
+    if (userData?.banner_url) {
+      const urlParts = userData.banner_url.split('/');
+      const oldFileName = urlParts[urlParts.length - 1];
+      await supabase.storage.from('banners').remove([oldFileName]);
+    }
+
+    // Upload la nouvelle bannière
+    const { error: uploadError } = await supabase.storage
+      .from('banners')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
+    if (uploadError) {
+      setBannerPreview(null);
+      setBannerUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('banners').getPublicUrl(fileName);
+    setBannerUrl(data.publicUrl);
+
+    await supabase
+      .from('users')
+      .update({ banner_url: data.publicUrl })
+      .eq('email', authUser.email);
+
+    setBannerPreview(null);
+    setBannerUploading(false);
+    refreshUser();
+  };
+
   // Gérer la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,6 +190,7 @@ const Settings: React.FC = () => {
       special_status: mention,
     };
     if (avatarUrl) updates.picture_url = avatarUrl;
+    if (bannerUrl) updates.banner_url = bannerUrl; // Ajouté
     const { error } = await supabase
       .from('users')
       .update(updates)
@@ -156,6 +224,30 @@ const Settings: React.FC = () => {
     setAvatarUrl(null);
     setAvatarPreview(null);
     setAvatarUploading(false);
+    refreshUser(); // Notifie la sidebar
+  };
+
+  // Suppression de la bannière
+  const handleBannerDelete = async () => {
+    if (!bannerUrl) return;
+    setBannerUploading(true);
+
+    // Extraire le nom du fichier depuis l'URL publique
+    const urlParts = bannerUrl.split('/');
+    const oldFileName = urlParts[urlParts.length - 1];
+
+    // Supprimer le fichier du bucket
+    await supabase.storage.from('banners').remove([oldFileName]);
+
+    // Mettre à jour la table users (banner_url à null)
+    await supabase
+      .from('users')
+      .update({ banner_url: null })
+      .eq('email', email);
+
+    setBannerUrl(null);
+    setBannerPreview(null);
+    setBannerUploading(false);
     refreshUser(); // Notifie la sidebar
   };
 
@@ -211,11 +303,41 @@ const Settings: React.FC = () => {
               onChange={handleAvatarChange}
             />
           </div>
-          {/* Bannière désactivée */}
+          {/* Bannière */}
           <div className="settings-avatar-section">
-            <div className="settings-banner" />
-            <button className="settings-btn" disabled>Mettre à jour</button>
-            <button className="settings-btn delete" disabled>🗑️ Effacer</button>
+            <div
+              className="settings-banner"
+              style={
+                bannerPreview
+                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : bannerUrl
+                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
+              }
+            />
+            <button
+              className="settings-btn"
+              type="button"
+              onClick={() => bannerInputRef.current?.click()}
+              disabled={bannerUploading || !!bannerPreview}
+            >
+              Mettre à jour
+            </button>
+            <button
+              className="settings-btn delete"
+              type="button"
+              disabled={!bannerUrl || updating || bannerUploading}
+              onClick={handleBannerDelete}
+            >
+              🗑️ Effacer
+            </button>
+            <input
+              type="file"
+              accept="image/png, image/jpeg, image/gif"
+              style={{ display: 'none' }}
+              ref={bannerInputRef}
+              onChange={handleBannerChange}
+            />
           </div>
           {/* Titre Informations */}
           <div className="settings-section-title">
@@ -252,7 +374,16 @@ const Settings: React.FC = () => {
         </div>
         <div className="settings-right">
           <div className="settings-card">
-            <div className="settings-card-banner" />
+            <div
+              className="settings-card-banner"
+              style={
+                bannerPreview
+                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : bannerUrl
+                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
+              }
+            />
             <div
               className="settings-card-avatar"
               style={
