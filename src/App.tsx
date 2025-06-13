@@ -7,11 +7,13 @@ import { SetStateAction, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Settings from './pages/Settings'
 import Sidebar from './components/Sidebar';
 import { UserUpdateProvider } from './UserContext';
 import Alert from './components/Alert';
+import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
+import ProfilePreviewModal from './components/ProfilePreviewModal';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -262,34 +264,37 @@ function App() {
   return (
     <BrowserRouter>
       <UserUpdateProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div className="app-root">
-                {/* AuthPage sans sidebar */}
-                <AuthPage />
-              </div>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <MainLayout>
-                <Settings />
-              </MainLayout>
-            }
-          />
-          {/* Ajoute d'autres routes ici si besoin */}
-        </Routes>
+        <ProfilePreviewProvider>
+          <ProfilePreviewModal />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="app-root">
+                  {/* AuthPage sans sidebar */}
+                  <AuthPage />
+                </div>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <MainLayout>
+                  <Settings />
+                </MainLayout>
+              }
+            />
+            {/* Ajoute d'autres routes ici si besoin */}
+          </Routes>
+        </ProfilePreviewProvider>
       </UserUpdateProvider>
     </BrowserRouter>
   );

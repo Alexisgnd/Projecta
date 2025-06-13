@@ -5,6 +5,7 @@ import './Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
+import { useProfilePreview } from '../contexts/ProfilePreviewContext';
 
 const ACTIVITY_STATUSES = [
   { key: 'online', label: 'En ligne', color: '#4ade80' },
@@ -23,6 +24,7 @@ const Sidebar: React.FC = () => {
   const [activityStatus, setActivityStatus] = React.useState<string>('online');
   const [showStatusMenu, setShowStatusMenu] = React.useState(false);
   const { userRefreshCount } = useUserUpdate();
+  const { open: openProfilePreview } = useProfilePreview();
   const statusBoxRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -62,11 +64,11 @@ const Sidebar: React.FC = () => {
       if (user && user.email) {
         const { data } = await supabase
           .from('users')
-          .select('activity_status')
+          .select('status') // <-- corrige ici
           .eq('email', user.email)
           .single();
-        if (data && data.activity_status) {
-          setActivityStatus(data.activity_status);
+        if (data && data.status) { // <-- corrige ici
+          setActivityStatus(data.status); // <-- corrige ici
         }
       }
     };
@@ -85,7 +87,7 @@ const Sidebar: React.FC = () => {
     if (user && user.email) {
       await supabase
         .from('users')
-        .update({ status }) // <-- MAJ la colonne "status"
+        .update({ status }) // <-- c'est déjà correct ici
         .eq('email', user.email);
     }
   };
@@ -115,14 +117,15 @@ const Sidebar: React.FC = () => {
           ref={statusBoxRef}
           style={
             avatarUrl
-              ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-              : {}
+              ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer' }
+              : { cursor: 'pointer' }
           }
+          onClick={openProfilePreview}
         >
           <span
             className="sidebar-status"
             style={{ background: currentStatus.color, cursor: 'pointer' }}
-            onClick={() => setShowStatusMenu(v => !v)}
+            onClick={e => { e.stopPropagation(); setShowStatusMenu(v => !v); }}
             title={currentStatus.label}
           />
           {showStatusMenu && (
