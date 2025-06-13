@@ -1,5 +1,4 @@
 .sidebar-container {
-  width: 270px;
   background: #fff;
   height: 100vh;
   display: flex;
@@ -7,6 +6,7 @@
   padding: 24px;
   box-sizing: border-box;
   border-right: 1px solid #eee;
+  min-width: 18%;
 }
 
 .sidebar-profile {
@@ -73,8 +73,18 @@
   align-items: center;
   margin-bottom: 16px;
   color: #3730A3;
-  padding: 14px 16px; /* Ajouté pour augmenter la hauteur */
-  border-radius: 12px; /* Optionnel pour un effet arrondi */
+  padding: 14px 16px;
+  border-radius: 12px;
+}
+
+.sidebar-link:hover {
+  background: #e0e7ff;
+  cursor: pointer;
+}
+
+.sidebar-link.active {
+  background: #e0e7ff;
+  color: #3730A3;
 }
 
 .sidebar-logout {
@@ -83,8 +93,10 @@
   color: #b91c1c;
   cursor: pointer;
   transition: background 0.2s;
-  padding: 14px 16px; /* Ajouté pour augmenter la hauteur */
-  border-radius: 12px; /* Optionnel pour un effet arrondi */
+  padding: 14px 16px;
+  /* Ajouté pour augmenter la hauteur */
+  border-radius: 12px;
+  /* Optionnel pour un effet arrondi */
 }
 
 .sidebar-logout:hover {

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
 import Text from '../components/Text';
-import Sidebar from '../components/Sidebar';
 import ProjectCard from '../components/ProjectCard';
 import { createClient } from '@supabase/supabase-js';
 
@@ -41,7 +40,6 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="dashboard-root">
-            <Sidebar />
             <div className="dashboard-container">
                 <Text size={32} bold color="primary">
                     Dashboard
