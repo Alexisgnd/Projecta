@@ -14,9 +14,15 @@ const Settings: React.FC = () => {
   const [mention, setMention] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [primaryColor, setPrimaryColor] = useState('#5A321F');
+  const [accentColor, setAccentColor] = useState('#FF0017');
   const { refreshUser } = useUserUpdate();
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Charger les infos utilisateur
   useEffect(() => {
@@ -39,6 +45,9 @@ const Settings: React.FC = () => {
         setBio(data.description || '');
         setMention(data.special_status || 'NOUVEL ARRIVANT');
         setAvatarUrl(data.picture_url || null);
+        setBannerUrl(data.banner_url || null);
+        setPrimaryColor(data.primary_color || '#5A321F');
+        setAccentColor(data.secondary_color || '#FF0017');
       }
       setLoading(false);
     };
@@ -112,6 +121,68 @@ const Settings: React.FC = () => {
     refreshUser(); // Notifie la sidebar
   };
 
+  // Gérer l'upload de la bannière
+  const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBannerUploading(true);
+    const previewUrl = URL.createObjectURL(file);
+    setBannerPreview(previewUrl);
+
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) {
+      setBannerPreview(null);
+      setBannerUploading(false);
+      return;
+    }
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('first_name, last_name, banner_url')
+      .eq('email', authUser.email)
+      .single();
+
+    const firstNameSanitized = (userData?.first_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const lastNameSanitized = (userData?.last_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const fileExt = file.name.split('.').pop();
+    const uniqueSuffix = Date.now();
+    const fileName = `${firstNameSanitized}-${lastNameSanitized}-profile-banner-${uniqueSuffix}.${fileExt}`;
+
+    // Supprime l'ancienne bannière si elle existe
+    if (userData?.banner_url) {
+      const urlParts = userData.banner_url.split('/');
+      const oldFileName = urlParts[urlParts.length - 1];
+      await supabase.storage.from('banners').remove([oldFileName]);
+    }
+
+    // Upload la nouvelle bannière
+    const { error: uploadError } = await supabase.storage
+      .from('banners')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
+    if (uploadError) {
+      setBannerPreview(null);
+      setBannerUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('banners').getPublicUrl(fileName);
+    setBannerUrl(data.publicUrl);
+
+    await supabase
+      .from('users')
+      .update({ banner_url: data.publicUrl })
+      .eq('email', authUser.email);
+
+    setBannerPreview(null);
+    setBannerUploading(false);
+    refreshUser();
+  };
+
   // Gérer la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,8 +192,11 @@ const Settings: React.FC = () => {
       last_name: lastName,
       description: bio,
       special_status: mention,
+      primary_color: primaryColor,
+      secondary_color: accentColor,
     };
     if (avatarUrl) updates.picture_url = avatarUrl;
+    if (bannerUrl) updates.banner_url = bannerUrl;
     const { error } = await supabase
       .from('users')
       .update(updates)
@@ -158,6 +232,43 @@ const Settings: React.FC = () => {
     setAvatarUploading(false);
     refreshUser(); // Notifie la sidebar
   };
+
+  // Suppression de la bannière
+  const handleBannerDelete = async () => {
+    if (!bannerUrl) return;
+    setBannerUploading(true);
+
+    // Extraire le nom du fichier depuis l'URL publique
+    const urlParts = bannerUrl.split('/');
+    const oldFileName = urlParts[urlParts.length - 1];
+
+    // Supprimer le fichier du bucket
+    await supabase.storage.from('banners').remove([oldFileName]);
+
+    // Mettre à jour la table users (banner_url à null)
+    await supabase
+      .from('users')
+      .update({ banner_url: null })
+      .eq('email', email);
+
+    setBannerUrl(null);
+    setBannerPreview(null);
+    setBannerUploading(false);
+    refreshUser(); // Notifie la sidebar
+  };
+
+  // Fonction pour obtenir la classe de contraste
+  function getContrastClass(hex: string) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? 'contrast-dark' : 'contrast-light';
+  }
+
+  const cardContrastClass = getContrastClass(primaryColor);
+  const accentContrastClass = getContrastClass(accentColor);
 
   if (loading) {
     return <Text size={18} color="secondary">Chargement...</Text>;
@@ -211,11 +322,41 @@ const Settings: React.FC = () => {
               onChange={handleAvatarChange}
             />
           </div>
-          {/* Bannière désactivée */}
+          {/* Bannière */}
           <div className="settings-avatar-section">
-            <div className="settings-banner" />
-            <button className="settings-btn" disabled>Mettre à jour</button>
-            <button className="settings-btn delete" disabled>🗑️ Effacer</button>
+            <div
+              className="settings-banner"
+              style={
+                bannerPreview
+                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : bannerUrl
+                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
+              }
+            />
+            <button
+              className="settings-btn"
+              type="button"
+              onClick={() => bannerInputRef.current?.click()}
+              disabled={bannerUploading || !!bannerPreview}
+            >
+              Mettre à jour
+            </button>
+            <button
+              className="settings-btn delete"
+              type="button"
+              disabled={!bannerUrl || updating || bannerUploading}
+              onClick={handleBannerDelete}
+            >
+              🗑️ Effacer
+            </button>
+            <input
+              type="file"
+              accept="image/png, image/jpeg, image/gif"
+              style={{ display: 'none' }}
+              ref={bannerInputRef}
+              onChange={handleBannerChange}
+            />
           </div>
           {/* Titre Informations */}
           <div className="settings-section-title">
@@ -224,22 +365,54 @@ const Settings: React.FC = () => {
           {/* Formulaire */}
           <form className="settings-form" onSubmit={handleSubmit}>
             <div className="settings-row">
-              <Text size={14} bold>Prénom</Text>
+              <span className="settings-label"><Text size={14} bold>Prénom</Text></span>
               <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
-              <Text size={14} bold>Nom</Text>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Nom</Text></span>
               <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Adresse e-mail</Text>
+              <span className="settings-label"><Text size={14} bold>Adresse e-mail</Text></span>
               <input type="email" value={email} disabled />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Mention</Text>
+              <span className="settings-label"><Text size={14} bold>Mention</Text></span>
               <input type="text" value={mention} onChange={e => setMention(e.target.value)} />
             </div>
             <div className="settings-row">
-              <Text size={14} bold>Bio</Text>
-              <textarea value={bio} onChange={e => setBio(e.target.value)} />
+              <span className="settings-label"><Text size={14} bold>Bio</Text></span>
+              <textarea
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                maxLength={200} // Limite la saisie à 200 caractères
+              />
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Couleur primaire</Text></span>
+              <div className="color-picker-group">
+                <input
+                  type="color"
+                  className="color-input"
+                  value={primaryColor}
+                  onChange={e => setPrimaryColor(e.target.value)}
+                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
+                />
+                <span className="color-hex">{primaryColor}</span>
+              </div>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Accentuation</Text></span>
+              <div className="color-picker-group">
+                <input
+                  type="color"
+                  className="color-input"
+                  value={accentColor}
+                  onChange={e => setAccentColor(e.target.value)}
+                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
+                />
+                <span className="color-hex">{accentColor}</span>
+              </div>
             </div>
             <div className="settings-actions">
               <button className="settings-btn primary" type="submit" disabled={updating}>
@@ -249,7 +422,26 @@ const Settings: React.FC = () => {
           </form>
         </div>
         <div className="settings-right">
-          <div className="settings-card">
+          <div
+            className={`settings-card ${cardContrastClass}`}
+            style={{
+              // On injecte UNIQUEMENT les variables CSS ici
+              ['--primary-color' as any]: primaryColor,
+              ['--accent-color' as any]: accentColor,
+              ['--primary-contrast' as any]: cardContrastClass === 'contrast-dark' ? '#111' : '#fff',
+              ['--accent-contrast' as any]: accentContrastClass === 'contrast-dark' ? '#111' : '#fff',
+            }}
+          >
+            <div
+              className="settings-card-banner"
+              style={
+                bannerPreview
+                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : bannerUrl
+                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : {}
+              }
+            />
             <div
               className="settings-card-avatar"
               style={
@@ -260,6 +452,29 @@ const Settings: React.FC = () => {
                     : {}
               }
             />
+            <div className="settings-card-info">
+              <Text size={22} bold className="settings-card-title">
+                {firstName} {lastName}
+              </Text>
+              <div className="settings-card-mention">
+                <Text size={15} bold>
+                  {mention || 'Nouvel arrivant'}
+                </Text>
+              </div>
+              <div className="settings-card-bio">
+                <Text size={14} italic>
+                  {bio || 'Aucune bio renseignée.'}
+                </Text>
+              </div>
+              <div className="settings-card-email">
+                <Text size={13}>
+                  {email}
+                </Text>
+              </div>
+              <button className="settings-preview-btn">
+                Bouton Exemple
+              </button>
+            </div>
           </div>
         </div>
       </div>
