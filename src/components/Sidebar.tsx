@@ -55,9 +55,25 @@ const Sidebar: React.FC = () => {
           <span className="sidebar-status" />
         </div>
         <div>
-          <Text size={14} bold>{displayName}</Text>
-          <div style={{ color: '#a259ff', fontWeight: 600, fontSize: 14 }}>
-            {specialStatus || 'NOUVEL ARRIVANT'}
+            <Text size={14} bold>{displayName}</Text>
+            <div
+            style={{
+              color:
+              specialStatus?.toLowerCase() === 'fondateur projecta'
+                ? '#e11d48'
+                : specialStatus?.toLowerCase() === 'nouvel arrivant'
+                ? '#a259ff'
+                : specialStatus?.toLowerCase() === 'développeur projecta'
+                ? '#2563eb'
+                : '#757575',
+              fontWeight: 600,
+              fontSize: 14,
+              textTransform: 'none',
+            }}
+            >
+            {specialStatus
+              ? specialStatus.charAt(0).toUpperCase() + specialStatus.slice(1).toLowerCase()
+              : 'Nouvel arrivant'}
           </div>
         </div>
       </div>
