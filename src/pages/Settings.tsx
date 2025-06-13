@@ -3,6 +3,7 @@ import './Settings.css';
 import Text from '../components/Text';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
+import Alert from '../components/Alert';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -23,6 +24,19 @@ const Settings: React.FC = () => {
   const [bannerUploading, setBannerUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  // Ajoute cet état pour l'alerte
+  const [alert, setAlert] = useState<{
+    type: "error" | "success" | "info" | "warning";
+    title: string;
+    message: React.ReactNode;
+    key?: string;
+  } | null>(null);
+
+  // Fonction utilitaire pour afficher une alerte
+  function showAlert(type: "error" | "success" | "info" | "warning", title: string, message: React.ReactNode) {
+    setAlert({ type, title, message, key: Date.now().toString() });
+  }
 
   // Charger les infos utilisateur
   useEffect(() => {
@@ -60,14 +74,15 @@ const Settings: React.FC = () => {
     if (!file) return;
 
     setAvatarUploading(true);
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreview(previewUrl);
+    setAvatarPreview(URL.createObjectURL(file));
+    showAlert("info", "Chargement...", "Envoi de la photo de profil en cours.");
 
     // Récupère l'utilisateur authentifié
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) {
       setAvatarPreview(null);
       setAvatarUploading(false);
+      showAlert("error", "Erreur !", "Utilisateur non authentifié.");
       return;
     }
 
@@ -103,14 +118,13 @@ const Settings: React.FC = () => {
     if (uploadError) {
       setAvatarPreview(null);
       setAvatarUploading(false);
+      showAlert("error", "Erreur !", "Échec de l'envoi de la photo de profil.");
       return;
     }
 
     // Récupère l'URL publique
     const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
     setAvatarUrl(data.publicUrl);
-
-    // Mets à jour la table users avec la nouvelle URL
     await supabase
       .from('users')
       .update({ picture_url: data.publicUrl })
@@ -118,7 +132,8 @@ const Settings: React.FC = () => {
 
     setAvatarPreview(null);
     setAvatarUploading(false);
-    refreshUser(); // Notifie la sidebar
+    showAlert("success", "Succès !", "Photo de profil mise à jour.");
+    refreshUser();
   };
 
   // Gérer l'upload de la bannière
@@ -127,13 +142,14 @@ const Settings: React.FC = () => {
     if (!file) return;
 
     setBannerUploading(true);
-    const previewUrl = URL.createObjectURL(file);
-    setBannerPreview(previewUrl);
+    setBannerPreview(URL.createObjectURL(file));
+    showAlert("info", "Chargement...", "Envoi de la bannière en cours.");
 
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) {
       setBannerPreview(null);
       setBannerUploading(false);
+      showAlert("error", "Erreur !", "Utilisateur non authentifié.");
       return;
     }
 
@@ -167,12 +183,12 @@ const Settings: React.FC = () => {
     if (uploadError) {
       setBannerPreview(null);
       setBannerUploading(false);
+      showAlert("error", "Erreur !", "Échec de l'envoi de la bannière.");
       return;
     }
 
     const { data } = supabase.storage.from('banners').getPublicUrl(fileName);
     setBannerUrl(data.publicUrl);
-
     await supabase
       .from('users')
       .update({ banner_url: data.publicUrl })
@@ -180,6 +196,7 @@ const Settings: React.FC = () => {
 
     setBannerPreview(null);
     setBannerUploading(false);
+    showAlert("success", "Succès !", "Bannière mise à jour.");
     refreshUser();
   };
 
@@ -187,6 +204,7 @@ const Settings: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
+    showAlert("info", "Sauvegarde...", "Enregistrement des modifications en cours.");
     const updates: any = {
       first_name: firstName,
       last_name: lastName,
@@ -203,9 +221,9 @@ const Settings: React.FC = () => {
       .eq('email', email);
     setUpdating(false);
     if (error) {
-      console.log('Erreur lors de la mise à jour:', error);
+      showAlert("error", "Erreur !", "Erreur lors de la sauvegarde des modifications.");
     } else {
-      console.log('Mise à jour réussie');
+      showAlert("success", "Succès !", "Modifications sauvegardées.");
     }
   };
 
@@ -213,6 +231,7 @@ const Settings: React.FC = () => {
   const handleAvatarDelete = async () => {
     if (!avatarUrl) return;
     setAvatarUploading(true);
+    showAlert("info", "Suppression...", "Suppression de la photo de profil en cours.");
 
     // Extraire le nom du fichier depuis l'URL publique
     const urlParts = avatarUrl.split('/');
@@ -230,13 +249,15 @@ const Settings: React.FC = () => {
     setAvatarUrl(null);
     setAvatarPreview(null);
     setAvatarUploading(false);
-    refreshUser(); // Notifie la sidebar
+    showAlert("success", "Succès !", "Photo de profil supprimée.");
+    refreshUser();
   };
 
   // Suppression de la bannière
   const handleBannerDelete = async () => {
     if (!bannerUrl) return;
     setBannerUploading(true);
+    showAlert("info", "Suppression...", "Suppression de la bannière en cours.");
 
     // Extraire le nom du fichier depuis l'URL publique
     const urlParts = bannerUrl.split('/');
@@ -254,7 +275,8 @@ const Settings: React.FC = () => {
     setBannerUrl(null);
     setBannerPreview(null);
     setBannerUploading(false);
-    refreshUser(); // Notifie la sidebar
+    showAlert("success", "Succès !", "Bannière supprimée.");
+    refreshUser();
   };
 
   // Fonction pour obtenir la classe de contraste
@@ -478,6 +500,17 @@ const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Affichage de l'alerte flottante */}
+      {alert && (
+        <Alert
+          key={alert.key}
+          type={alert.type}
+          title={alert.title}
+          onClose={() => setAlert(null)}
+        >
+          {alert.message}
+        </Alert>
+      )}
     </div>
   );
 };
