@@ -16,6 +16,8 @@ const Settings: React.FC = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [primaryColor, setPrimaryColor] = useState('#5A321F');
+  const [accentColor, setAccentColor] = useState('#FF0017');
   const { refreshUser } = useUserUpdate();
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [bannerUploading, setBannerUploading] = useState(false);
@@ -43,7 +45,9 @@ const Settings: React.FC = () => {
         setBio(data.description || '');
         setMention(data.special_status || 'NOUVEL ARRIVANT');
         setAvatarUrl(data.picture_url || null);
-        setBannerUrl(data.banner_url || null); // <-- Ajouté
+        setBannerUrl(data.banner_url || null);
+        setPrimaryColor(data.primary_color || '#5A321F');
+        setAccentColor(data.secondary_color || '#FF0017');
       }
       setLoading(false);
     };
@@ -188,9 +192,11 @@ const Settings: React.FC = () => {
       last_name: lastName,
       description: bio,
       special_status: mention,
+      primary_color: primaryColor,
+      secondary_color: accentColor,
     };
     if (avatarUrl) updates.picture_url = avatarUrl;
-    if (bannerUrl) updates.banner_url = bannerUrl; // Ajouté
+    if (bannerUrl) updates.banner_url = bannerUrl;
     const { error } = await supabase
       .from('users')
       .update(updates)
@@ -250,6 +256,19 @@ const Settings: React.FC = () => {
     setBannerUploading(false);
     refreshUser(); // Notifie la sidebar
   };
+
+  // Fonction pour obtenir la classe de contraste
+  function getContrastClass(hex: string) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? 'contrast-dark' : 'contrast-light';
+  }
+
+  const cardContrastClass = getContrastClass(primaryColor);
+  const accentContrastClass = getContrastClass(accentColor);
 
   if (loading) {
     return <Text size={18} color="secondary">Chargement...</Text>;
@@ -363,7 +382,37 @@ const Settings: React.FC = () => {
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Bio</Text></span>
-              <textarea value={bio} onChange={e => setBio(e.target.value)} />
+              <textarea
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                maxLength={200} // Limite la saisie à 200 caractères
+              />
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Couleur primaire</Text></span>
+              <div className="color-picker-group">
+                <input
+                  type="color"
+                  className="color-input"
+                  value={primaryColor}
+                  onChange={e => setPrimaryColor(e.target.value)}
+                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
+                />
+                <span className="color-hex">{primaryColor}</span>
+              </div>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label"><Text size={14} bold>Accentuation</Text></span>
+              <div className="color-picker-group">
+                <input
+                  type="color"
+                  className="color-input"
+                  value={accentColor}
+                  onChange={e => setAccentColor(e.target.value)}
+                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
+                />
+                <span className="color-hex">{accentColor}</span>
+              </div>
             </div>
             <div className="settings-actions">
               <button className="settings-btn primary" type="submit" disabled={updating}>
@@ -373,7 +422,16 @@ const Settings: React.FC = () => {
           </form>
         </div>
         <div className="settings-right">
-          <div className="settings-card">
+          <div
+            className={`settings-card ${cardContrastClass}`}
+            style={{
+              // On injecte UNIQUEMENT les variables CSS ici
+              ['--primary-color' as any]: primaryColor,
+              ['--accent-color' as any]: accentColor,
+              ['--primary-contrast' as any]: cardContrastClass === 'contrast-dark' ? '#111' : '#fff',
+              ['--accent-contrast' as any]: accentContrastClass === 'contrast-dark' ? '#111' : '#fff',
+            }}
+          >
             <div
               className="settings-card-banner"
               style={
@@ -394,26 +452,28 @@ const Settings: React.FC = () => {
                     : {}
               }
             />
-            {/* Ajout des infos utilisateur dans la card */}
             <div className="settings-card-info">
-              <Text size={22} bold>
+              <Text size={22} bold className="settings-card-title">
                 {firstName} {lastName}
               </Text>
               <div className="settings-card-mention">
-                <Text size={15} color="primary" bold>
+                <Text size={15} bold>
                   {mention || 'Nouvel arrivant'}
                 </Text>
               </div>
               <div className="settings-card-bio">
-                <Text size={14} color="secondary" italic>
+                <Text size={14} italic>
                   {bio || 'Aucune bio renseignée.'}
                 </Text>
               </div>
               <div className="settings-card-email">
-                <Text size={13} color="muted">
+                <Text size={13}>
                   {email}
                 </Text>
               </div>
+              <button className="settings-preview-btn">
+                Bouton Exemple
+              </button>
             </div>
           </div>
         </div>
