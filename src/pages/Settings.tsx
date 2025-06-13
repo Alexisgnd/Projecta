@@ -394,6 +394,27 @@ const Settings: React.FC = () => {
                     : {}
               }
             />
+            {/* Ajout des infos utilisateur dans la card */}
+            <div className="settings-card-info">
+              <Text size={22} bold>
+                {firstName} {lastName}
+              </Text>
+              <div className="settings-card-mention">
+                <Text size={15} color="primary" bold>
+                  {mention || 'Nouvel arrivant'}
+                </Text>
+              </div>
+              <div className="settings-card-bio">
+                <Text size={14} color="secondary" italic>
+                  {bio || 'Aucune bio renseignée.'}
+                </Text>
+              </div>
+              <div className="settings-card-email">
+                <Text size={13} color="muted">
+                  {email}
+                </Text>
+              </div>
+            </div>
           </div>
         </div>
       </div>
