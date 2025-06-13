@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Settings.css';
 import Text from '../components/Text';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY
-);
+import supabase from '../supabaseClient';
+import { useUserUpdate } from '../UserContext';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -18,6 +14,8 @@ const Settings: React.FC = () => {
   const [mention, setMention] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const { refreshUser } = useUserUpdate();
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Charger les infos utilisateur
@@ -52,36 +50,66 @@ const Settings: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Affiche l'aperçu local immédiatement
+    setAvatarUploading(true);
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
 
-    // Upload vers Supabase Storage
-    const fileExt = file.name.split('.').pop();
+    // Récupère l'utilisateur authentifié
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) {
-      console.log('Utilisateur non authentifié');
       setAvatarPreview(null);
+      setAvatarUploading(false);
       return;
     }
-    const fileName = `${authUser.id}_${Date.now()}.${fileExt}`;
 
+    // Récupère prénom et nom pour le nom du fichier
+    const { data: userData } = await supabase
+      .from('users')
+      .select('first_name, last_name, picture_url')
+      .eq('email', authUser.email)
+      .single();
+
+    const firstNameSanitized = (userData?.first_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const lastNameSanitized = (userData?.last_name || 'user').replace(/\s+/g, '-').toLowerCase();
+    const fileExt = file.name.split('.').pop();
+    // Ajoute un timestamp pour garantir l'unicité du nom
+    const uniqueSuffix = Date.now();
+    const fileName = `${firstNameSanitized}-${lastNameSanitized}-profile-picture-${uniqueSuffix}.${fileExt}`;
+
+    // Supprime l'ancienne image si elle existe
+    if (userData?.picture_url) {
+      const urlParts = userData.picture_url.split('/');
+      const oldFileName = urlParts[urlParts.length - 1];
+      await supabase.storage.from('avatars').remove([oldFileName]);
+    }
+
+    // Upload la nouvelle image
     const { error: uploadError } = await supabase.storage
       .from('avatars')
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: true,
+        upsert: false, // false car le nom est unique
         contentType: file.type,
       });
     if (uploadError) {
-      console.log('Erreur upload:', uploadError);
-      setAvatarPreview(null); // retire l'aperçu si erreur
+      setAvatarPreview(null);
+      setAvatarUploading(false);
       return;
     }
-    // Récupérer l'URL publique
+
+    // Récupère l'URL publique
     const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
     setAvatarUrl(data.publicUrl);
-    setAvatarPreview(null); // on repasse sur l'URL distante après upload
+
+    // Mets à jour la table users avec la nouvelle URL
+    await supabase
+      .from('users')
+      .update({ picture_url: data.publicUrl })
+      .eq('email', authUser.email);
+
+    setAvatarPreview(null);
+    setAvatarUploading(false);
+    refreshUser(); // Notifie la sidebar
   };
 
   // Gérer la soumission du formulaire
@@ -105,6 +133,30 @@ const Settings: React.FC = () => {
     } else {
       console.log('Mise à jour réussie');
     }
+  };
+
+  // Ajoute cette fonction pour la suppression de l'avatar
+  const handleAvatarDelete = async () => {
+    if (!avatarUrl) return;
+    setAvatarUploading(true);
+
+    // Extraire le nom du fichier depuis l'URL publique
+    const urlParts = avatarUrl.split('/');
+    const oldFileName = urlParts[urlParts.length - 1];
+
+    // Supprimer le fichier du bucket
+    await supabase.storage.from('avatars').remove([oldFileName]);
+
+    // Mettre à jour la table users (picture_url à null)
+    await supabase
+      .from('users')
+      .update({ picture_url: null })
+      .eq('email', email);
+
+    setAvatarUrl(null);
+    setAvatarPreview(null);
+    setAvatarUploading(false);
+    refreshUser(); // Notifie la sidebar
   };
 
   if (loading) {
@@ -139,15 +191,15 @@ const Settings: React.FC = () => {
               className="settings-btn"
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled
+              disabled={avatarUploading || !!avatarPreview} // <-- désactive si upload ou preview
             >
               Mettre à jour
             </button>
             <button
               className="settings-btn delete"
               type="button"
-              disabled={!avatarUrl || updating}
-              onClick={() => { setAvatarUrl(null); }}
+              disabled={!avatarUrl || updating || avatarUploading}
+              onClick={handleAvatarDelete}
             >
               🗑️ Effacer
             </button>

@@ -3,27 +3,25 @@ import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } 
 import Text from './Text';
 import './Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY
-);
+import supabase from '../supabaseClient';
+import { useUserUpdate } from '../UserContext';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
-  const [specialStatus, setSpecialStatus] = React.useState<string>(''); 
+  const [specialStatus, setSpecialStatus] = React.useState<string>('');
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const { userRefreshCount } = useUserUpdate();
 
   React.useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
-        // Récupérer le prénom, le nom et le special_status depuis la table users
+        // Récupérer le prénom, le nom, le special_status et l'avatar
         const { data } = await supabase
           .from('users')
-          .select('first_name, last_name, special_status')
+          .select('first_name, last_name, special_status, picture_url')
           .eq('email', user.email)
           .single();
 
@@ -37,10 +35,15 @@ const Sidebar: React.FC = () => {
         } else {
           setSpecialStatus('');
         }
+        if (data && data.picture_url) {
+          setAvatarUrl(data.picture_url);
+        } else {
+          setAvatarUrl(null);
+        }
       }
     };
     fetchUser();
-  }, []);
+  }, [userRefreshCount]); // <-- Ajoute la dépendance ici
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -51,26 +54,30 @@ const Sidebar: React.FC = () => {
     <div className="sidebar-container">
       {/* Profil */}
       <div className="sidebar-profile">
-        <div className="sidebar-avatar">
+        <div className="sidebar-avatar" style={
+          avatarUrl
+            ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : {}
+        }>
           <span className="sidebar-status" />
         </div>
         <div>
-            <Text size={14} bold>{displayName}</Text>
-            <div
+          <Text size={14} bold>{displayName}</Text>
+          <div
             style={{
               color:
-              specialStatus?.toLowerCase() === 'fondateur projecta'
-                ? '#e11d48'
-                : specialStatus?.toLowerCase() === 'nouvel arrivant'
-                ? '#a259ff'
-                : specialStatus?.toLowerCase() === 'développeur projecta'
-                ? '#2563eb'
-                : '#757575',
+                specialStatus?.toLowerCase() === 'fondateur projecta'
+                  ? '#e11d48'
+                  : specialStatus?.toLowerCase() === 'nouvel arrivant'
+                    ? '#a259ff'
+                    : specialStatus?.toLowerCase() === 'développeur projecta'
+                      ? '#2563eb'
+                      : '#757575',
               fontWeight: 600,
               fontSize: 14,
               textTransform: 'none',
             }}
-            >
+          >
             {specialStatus
               ? specialStatus.charAt(0).toUpperCase() + specialStatus.slice(1).toLowerCase()
               : 'Nouvel arrivant'}

@@ -2,12 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
 import Text from '../components/Text';
 import ProjectCard from '../components/ProjectCard';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_KEY
-);
+import supabase from '../supabaseClient';
 
 interface Project {
     id: number;
