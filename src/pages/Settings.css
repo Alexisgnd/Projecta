@@ -326,11 +326,3 @@ body {
     border: 2px solid #eee;
     margin-bottom: 2px;
 }
-
-.color-preview-box.primary {
-    /* Optionnel: border ou effet spécial */
-}
-
-.color-preview-box.accent {
-    /* Optionnel: border ou effet spécial */
-}
