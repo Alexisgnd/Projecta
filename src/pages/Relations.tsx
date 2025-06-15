@@ -95,6 +95,36 @@ const Relations: React.FC = () => {
     fetchRelationsAndUsers();
   }, []);
 
+  useEffect(() => {
+    const updateStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !user.email) return;
+
+      await supabase
+        .from("users")
+        .update({ status: "online" }) // ou "away", "busy", etc.
+        .eq("email", user.email);
+    };
+
+    updateStatus();
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      supabase.auth.getUser().then(({ data }) => {
+        if (!data?.user?.email) return;
+
+        supabase
+          .from("users")
+          .update({ status: "offline" })
+          .eq("email", data.user.email);
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   // Ajout d'une demande de relation
   const handleAddRelation = async (receiverEmail: string) => {
     setPendingRequests((prev) => [...prev, { email: receiverEmail, status: "pending" }]);
