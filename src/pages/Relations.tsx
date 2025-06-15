@@ -9,16 +9,11 @@ import Alert from "../components/Alert"; // Pour afficher l'alerte
 // Récupère les emails des relations approuvées
 const getUserRelations = async (userEmail: string) => {
   const { data, error } = await supabase
-    .from("relations")
-    .select("sender_email, receiver_email, status")
-    .or(`sender_email.eq.${userEmail},receiver_email.eq.${userEmail}`);
+    .from("user_friends")
+    .select("friend_email")
+    .eq("user_email", userEmail);
   if (error) return [];
-  // On ne garde que les relations approuvées
-  return data
-    .filter((r: any) => r.status === "approved")
-    .map((r: any) =>
-      r.sender_email === userEmail ? r.receiver_email : r.sender_email
-    );
+  return data.map((r: any) => r.friend_email);
 };
 
 const Relations: React.FC = () => {
@@ -161,6 +156,150 @@ const Relations: React.FC = () => {
                 </div>
               )))
             }
+          </div>
+          <div className="relations-section-title" style={{ marginTop: 32 }}>
+            <Text size={20} bold>
+              Demandes reçues
+            </Text>
+          </div>
+          <div className="relations-list">
+            {receivedRequests.filter(r => r.status === "pending").length === 0 ? (
+              <Text size={16} color="secondary">
+                Aucune demande reçue.
+              </Text>
+            ) : (
+              receivedRequests
+                .filter(r => r.status === "pending")
+                .map((req) => {
+                  const user = allUsers.find((u: any) => u.email === req.email);
+                  if (!user) return null;
+                  return (
+                    <div className="relation-card" key={user.id}>
+                      {user.picture_url ? (
+                        <img
+                          src={user.picture_url}
+                          alt={user.first_name}
+                          className="relation-avatar"
+                          onClick={() => setPreviewUser(user)}
+                        />
+                      ) : (
+                        <div
+                          className="relation-avatar"
+                          onClick={() => setPreviewUser(user)}
+                        />
+                      )}
+                      <div className="relation-info">
+                        <span className="relation-name">
+                          {user.first_name} {user.last_name}
+                        </span>
+                        <span className="relation-status">
+                          {user.special_status || "Utilisateur"}
+                        </span>
+                      </div>
+                      <div className="relation-actions">
+                        {/* Bouton accepter */}
+                        <button
+                          className="relation-action-btn accept"
+                          title="Accepter"
+                          onClick={async () => {
+                            // 1. Met à jour la demande en "approved"
+                            await supabase
+                              .from("relations")
+                              .update({ status: "approved" })
+                              .eq("sender_email", user.email)
+                              .eq("receiver_email", currentUserEmail);
+
+                            // 2. Ajoute la relation dans user_friends (dans les deux sens)
+                            await supabase
+                              .from("user_friends")
+                              .insert([
+                                { user_email: currentUserEmail, friend_email: user.email },
+                                { user_email: user.email, friend_email: currentUserEmail }
+                              ]);
+
+                            // 3. Supprime la demande de la liste locale
+                            setReceivedRequests((prev) =>
+                              prev.filter((r) => r.email !== user.email)
+                            );
+                            setRelations((prev) => [...prev, user]);
+                            showAlert("success", "Relation acceptée", "Vous êtes maintenant en relation.");
+                          }}
+                        >
+                          <FaCheck />
+                        </button>
+                        {/* Bouton refuser */}
+                        <button
+                          className="relation-action-btn reject"
+                          title="Refuser"
+                          onClick={async () => {
+                            // 1. Met à jour la demande en "refused"
+                            await supabase
+                              .from("relations")
+                              .update({ status: "refused" })
+                              .eq("sender_email", user.email)
+                              .eq("receiver_email", currentUserEmail);
+
+                            // 2. Supprime la demande de la liste locale
+                            setReceivedRequests((prev) =>
+                              prev.filter((r) => r.email !== user.email)
+                            );
+                            showAlert("info", "Demande refusée", "La demande a été refusée.");
+                          }}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+            )}
+          </div>
+          <div className="relations-section-title" style={{ marginTop: 32 }}>
+            <Text size={20} bold>
+              Demandes envoyées
+            </Text>
+          </div>
+          <div className="relations-list">
+            {pendingRequests.filter(r => r.status === "pending").length === 0 ? (
+              <Text size={16} color="secondary">
+                Aucune demande envoyée.
+              </Text>
+            ) : (
+              pendingRequests
+                .filter(r => r.status === "pending")
+                .map((req) => {
+                  const user = allUsers.find((u: any) => u.email === req.email);
+                  if (!user) return null;
+                  return (
+                    <div className="relation-card" key={user.id}>
+                      {user.picture_url ? (
+                        <img
+                          src={user.picture_url}
+                          alt={user.first_name}
+                          className="relation-avatar"
+                          onClick={() => setPreviewUser(user)}
+                        />
+                      ) : (
+                        <div
+                          className="relation-avatar"
+                          onClick={() => setPreviewUser(user)}
+                        />
+                      )}
+                      <div className="relation-info">
+                        <span className="relation-name">
+                          {user.first_name} {user.last_name}
+                        </span>
+                        <span className="relation-status">
+                          {user.special_status || "Utilisateur"}
+                        </span>
+                      </div>
+                      <span className="relation-status-text" data-btncolor="#f59e42">
+                        Demande envoyée
+                      </span>
+                    </div>
+                  );
+                })
+            )}
           </div>
           <div className="relations-section-title" style={{ marginTop: 32 }}>
             <Text size={20} bold>
