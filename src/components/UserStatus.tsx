@@ -1,7 +1,7 @@
 import React from "react";
 import "./UserStatus.css";
 
-export type UserStatusKey = "online" | "busy" | "away" | "invisible" | "dnd";
+export type UserStatusKey = "online" | "busy" | "away" | "invisible" | "dnd" | "offline";
 
 export interface UserStatusDef {
     key: UserStatusKey;
@@ -15,6 +15,7 @@ export const USER_STATUSES: UserStatusDef[] = [
     { key: "away", label: "Absent", color: "#facc15" },
     { key: "invisible", label: "Invisible", color: "#a3a3a3" },
     { key: "dnd", label: "Ne pas déranger", color: "#ef4444" },
+    { key: "offline", label: "Déconnecté", color: "#bdbdbd" },
 ];
 
 export function getUserStatusDef(status?: string): UserStatusDef {

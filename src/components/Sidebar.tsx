@@ -69,6 +69,14 @@ const Sidebar: React.FC = () => {
   }, [userRefreshCount]);
 
   const handleLogout = async () => {
+    // Met à jour le status en "offline" avant de déconnecter
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && user.email) {
+      await supabase
+        .from('users')
+        .update({ status: "offline" })
+        .eq('email', user.email);
+    }
     await supabase.auth.signOut();
     navigate('/');
   };
