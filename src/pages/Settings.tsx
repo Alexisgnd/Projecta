@@ -17,8 +17,8 @@ const Settings: React.FC = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
-  const [primaryColor, setPrimaryColor] = useState('#5A321F');
-  const [accentColor, setAccentColor] = useState('#FF0017');
+  const [primaryColor, setPrimaryColor] = useState('#F3F4F6'); // Blanc grisé par défaut
+  const [accentColor, setAccentColor] = useState('#BDBDBD'); // Gris plus foncé par défaut
   const { refreshUser } = useUserUpdate();
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [bannerUploading, setBannerUploading] = useState(false);
@@ -60,8 +60,8 @@ const Settings: React.FC = () => {
         setMention(data.special_status || 'NOUVEL ARRIVANT');
         setAvatarUrl(data.picture_url || null);
         setBannerUrl(data.banner_url || null);
-        setPrimaryColor(data.primary_color || '#5A321F');
-        setAccentColor(data.secondary_color || '#FF0017');
+        setPrimaryColor(data.primary_color || '#F3F4F6'); // Blanc grisé par défaut
+        setAccentColor(data.secondary_color || '#BDBDBD'); // Gris plus foncé par défaut
       }
       setLoading(false);
     };

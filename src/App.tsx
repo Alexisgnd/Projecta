@@ -68,21 +68,23 @@ function AuthPage() {
       password !== confirmPassword
     ))
 
+  // Vérifie si l'email est déjà utilisé
+  const checkEmailExists = async (email: string) => {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return data !== null;
+  };
+
   // Vérifie si l'utilisateur existe et adapte le mode (connexion ou inscription)
   const handleCheck = async () => {
     setLoading(true)
     setError(null)
-    const { data, error } = await supabase
-      .from('users')
-      .select('email')
-      .eq('email', email)
-      .maybeSingle()
+    const exists = await checkEmailExists(email)
     setLoading(false)
-    if (error) {
-      setError("Erreur lors de la vérification de l'email")
-      return
-    }
-    if (data) {
+    if (exists) {
       setButtonText('Connexion')
       setSubtitle('Bienvenue ! Nous sommes ravis de vous revoir !')
       setTitle('Connexion')
@@ -132,7 +134,10 @@ function AuthPage() {
         .insert([{
           email,
           first_name: firstName,
-          last_name: lastName
+          last_name: lastName,
+          status: "online", // Ajout du status par défaut
+          primary_color: "#F3F4F6", // Blanc grisé
+          secondary_color: "#BDBDBD" // Gris plus foncé
         }])
       setLoading(false)
       if (insertError) {
