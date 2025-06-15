@@ -114,16 +114,27 @@ const Relations: React.FC = () => {
             ) : (
               relations.map((relation) => (
                 <div className="relation-card" key={relation.id || relation.email}>
-                  <img
-                    src={
-                      relation.picture_url ||
-                      "https://randomuser.me/api/portraits/lego/1.jpg"
-                    }
-                    alt={relation.first_name}
-                    className="relation-avatar"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setPreviewUser(relation)}
-                  />
+                  {relation.picture_url ? (
+                    <img
+                      src={relation.picture_url}
+                      alt={relation.first_name}
+                      className="relation-avatar"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setPreviewUser(relation)}
+                    />
+                  ) : (
+                    <div
+                      className="relation-avatar"
+                      style={{
+                        background: "#eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setPreviewUser(relation)}
+                    />
+                  )}
                   <div className="relation-info">
                     <span className="relation-name">
                       {relation.first_name} {relation.last_name}
@@ -154,19 +165,30 @@ const Relations: React.FC = () => {
               allUsers.map((user) => {
                 const isRelation = relations.some((r) => r.email === user.email);
                 const isPending = pendingRequests.includes(user.email);
-                const isSelf = currentUserEmail === user.email; // <-- Ajout ici
+                const isSelf = currentUserEmail === user.email;
                 return (
                   <div className="relation-card" key={user.id} style={{ position: "relative" }}>
-                    <img
-                      src={
-                        user.picture_url ||
-                        "https://randomuser.me/api/portraits/lego/2.jpg"
-                      }
-                      alt={user.first_name}
-                      className="relation-avatar"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setPreviewUser(user)}
-                    />
+                    {user.picture_url ? (
+                      <img
+                        src={user.picture_url}
+                        alt={user.first_name}
+                        className="relation-avatar"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setPreviewUser(user)}
+                      />
+                    ) : (
+                      <div
+                        className="relation-avatar"
+                        style={{
+                          background: "#eee",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setPreviewUser(user)}
+                      />
+                    )}
                     <div className="relation-info">
                       <span className="relation-name">
                         {user.first_name} {user.last_name}
