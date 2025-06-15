@@ -3,7 +3,7 @@ import Text from "../components/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
 import ProfilePreviewModal from "../components/ProfilePreviewModal";
-import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa"; // Ajout des icônes
+import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa";
 import Alert from "../components/Alert"; // Pour afficher l'alerte
 import { UserStatusDot } from "../components/UserStatus";
 
@@ -125,6 +125,19 @@ const Relations: React.FC = () => {
       .insert([{ sender_email: user.email, receiver_email: receiverEmail, status: "pending" }]);
   };
 
+  // Fonction pour retirer un ami
+  const handleRemoveFriend = async (friendEmail: string) => {
+    if (!currentUserEmail) return;
+    await supabase
+      .from("user_friends")
+      .delete()
+      .or(
+        `and(user_email.eq.${currentUserEmail},friend_email.eq.${friendEmail}),and(user_email.eq.${friendEmail},friend_email.eq.${currentUserEmail})`
+      );
+    setRelations((prev) => prev.filter((r) => r.email !== friendEmail));
+    showAlert("success", "Relation supprimée", "L'ami a été retiré de vos relations.");
+  };
+
   return (
     <div className="relations-root">
       <div className="relations-container">
@@ -176,6 +189,14 @@ const Relations: React.FC = () => {
                       {relation.special_status || "Utilisateur"}
                     </span>
                   </div>
+                  {/* Bouton retirer l'ami */}
+                  <button
+                    className="relation-action-btn remove"
+                    title="Retirer cet ami"
+                    onClick={() => handleRemoveFriend(relation.email)}
+                  >
+                    <FaTimes />
+                  </button>
                 </div>
               )))
             }
