@@ -3,11 +3,20 @@ import { useProfilePreview } from "../contexts/ProfilePreviewContext";
 import supabase from "../supabaseClient";
 import Text from "./Text";
 
-const ProfilePreviewModal: React.FC = () => {
+interface ProfilePreviewModalProps {
+  user?: any; // optionnel, si non fourni on affiche le profil connecté
+  onClose?: () => void;
+}
+
+const ProfilePreviewModal: React.FC<ProfilePreviewModalProps> = ({ user: userProp, onClose }) => {
   const { show, close } = useProfilePreview();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(userProp || null);
 
   useEffect(() => {
+    if (userProp) {
+      setUser(userProp);
+      return;
+    }
     if (!show) return;
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -20,9 +29,9 @@ const ProfilePreviewModal: React.FC = () => {
       setUser(data);
     };
     fetchUser();
-  }, [show]);
+  }, [show, userProp]);
 
-  if (!show || !user) return null;
+  if ((!show && !userProp) || !user) return null;
 
   // Contraste dynamique
   function getContrastClass(hex: string) {
@@ -49,7 +58,7 @@ const ProfilePreviewModal: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'center'
       }}
-      onClick={close}
+      onClick={onClose || close}
     >
       <div
         style={{
@@ -106,7 +115,7 @@ const ProfilePreviewModal: React.FC = () => {
                 {user.email}
               </Text>
             </div>
-            <button className="settings-preview-btn" onClick={close}>
+            <button className="settings-preview-btn" onClick={onClose || close}>
               Fermer
             </button>
           </div>

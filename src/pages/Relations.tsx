@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import Text from "../components/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
+import ProfilePreviewModal from "../components/ProfilePreviewModal";
 
-// Remplace ceci par la vraie logique pour récupérer les relations de l'utilisateur connecté
+// Récupère les emails des amis où user_email = email de l'utilisateur courant
 const getUserRelations = async (userEmail: string) => {
-  // On récupère les emails des amis où user_email = email de l'utilisateur courant
   const { data, error } = await supabase
     .from("relations")
     .select("friend_email")
-    .eq("user_email", userEmail); // <-- correction ici
+    .eq("user_email", userEmail);
   if (error) return [];
   return data.map((r: any) => r.friend_email);
 };
@@ -18,6 +18,7 @@ const Relations: React.FC = () => {
   const [relations, setRelations] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewUser, setPreviewUser] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchRelationsAndUsers = async () => {
@@ -78,7 +79,7 @@ const Relations: React.FC = () => {
             </Text>
           ) : (
             relations.map((relation) => (
-              <div className="relation-card" key={relation.id}>
+              <div className="relation-card" key={relation.id || relation.email}>
                 <img
                   src={
                     relation.picture_url ||
@@ -86,6 +87,8 @@ const Relations: React.FC = () => {
                   }
                   alt={relation.first_name}
                   className="relation-avatar"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setPreviewUser(relation)}
                 />
                 <div className="relation-info">
                   <span className="relation-name">
@@ -125,6 +128,8 @@ const Relations: React.FC = () => {
                   }
                   alt={user.first_name}
                   className="relation-avatar"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setPreviewUser(user)}
                 />
                 <div className="relation-info">
                   <span className="relation-name">
@@ -139,6 +144,10 @@ const Relations: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Modale de preview */}
+      {previewUser && (
+        <ProfilePreviewModal user={previewUser} onClose={() => setPreviewUser(null)} />
+      )}
     </div>
   );
 };
