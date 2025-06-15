@@ -1,8 +1,9 @@
 .dashboard-root {
     display: flex;
     min-height: 100vh;
-    width: 100%; /* <-- corrige ici */
+    width: 100%;
     overflow: hidden;
+    margin-left: 260px; /* Ajouté pour décaler le contenu à droite de la sidebar */
 }
 
 .dashboard-container {

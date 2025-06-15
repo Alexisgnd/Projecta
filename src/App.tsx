@@ -14,6 +14,7 @@ import { UserUpdateProvider } from './UserContext';
 import Alert from './components/Alert';
 import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
 import ProfilePreviewModal from './components/ProfilePreviewModal';
+import Relations from './pages/Relations';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -67,21 +68,23 @@ function AuthPage() {
       password !== confirmPassword
     ))
 
+  // Vérifie si l'email est déjà utilisé
+  const checkEmailExists = async (email: string) => {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return data !== null;
+  };
+
   // Vérifie si l'utilisateur existe et adapte le mode (connexion ou inscription)
   const handleCheck = async () => {
     setLoading(true)
     setError(null)
-    const { data, error } = await supabase
-      .from('users')
-      .select('email')
-      .eq('email', email)
-      .maybeSingle()
+    const exists = await checkEmailExists(email)
     setLoading(false)
-    if (error) {
-      setError("Erreur lors de la vérification de l'email")
-      return
-    }
-    if (data) {
+    if (exists) {
       setButtonText('Connexion')
       setSubtitle('Bienvenue ! Nous sommes ravis de vous revoir !')
       setTitle('Connexion')
@@ -131,7 +134,10 @@ function AuthPage() {
         .insert([{
           email,
           first_name: firstName,
-          last_name: lastName
+          last_name: lastName,
+          status: "online", // Ajout du status par défaut
+          primary_color: "#F3F4F6", // Blanc grisé
+          secondary_color: "#BDBDBD" // Gris plus foncé
         }])
       setLoading(false)
       if (insertError) {
@@ -289,6 +295,14 @@ function App() {
               element={
                 <MainLayout>
                   <Settings />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/relations"
+              element={
+                <MainLayout>
+                  <Relations />
                 </MainLayout>
               }
             />
