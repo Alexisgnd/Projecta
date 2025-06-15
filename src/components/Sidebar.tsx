@@ -19,6 +19,7 @@ const Sidebar: React.FC = () => {
   const { userRefreshCount } = useUserUpdate();
   const { open: openProfilePreview } = useProfilePreview();
   const statusBoxRef = useRef<HTMLDivElement>(null);
+  const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -106,6 +107,62 @@ const Sidebar: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showStatusMenu]);
+
+  // Gestion de l'inactivité utilisateur
+  useEffect(() => {
+    let lastStatus = activityStatus;
+
+    const setAway = async () => {
+      if (lastStatus !== "away") {
+        setActivityStatus("away");
+        lastStatus = "away";
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && user.email) {
+          await supabase
+            .from('users')
+            .update({ status: "away" })
+            .eq('email', user.email);
+        }
+      }
+    };
+
+    const setOnline = async () => {
+      if (lastStatus !== "online") {
+        setActivityStatus("online");
+        lastStatus = "online";
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && user.email) {
+          await supabase
+            .from('users')
+            .update({ status: "online" })
+            .eq('email', user.email);
+        }
+      }
+    };
+
+    const resetTimer = () => {
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+      inactivityTimer.current = setTimeout(setAway, 180000); // 3 minutes
+      setOnline();
+    };
+
+    // Événements d'activité
+    const events = ["mousemove", "mousedown", "keydown", "touchstart"];
+    events.forEach(event =>
+      window.addEventListener(event, resetTimer)
+    );
+
+    // Démarre le timer au montage
+    resetTimer();
+
+    return () => {
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+      events.forEach(event =>
+        window.removeEventListener(event, resetTimer)
+      );
+    };
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div className="sidebar-container">
