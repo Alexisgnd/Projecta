@@ -105,6 +105,11 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (!error) {
+        // Met à jour le status en "online" après connexion
+        await supabase
+          .from('users')
+          .update({ status: "online" })
+          .eq('email', email);
         navigate('/dashboard');
       } else {
         setError('Mot de passe incorrect')
