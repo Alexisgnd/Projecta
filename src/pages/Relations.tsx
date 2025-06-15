@@ -3,17 +3,22 @@ import Text from "../components/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
 import ProfilePreviewModal from "../components/ProfilePreviewModal";
-import { FaUserPlus, FaHourglassHalf } from "react-icons/fa"; // Ajout des icônes
+import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa"; // Ajout des icônes
 import Alert from "../components/Alert"; // Pour afficher l'alerte
 
-// Récupère les emails des amis où user_email = email de l'utilisateur courant
+// Récupère les emails des relations approuvées
 const getUserRelations = async (userEmail: string) => {
   const { data, error } = await supabase
     .from("relations")
-    .select("friend_email")
-    .eq("user_email", userEmail);
+    .select("sender_email, receiver_email, status")
+    .or(`sender_email.eq.${userEmail},receiver_email.eq.${userEmail}`);
   if (error) return [];
-  return data.map((r: any) => r.friend_email);
+  // On ne garde que les relations approuvées
+  return data
+    .filter((r: any) => r.status === "approved")
+    .map((r: any) =>
+      r.sender_email === userEmail ? r.receiver_email : r.sender_email
+    );
 };
 
 const Relations: React.FC = () => {
@@ -21,7 +26,9 @@ const Relations: React.FC = () => {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewUser, setPreviewUser] = useState<any | null>(null);
-  const [pendingRequests, setPendingRequests] = useState<string[]>([]); // emails des demandes envoyées
+  // On stocke les demandes avec leur status
+  const [pendingRequests, setPendingRequests] = useState<{ email: string, status: string }[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<{ email: string, status: string }[]>([]);
   const [alert, setAlert] = useState<{
     type: "error" | "success" | "info" | "warning";
     title: string;
@@ -46,24 +53,39 @@ const Relations: React.FC = () => {
         return;
       }
       setCurrentUserEmail(user.email);
-      // Récupère les emails des relations
+
+      // Relations approuvées
       const relationEmails = await getUserRelations(user.email);
 
-      // Récupère tous les utilisateurs actifs
+      // Tous les utilisateurs actifs
       const { data: usersData } = await supabase
         .from("users")
         .select("*")
         .eq("isActive", true);
 
-      // Récupère les demandes en attente
+      // Demandes envoyées (status != approved)
       const { data: pending } = await supabase
-        .from("relations_requests")
-        .select("friend_email")
-        .eq("user_email", user.email);
+        .from("relations")
+        .select("receiver_email, status")
+        .eq("sender_email", user.email)
+        .not("status", "eq", "approved");
 
-      const pendingList = pending?.map((r: any) => r.friend_email) || [];
+      // Demandes reçues (status != approved)
+      const { data: received } = await supabase
+        .from("relations")
+        .select("sender_email, status")
+        .eq("receiver_email", user.email)
+        .not("status", "eq", "approved");
 
-      // Sépare les relations et les autres utilisateurs
+      const pendingList = pending?.map((r: any) => ({
+        email: r.receiver_email,
+        status: r.status,
+      })) || [];
+      const receivedList = received?.map((r: any) => ({
+        email: r.sender_email,
+        status: r.status,
+      })) || [];
+
       const relationsList =
         usersData?.filter((u: any) => relationEmails.includes(u.email)) || [];
       const allUsersList = usersData || [];
@@ -71,23 +93,24 @@ const Relations: React.FC = () => {
       setRelations(relationsList);
       setAllUsers(allUsersList);
       setPendingRequests(pendingList);
+      setReceivedRequests(receivedList);
       setLoading(false);
     };
     fetchRelationsAndUsers();
   }, []);
 
-  // Ajout d'une relation
-  const handleAddRelation = async (friendEmail: string) => {
-    setPendingRequests((prev) => [...prev, friendEmail]);
+  // Ajout d'une demande de relation
+  const handleAddRelation = async (receiverEmail: string) => {
+    setPendingRequests((prev) => [...prev, { email: receiverEmail, status: "pending" }]);
     showAlert("info", "Demande envoyée", "Votre demande de relation a été envoyée.");
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user || !user.email) return;
-    // Ajoute la demande dans la table relations_requests
+    // Ajoute la demande dans la table relations
     await supabase
-      .from("relations_requests")
-      .insert([{ user_email: user.email, friend_email: friendEmail }]);
+      .from("relations")
+      .insert([{ sender_email: user.email, receiver_email: receiverEmail, status: "pending" }]);
   };
 
   return (
@@ -119,19 +142,11 @@ const Relations: React.FC = () => {
                       src={relation.picture_url}
                       alt={relation.first_name}
                       className="relation-avatar"
-                      style={{ cursor: "pointer" }}
                       onClick={() => setPreviewUser(relation)}
                     />
                   ) : (
                     <div
                       className="relation-avatar"
-                      style={{
-                        background: "#eee",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                      }}
                       onClick={() => setPreviewUser(relation)}
                     />
                   )}
@@ -144,8 +159,8 @@ const Relations: React.FC = () => {
                     </span>
                   </div>
                 </div>
-              ))
-            )}
+              )))
+            }
           </div>
           <div className="relations-section-title" style={{ marginTop: 32 }}>
             <Text size={20} bold>
@@ -164,28 +179,77 @@ const Relations: React.FC = () => {
             ) : (
               allUsers.map((user) => {
                 const isRelation = relations.some((r) => r.email === user.email);
-                const isPending = pendingRequests.includes(user.email);
+                const sentRequest = pendingRequests.find((r) => r.email === user.email);
+                const receivedRequest = receivedRequests.find((r) => r.email === user.email);
                 const isSelf = currentUserEmail === user.email;
+
+                let btnState = null;
+                let btnLabel = "Ajouter comme relation";
+                let btnIcon = <FaUserPlus />;
+                let btnColor = "#22c55e";
+                let btnDisabled = false;
+                let statusText = "";
+
+                if (sentRequest) {
+                  if (sentRequest.status === "pending") {
+                    btnState = "pending";
+                    btnLabel = "Demande envoyée";
+                    btnIcon = <FaHourglassHalf />;
+                    btnColor = "#f59e42";
+                    btnDisabled = true;
+                    statusText = "Demande envoyée";
+                  } else if (sentRequest.status === "approved") {
+                    btnState = "approved";
+                    btnLabel = "Déjà en relation";
+                    btnIcon = <FaCheck />;
+                    btnColor = "#22c55e";
+                    btnDisabled = true;
+                    statusText = "Relation approuvée";
+                  } else if (sentRequest.status === "rejected") {
+                    btnState = "rejected";
+                    btnLabel = "Demande refusée";
+                    btnIcon = <FaTimes />;
+                    btnColor = "#dc3545";
+                    btnDisabled = true;
+                    statusText = "Demande refusée";
+                  }
+                } else if (receivedRequest) {
+                  if (receivedRequest.status === "pending") {
+                    btnState = "received";
+                    btnLabel = "Demande reçue";
+                    btnIcon = <FaHourglassHalf />;
+                    btnColor = "#f59e42";
+                    btnDisabled = true;
+                    statusText = "Demande reçue";
+                  } else if (receivedRequest.status === "approved") {
+                    btnState = "approved";
+                    btnLabel = "Déjà en relation";
+                    btnIcon = <FaCheck />;
+                    btnColor = "#22c55e";
+                    btnDisabled = true;
+                    statusText = "Relation approuvée";
+                  } else if (receivedRequest.status === "rejected") {
+                    btnState = "rejected";
+                    btnLabel = "Demande refusée";
+                    btnIcon = <FaTimes />;
+                    btnColor = "#dc3545";
+                    btnDisabled = true;
+                    statusText = "Demande refusée";
+                  }
+                }
+
                 return (
-                  <div className="relation-card" key={user.id} style={{ position: "relative" }}>
+                  <div className="relation-card" key={user.id}>
                     {user.picture_url ? (
                       <img
                         src={user.picture_url}
                         alt={user.first_name}
                         className="relation-avatar"
-                        style={{ cursor: "pointer" }}
                         onClick={() => setPreviewUser(user)}
                       />
                     ) : (
                       <div
                         className="relation-avatar"
-                        style={{
-                          background: "#eee",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                        }}
                         onClick={() => setPreviewUser(user)}
                       />
                     )}
@@ -200,45 +264,33 @@ const Relations: React.FC = () => {
                     {/* Désactive le bouton si c'est soi-même */}
                     {!isRelation && !isSelf && (
                       <button
-                        className={`relation-add-btn${isPending ? " pending" : ""}`}
-                        style={{
-                          position: "absolute",
-                          right: 18,
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: 44,
-                          height: 44,
-                          background: isPending ? "#f59e42" : "#22c55e",
-                          color: "#fff",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 22,
-                          cursor: isPending ? "not-allowed" : "pointer",
-                          transition: "background 0.2s",
-                        }}
-                        disabled={isPending}
+                        className={
+                          "relation-add-btn" +
+                          (btnState === "pending" || btnState === "received"
+                            ? " pending"
+                            : "") +
+                          (btnState === "rejected" ? " rejected" : "")
+                        }
+                        disabled={btnDisabled}
                         onClick={() => handleAddRelation(user.email)}
-                        title={isPending ? "Demande envoyée" : "Ajouter comme relation"}
+                        title={btnLabel}
+                        data-btncolor={btnColor}
                       >
-                        {isPending ? <FaHourglassHalf /> : <FaUserPlus />}
+                        {btnIcon}
                       </button>
                     )}
-                    {isPending && !isSelf && (
+                    {statusText && !isSelf && (
                       <span
-                        style={{
-                          position: "absolute",
-                          right: 70,
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          color: "#f59e42",
-                          fontWeight: 600,
-                          fontSize: 14,
-                        }}
+                        className={
+                          "relation-status-text" +
+                          (btnState === "pending" || btnState === "received"
+                            ? " pending"
+                            : "") +
+                          (btnState === "rejected" ? " rejected" : "")
+                        }
+                        data-btncolor={btnColor}
                       >
-                        Demande envoyée
+                        {statusText}
                       </span>
                     )}
                   </div>

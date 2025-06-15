@@ -74,6 +74,7 @@ body {
     align-items: center;
     gap: 18px;
     transition: box-shadow 0.2s;
+    position: relative;
 }
 
 .relation-card:hover {
@@ -114,7 +115,7 @@ body {
     max-width: 44px;
     max-height: 44px;
     border-radius: 50%;
-    background: #22c55e;
+    background: var(--relation-btn-color, #22c55e);
     color: #fff;
     border: none;
     display: flex;
@@ -126,6 +127,10 @@ body {
     margin: 0;
     transition: background 0.2s, color 0.2s;
     cursor: pointer;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .relation-add-btn.pending {
@@ -138,4 +143,34 @@ body {
 .relation-add-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.relation-add-btn[data-btncolor="#22c55e"] {
+  --relation-btn-color: #22c55e;
+}
+.relation-add-btn[data-btncolor="#f59e42"] {
+  --relation-btn-color: #f59e42;
+}
+.relation-add-btn[data-btncolor="#dc3545"] {
+  --relation-btn-color: #dc3545;
+}
+
+.relation-status-text {
+  position: absolute;
+  right: 70px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--relation-status-color, #22c55e);
+}
+
+.relation-status-text[data-btncolor="#22c55e"] {
+  --relation-status-color: #22c55e;
+}
+.relation-status-text[data-btncolor="#f59e42"] {
+  --relation-status-color: #f59e42;
+}
+.relation-status-text[data-btncolor="#dc3545"] {
+  --relation-status-color: #dc3545;
 }
