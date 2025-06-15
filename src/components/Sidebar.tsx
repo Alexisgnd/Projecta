@@ -212,12 +212,17 @@ const Sidebar: React.FC = () => {
           </div>
           {/* Ajout de Relations */}
           <div
-            className="sidebar-link disabled"
-            style={{ cursor: 'not-allowed', opacity: 0.5 }}
-            title="Fonctionnalité désactivée"
+            className={`sidebar-link${location.pathname === '/relations' ? ' active' : ''}`}
+            onClick={() => navigate('/relations')}
+            style={{
+              cursor: 'pointer',
+              opacity: 1,
+              color: location.pathname === '/relations' ? '#3730A3' : undefined
+            }}
+            title="Voir vos relations"
           >
             <FaUsers size={20} className="sidebar-icon" />
-            <Text size={16} color="#757575">RELATIONS</Text>
+            <Text size={16} color={location.pathname === '/relations' ? "#3730A3" : "#757575"}>RELATIONS</Text>
           </div>
           {/* AIDE désactivé */}
           <div

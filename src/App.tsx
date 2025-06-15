@@ -14,6 +14,7 @@ import { UserUpdateProvider } from './UserContext';
 import Alert from './components/Alert';
 import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
 import ProfilePreviewModal from './components/ProfilePreviewModal';
+import Relations from './pages/Relations';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -289,6 +290,14 @@ function App() {
               element={
                 <MainLayout>
                   <Settings />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/relations"
+              element={
+                <MainLayout>
+                  <Relations />
                 </MainLayout>
               }
             />
