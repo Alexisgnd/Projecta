@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { FaHome, FaFolderOpen, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaFolderOpen, FaSearch, FaPlug, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -234,6 +234,7 @@ const Sidebar: React.FC = () => {
       </div>
       {/* Menu */}
       <div className="sidebar-menu">
+        {/* Dashboard */}
         <div
           className={`sidebar-item${location.pathname === '/dashboard' ? ' active' : ''}`}
           onClick={() => navigate('/dashboard')}
@@ -242,6 +243,7 @@ const Sidebar: React.FC = () => {
           <FaHome size={22} className="sidebar-icon" />
           <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
         </div>
+        {/* Projets */}
         <div
           className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''} disabled`}
           // onClick={() => navigate('/projects')}
@@ -251,6 +253,25 @@ const Sidebar: React.FC = () => {
           <FaFolderOpen size={22} className="sidebar-icon" />
           <Text size={16} color="#757575">PROJETS</Text>
         </div>
+        {/* Recherches / Rapports globaux (désactivé) */}
+        <div
+          className="sidebar-item disabled"
+          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
+        >
+          <FaSearch size={22} className="sidebar-icon" />
+          <Text size={16} color="#757575">RECHERCHES</Text>
+        </div>
+        {/* Intégrations (désactivé) */}
+        <div
+          className="sidebar-item disabled"
+          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
+        >
+          <FaPlug size={22} className="sidebar-icon" />
+          <Text size={16} color="#757575">INTÉGRATIONS</Text>
+        </div>
+        {/* Communauté (désactivé) */}
         <div
           className={`sidebar-item${location.pathname === '/community' ? ' active' : ''} disabled`}
           // onClick={() => navigate('/community')}
@@ -261,7 +282,7 @@ const Sidebar: React.FC = () => {
           <Text size={16} color="#757575">COMMUNAUTÉ</Text>
         </div>
         <div className="sidebar-bottom">
-          {/* Ajout de ADMIN désactivé en rouge */}
+          {/* ADMIN désactivé */}
           {/* <div
             className="sidebar-link disabled"
             style={{ cursor: 'not-allowed', opacity: 0.7, color: '#e11d48' }}
@@ -270,7 +291,7 @@ const Sidebar: React.FC = () => {
             <FaUsers size={20} className="sidebar-icon" style={{ color: '#e11d48' }} />
             <Text size={16} color="#e11d48">ADMIN</Text>
           </div> */}
-          {/* Ajout de Relations */}
+          {/* Relations */}
           <div
             className={`sidebar-link${location.pathname === '/relations' ? ' active' : ''}`}
             onClick={() => navigate('/relations')}
@@ -293,13 +314,12 @@ const Sidebar: React.FC = () => {
             <FaQuestionCircle size={20} className="sidebar-icon" />
             <Text size={16} color="#757575">AIDE</Text>
           </div>
-          <div
-            className={`sidebar-link${location.pathname === '/settings' ? ' active' : ''}`}
-            onClick={() => navigate('/settings')}
-          >
+          {/* Paramètres */}
+          <div className={`sidebar-link${location.pathname === '/settings' ? ' active' : ''}`} onClick={() => navigate('/settings')}>
             <FaCog size={20} className="sidebar-icon" />
             <Text size={16} color="#3730A3">PARAMÈTRES</Text>
           </div>
+          {/* Déconnexion */}
           <div className="sidebar-logout" onClick={handleLogout}>
             <FaSignOutAlt size={22} className="sidebar-icon" />
             <Text size={16} color="#b91c1c" bold> DÉCONNEXION </Text>
