@@ -55,96 +55,90 @@ const Relations: React.FC = () => {
   return (
     <div className="relations-root">
       <div className="relations-container">
-        <Text size={32} bold color="primary" className="relations-title">
-          Relations
-        </Text>
-        <Text size={16} color="secondary" className="relations-subtitle">
-          Retrouvez ici vos relations et tous les utilisateurs actifs.
-        </Text>
-
-        {/* Section Relations ajoutées */}
-        <div className="settings-section-title">
-          <Text size={20} bold>
-            Relations ajoutées
+        <div className="relations-left">
+          <Text size={32} bold color="primary" className="relations-title">
+            Relations
           </Text>
-        </div>
-        <div className="relations-list">
-          {loading ? (
-            <Text size={16} color="secondary">
-              Chargement...
+          <div className="relations-section-title">
+            <Text size={20} bold>
+              Relations ajoutées
             </Text>
-          ) : relations.length === 0 ? (
-            <Text size={16} color="secondary">
-              Aucune relation ajoutée.
-            </Text>
-          ) : (
-            relations.map((relation) => (
-              <div className="relation-card" key={relation.id || relation.email}>
-                <img
-                  src={
-                    relation.picture_url ||
-                    "https://randomuser.me/api/portraits/lego/1.jpg"
-                  }
-                  alt={relation.first_name}
-                  className="relation-avatar"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setPreviewUser(relation)}
-                />
-                <div className="relation-info">
-                  <span className="relation-name">
-                    {relation.first_name} {relation.last_name}
-                  </span>
-                  <span className="relation-status">
-                    {relation.special_status || "Utilisateur"}
-                  </span>
+          </div>
+          <div className="relations-list">
+            {loading ? (
+              <Text size={16} color="secondary">
+                Chargement...
+              </Text>
+            ) : relations.length === 0 ? (
+              <Text size={16} color="secondary">
+                Aucune relation ajoutée.
+              </Text>
+            ) : (
+              relations.map((relation) => (
+                <div className="relation-card" key={relation.id || relation.email}>
+                  <img
+                    src={
+                      relation.picture_url ||
+                      "https://randomuser.me/api/portraits/lego/1.jpg"
+                    }
+                    alt={relation.first_name}
+                    className="relation-avatar"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setPreviewUser(relation)}
+                  />
+                  <div className="relation-info">
+                    <span className="relation-name">
+                      {relation.first_name} {relation.last_name}
+                    </span>
+                    <span className="relation-status">
+                      {relation.special_status || "Utilisateur"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Section Tous les utilisateurs */}
-        <div className="settings-section-title" style={{ marginTop: 32 }}>
-          <Text size={20} bold>
-            Tous les utilisateurs actifs
-          </Text>
-        </div>
-        <div className="relations-list">
-          {loading ? (
-            <Text size={16} color="secondary">
-              Chargement...
+              ))
+            )}
+          </div>
+          <div className="relations-section-title" style={{ marginTop: 32 }}>
+            <Text size={20} bold>
+              Tous les utilisateurs actifs
             </Text>
-          ) : allUsers.length === 0 ? (
-            <Text size={16} color="secondary">
-              Aucun utilisateur actif.
-            </Text>
-          ) : (
-            allUsers.map((user) => (
-              <div className="relation-card" key={user.id}>
-                <img
-                  src={
-                    user.picture_url ||
-                    "https://randomuser.me/api/portraits/lego/2.jpg"
-                  }
-                  alt={user.first_name}
-                  className="relation-avatar"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setPreviewUser(user)}
-                />
-                <div className="relation-info">
-                  <span className="relation-name">
-                    {user.first_name} {user.last_name}
-                  </span>
-                  <span className="relation-status">
-                    {user.special_status || "Utilisateur"}
-                  </span>
+          </div>
+          <div className="relations-list">
+            {loading ? (
+              <Text size={16} color="secondary">
+                Chargement...
+              </Text>
+            ) : allUsers.length === 0 ? (
+              <Text size={16} color="secondary">
+                Aucun utilisateur actif.
+              </Text>
+            ) : (
+              allUsers.map((user) => (
+                <div className="relation-card" key={user.id}>
+                  <img
+                    src={
+                      user.picture_url ||
+                      "https://randomuser.me/api/portraits/lego/2.jpg"
+                    }
+                    alt={user.first_name}
+                    className="relation-avatar"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setPreviewUser(user)}
+                  />
+                  <div className="relation-info">
+                    <span className="relation-name">
+                      {user.first_name} {user.last_name}
+                    </span>
+                    <span className="relation-status">
+                      {user.special_status || "Utilisateur"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
-      {/* Modale de preview */}
       {previewUser && (
         <ProfilePreviewModal user={previewUser} onClose={() => setPreviewUser(null)} />
       )}
