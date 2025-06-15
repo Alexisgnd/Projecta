@@ -262,14 +262,14 @@ const Sidebar: React.FC = () => {
         </div>
         <div className="sidebar-bottom">
           {/* Ajout de ADMIN désactivé en rouge */}
-          <div
+          {/* <div
             className="sidebar-link disabled"
             style={{ cursor: 'not-allowed', opacity: 0.7, color: '#e11d48' }}
             title="Fonctionnalité réservée à l'administration"
           >
             <FaUsers size={20} className="sidebar-icon" style={{ color: '#e11d48' }} />
             <Text size={16} color="#e11d48">ADMIN</Text>
-          </div>
+          </div> */}
           {/* Ajout de Relations */}
           <div
             className={`sidebar-link${location.pathname === '/relations' ? ' active' : ''}`}
