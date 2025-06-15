@@ -5,6 +5,7 @@ import supabase from "../supabaseClient";
 import ProfilePreviewModal from "../components/ProfilePreviewModal";
 import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa"; // Ajout des icônes
 import Alert from "../components/Alert"; // Pour afficher l'alerte
+import { UserStatusDot } from "../components/UserStatus";
 
 // Récupère les emails des relations approuvées
 const getUserRelations = async (userEmail: string) => {
@@ -133,17 +134,23 @@ const Relations: React.FC = () => {
               relations.map((relation) => (
                 <div className="relation-card" key={relation.id || relation.email}>
                   {relation.picture_url ? (
-                    <img
-                      src={relation.picture_url}
-                      alt={relation.first_name}
-                      className="relation-avatar"
-                      onClick={() => setPreviewUser(relation)}
-                    />
+                    <div style={{ position: "relative", display: "inline-block" }}>
+                      <img
+                        src={relation.picture_url}
+                        alt={relation.first_name}
+                        className="relation-avatar"
+                        onClick={() => setPreviewUser(relation)}
+                      />
+                      <UserStatusDot status={relation.status} />
+                    </div>
                   ) : (
                     <div
                       className="relation-avatar"
+                      style={{ position: "relative", display: "inline-block" }}
                       onClick={() => setPreviewUser(relation)}
-                    />
+                    >
+                      <UserStatusDot status={relation.status} />
+                    </div>
                   )}
                   <div className="relation-info">
                     <span className="relation-name">
@@ -176,17 +183,23 @@ const Relations: React.FC = () => {
                   return (
                     <div className="relation-card" key={user.id}>
                       {user.picture_url ? (
-                        <img
-                          src={user.picture_url}
-                          alt={user.first_name}
-                          className="relation-avatar"
-                          onClick={() => setPreviewUser(user)}
-                        />
+                        <div style={{ position: "relative", display: "inline-block" }}>
+                          <img
+                            src={user.picture_url}
+                            alt={user.first_name}
+                            className="relation-avatar"
+                            onClick={() => setPreviewUser(user)}
+                          />
+                          <UserStatusDot status={user.status} />
+                        </div>
                       ) : (
                         <div
                           className="relation-avatar"
+                          style={{ position: "relative", display: "inline-block" }}
                           onClick={() => setPreviewUser(user)}
-                        />
+                        >
+                          <UserStatusDot status={user.status} />
+                        </div>
                       )}
                       <div className="relation-info">
                         <span className="relation-name">
@@ -273,17 +286,23 @@ const Relations: React.FC = () => {
                   return (
                     <div className="relation-card" key={user.id}>
                       {user.picture_url ? (
-                        <img
-                          src={user.picture_url}
-                          alt={user.first_name}
-                          className="relation-avatar"
-                          onClick={() => setPreviewUser(user)}
-                        />
+                        <div style={{ position: "relative", display: "inline-block" }}>
+                          <img
+                            src={user.picture_url}
+                            alt={user.first_name}
+                            className="relation-avatar"
+                            onClick={() => setPreviewUser(user)}
+                          />
+                          <UserStatusDot status={user.status} />
+                        </div>
                       ) : (
                         <div
                           className="relation-avatar"
+                          style={{ position: "relative", display: "inline-block" }}
                           onClick={() => setPreviewUser(user)}
-                        />
+                        >
+                          <UserStatusDot status={user.status} />
+                        </div>
                       )}
                       <div className="relation-info">
                         <span className="relation-name">
@@ -380,17 +399,23 @@ const Relations: React.FC = () => {
                 return (
                   <div className="relation-card" key={user.id}>
                     {user.picture_url ? (
-                      <img
-                        src={user.picture_url}
-                        alt={user.first_name}
-                        className="relation-avatar"
-                        onClick={() => setPreviewUser(user)}
-                      />
+                      <div style={{ position: "relative", display: "inline-block" }}>
+                        <img
+                          src={user.picture_url}
+                          alt={user.first_name}
+                          className="relation-avatar"
+                          onClick={() => setPreviewUser(user)}
+                        />
+                        <UserStatusDot status={user.status} />
+                      </div>
                     ) : (
                       <div
                         className="relation-avatar"
+                        style={{ position: "relative", display: "inline-block" }}
                         onClick={() => setPreviewUser(user)}
-                      />
+                      >
+                        <UserStatusDot status={user.status} />
+                      </div>
                     )}
                     <div className="relation-info">
                       <span className="relation-name">

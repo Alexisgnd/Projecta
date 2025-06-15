@@ -6,14 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
 import { useProfilePreview } from '../contexts/ProfilePreviewContext';
-
-const ACTIVITY_STATUSES = [
-  { key: 'online', label: 'En ligne', color: '#4ade80' },
-  { key: 'busy', label: 'Occupé', color: '#f87171' },
-  { key: 'away', label: 'Absent', color: '#facc15' },
-  { key: 'invisible', label: 'Invisible', color: '#a3a3a3' },
-  { key: 'dnd', label: 'Ne pas déranger', color: '#ef4444' },
-];
+import { USER_STATUSES, UserStatusDot } from "./UserStatus";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -92,8 +85,6 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const currentStatus = ACTIVITY_STATUSES.find(s => s.key === activityStatus) || ACTIVITY_STATUSES[0];
-
   useEffect(() => {
     if (!showStatusMenu) return;
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,20 +113,24 @@ const Sidebar: React.FC = () => {
           }
           onClick={openProfilePreview}
         >
+          {/* Ajoute un span englobant la pastille pour gérer le clic */}
           <span
-            className="sidebar-status"
-            style={{ background: currentStatus.color, cursor: 'pointer' }}
-            onClick={e => { e.stopPropagation(); setShowStatusMenu(v => !v); }}
-            title={currentStatus.label}
-          />
+            style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 3 }}
+            onClick={e => {
+              e.stopPropagation();
+              setShowStatusMenu(v => !v);
+            }}
+          >
+            <UserStatusDot status={activityStatus} />
+          </span>
           {showStatusMenu && (
             <div className="sidebar-status-menu">
-              {ACTIVITY_STATUSES.map(status => (
+              {USER_STATUSES.map(status => (
                 <div
                   key={status.key}
                   className={`sidebar-status-menu-item${activityStatus === status.key ? ' selected' : ''}`}
                   onClick={e => {
-                    e.stopPropagation(); // <-- Ajoute ceci
+                    e.stopPropagation();
                     handleStatusChange(status.key);
                   }}
                 >
