@@ -48,8 +48,7 @@
     height: 100%;
     z-index: 2000;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
     background: #a259ff;
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
     overflow: auto;
@@ -63,7 +62,6 @@
     justify-content: flex-start;
     width: 100%;
     max-width: 600px;
-    margin: 0 auto;
     padding: 64px 32px 32px 32px;
     box-sizing: border-box;
     color: #fff;
@@ -105,4 +103,48 @@
     flex-direction: column;
     gap: 8px;
     align-items: center;
+}
+
+.project-expand-header {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0;
+    margin-top: -12px;
+    margin-left: 0;
+    padding-bottom: 18px;
+}
+
+.project-tabs-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+    margin-bottom: 32px;
+    overflow-x: auto;
+    width: 100%;
+    background: none;
+    width: fit-content;
+}
+
+.project-tab-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: background 0.18s, color 0.18s;
+    margin-right: 2px;
+}
+
+.project-tab-btn.selected,
+.project-tab-btn:focus {
+    background: #fff;
+    color: #a259ff;
+    outline: none;
+    box-shadow: 0 2px 8px #0001;
+    z-index: 2;
 }

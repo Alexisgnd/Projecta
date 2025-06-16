@@ -121,11 +121,25 @@ const Projects: React.FC = () => {
                             }}
                             onClick={() => setSelectedProject(null)}
                         >
-                            <div className="project-expand-content" onClick={e => e.stopPropagation()}>
-                                <Text size={40} bold>
-                                    {selectedProject.name}
-                                </Text>
-                                <div className="project-expand-details">
+                            <div className="project-expand-content" onClick={e => e.stopPropagation()} style={{ alignItems: "stretch" }}>
+                                {/* Titre aligné en haut à gauche */}
+                                <div className="project-expand-header">
+                                    <Text size={40} bold>
+                                        {selectedProject.name}
+                                    </Text>
+                                </div>
+                                {/* Menu onglets horizontal */}
+                                <div className="project-tabs-row">
+                                    <button className="project-tab-btn selected">📌 Vue d’ensemble</button>
+                                    <button className="project-tab-btn">🧾 Tâches / Kanban</button>
+                                    <button className="project-tab-btn">📊 Indicateurs & KPI</button>
+                                    <button className="project-tab-btn">🗓️ Planning / Gantt</button>
+                                    <button className="project-tab-btn">📂 Documents du projet</button>
+                                    <button className="project-tab-btn">📒 Journal de bord</button>
+                                    <button className="project-tab-btn">⚙️ Paramètres du projet</button>
+                                </div>
+                                {/* Contenu de l’onglet sélectionné */}
+                                <div className="project-expand-details" style={{ alignItems: "flex-start" }}>
                                     <Text size={20}>
                                         {selectedProject.num_tasks} tâche{selectedProject.num_tasks > 1 ? "s" : ""}
                                     </Text>
