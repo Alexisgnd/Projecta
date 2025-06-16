@@ -21,7 +21,8 @@ interface ProjectCardProps {
   progress: number; // 0-100
   members: string[]; // URLs des avatars
   extraMembers?: number;
-  backgroundColor?: string; // Ajout de la prop
+  backgroundColor?: string;
+  onClick?: () => void; // gestion du clic
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -31,6 +32,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   members,
   extraMembers = 0,
   backgroundColor = "#a259ff",
+  onClick,
 }) => {
   // Détermine la couleur du texte selon le fond
   const textColor = isColorLight(backgroundColor.replace(/[^#a-fA-F0-9]/g, '')) ? "#222" : "#fff";
@@ -39,6 +41,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <div
       className="project-card"
       style={{ background: backgroundColor, color: textColor }}
+      onClick={onClick}
     >
       <div className="project-card-folder-shape" />
       <div className="project-card-members">

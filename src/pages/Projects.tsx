@@ -3,6 +3,7 @@ import './Projects.css';
 import Text from '../components/Text';
 import ProjectCard from '../components/ProjectCard';
 import supabase from '../supabaseClient';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Project {
     id: number;
@@ -19,6 +20,7 @@ interface Project {
 const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -77,7 +79,7 @@ const Projects: React.FC = () => {
                 ) : projects.length === 0 ? (
                     <Text size={18} color="secondary">Vous n'avez aucun projet</Text>
                 ) : (
-                    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginTop: 24 }}>
+                    <div className="projects-list">
                         {projects.map((project) => {
                             const maxAvatars = 3;
                             const members = project.members?.slice(0, maxAvatars) || [];
@@ -86,19 +88,61 @@ const Projects: React.FC = () => {
                                 : 0;
 
                             return (
-                                <ProjectCard
-                                    key={project.id}
-                                    title={project.name}
-                                    tasks={project.num_tasks}
-                                    progress={project.progression}
-                                    members={members}
-                                    extraMembers={extraMembers}
-                                    backgroundColor={project.color}
-                                />
+                                <div key={project.id} className="project-card-wrapper">
+                                    <ProjectCard
+                                        title={project.name}
+                                        tasks={project.num_tasks}
+                                        progress={project.progression}
+                                        members={members}
+                                        extraMembers={extraMembers}
+                                        backgroundColor={project.color}
+                                        onClick={() => setSelectedProject(project)}
+                                    />
+                                </div>
                             );
                         })}
                     </div>
                 )}
+                {/* Overlay animé : DOIT ÊTRE ICI */}
+                <AnimatePresence>
+                    {selectedProject && (
+                        <motion.div
+                            className="project-expand-overlay"
+                            initial={{ borderRadius: 32, scale: 0.9, opacity: 0 }}
+                            animate={{
+                                borderRadius: 0,
+                                scale: 1,
+                                opacity: 1,
+                            }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                            style={{
+                                background: selectedProject.color || "#a259ff",
+                            }}
+                            onClick={() => setSelectedProject(null)}
+                        >
+                            <div className="project-expand-content" onClick={e => e.stopPropagation()}>
+                                <Text size={40} bold>
+                                    {selectedProject.name}
+                                </Text>
+                                <div className="project-expand-details">
+                                    <Text size={20}>
+                                        {selectedProject.num_tasks} tâche{selectedProject.num_tasks > 1 ? "s" : ""}
+                                    </Text>
+                                    <Text size={20}>
+                                        Progression : {selectedProject.progression}%
+                                    </Text>
+                                </div>
+                                <button
+                                    className="project-expand-close"
+                                    onClick={() => setSelectedProject(null)}
+                                >
+                                    Fermer
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
