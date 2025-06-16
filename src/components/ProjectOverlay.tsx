@@ -3,6 +3,10 @@ import Text from "./Text";
 import { motion, AnimatePresence } from "framer-motion";
 import "./ProjectOverlay.css";
 import Input from "./Input";
+import Alert from "./Alert";
+import supabase from "../supabaseClient";
+import Button from "./Button";
+import TagInput from "./TagInput";
 
 interface Project {
     id: number;
@@ -17,6 +21,7 @@ interface Project {
     description?: string;
     goal?: string;
     tags?: string[];
+    tags_colors?: { [tag: string]: string };
 }
 
 interface ProjectOverlayProps {
@@ -43,6 +48,59 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
 
     // Nouveau composant pour l’onglet paramètres
     function ProjectSettingsPanel() {
+        const [name, setName] = React.useState(project?.name || "");
+        const [description, setDescription] = React.useState(project?.description || "");
+        const [goal, setGoal] = React.useState(project?.goal || "");
+        const [tagsArr, setTagsArr] = React.useState<string[]>(project?.tags || []);
+        const [tagsColors, setTagsColors] = React.useState<{ [tag: string]: string }>(project?.tags_colors || {});
+        const [loading, setLoading] = React.useState(false);
+        const [alert, setAlert] = React.useState<{
+            type: "error" | "success" | "info" | "warning";
+            title: string;
+            message: React.ReactNode;
+            key?: string;
+        } | null>(null);
+
+        // Met à jour les états locaux si le projet change
+        React.useEffect(() => {
+            setName(project?.name || "");
+            setDescription(project?.description || "");
+            setGoal(project?.goal || "");
+            setTagsArr(project?.tags || []);
+            setTagsColors(project?.tags_colors || {});
+        }, [project]);
+
+        const handleSave = async () => {
+            setLoading(true);
+            setAlert(null);
+            const { error } = await supabase
+                .from("projects")
+                .update({
+                    name,
+                    description,
+                    goal,
+                    tags: tagsArr,
+                    tags_colors: tagsColors,
+                })
+                .eq("id", project?.id);
+            setLoading(false);
+            if (error) {
+                setAlert({
+                    type: "error",
+                    title: "Erreur",
+                    message: "La mise à jour a échoué.",
+                    key: Date.now().toString(),
+                });
+            } else {
+                setAlert({
+                    type: "success",
+                    title: "Succès",
+                    message: "Projet mis à jour avec succès.",
+                    key: Date.now().toString(),
+                });
+            }
+        };
+
         return (
             <div className="project-settings-panel">
                 {/* 1. Informations générales */}
@@ -52,26 +110,53 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-general-grid">
                     <Input
                         header="Nom du projet"
-                        value={project?.name || ""}
-                        disabled
+                        value={name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                        disabled={loading}
                     />
                     <Input
                         header="Description courte"
-                        value={project?.description || ""}
-                        disabled
+                        value={description}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+                        disabled={loading}
                     />
                     <Input
                         header="Objectif du projet"
-                        value={project?.goal || ""}
-                        disabled
+                        value={goal}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoal(e.target.value)}
+                        disabled={loading}
                     />
-                    <Input
-                        header="Tags / catégories"
-                        value={project?.tags?.join(", ") || ""}
-                        disabled
+                    <div>
+                        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>Tags / catégories</div>
+                        <TagInput
+                            tags={tagsArr}
+                            setTags={setTagsArr}
+                            tagsColors={tagsColors}
+                            setTagsColors={setTagsColors}
+                            disabled={loading}
+                            placeholder="ex: interne, client, urgent"
+                        />
+                    </div>
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+                    <Button
+                        text={loading ? "Enregistrement..." : "Valider les changements"}
+                        variant="primary"
+                        style={{ minWidth: 180, padding: 25 }}
+                        onClick={handleSave}
+                        disabled={loading}
                     />
                 </div>
-
+                {alert && (
+                    <Alert
+                        key={alert.key}
+                        type={alert.type}
+                        title={alert.title}
+                        onClose={() => setAlert(null)}
+                    >
+                        {alert.message}
+                    </Alert>
+                )}
                 {/* 2. Gestion des membres */}
                 <div className="project-settings-section-title">
                     <Text size={20} bold>👥 Gestion des membres</Text>
