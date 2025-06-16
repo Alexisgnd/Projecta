@@ -7,6 +7,8 @@ import Input from "./Input";
 import Alert from "./Alert";
 import Button from "./Button";
 import TagInput from "./TagInput";
+import { FaUserPlus, FaTimes } from "react-icons/fa";
+import Modal from "./Modal";
 
 interface Project {
     id: number;
@@ -65,6 +67,10 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         // États pour les membres
         const [members, setMembers] = useState<any[]>([]);
         const [loadingMembers, setLoadingMembers] = useState(false);
+        const [showAddModal, setShowAddModal] = useState(false);
+        const [relations, setRelations] = useState<any[]>([]);
+        const [search, setSearch] = useState("");
+        const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
         // Met à jour les états locaux si le projet change
         React.useEffect(() => {
@@ -75,21 +81,51 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             setTagsColors(project?.tags_colors || {});
         }, [project]);
 
-        // Récupère les membres du projet avec leurs infos utilisateur
-        useEffect(() => {
+        // Fonction pour récupérer les membres du projet avec leurs infos utilisateur
+        const fetchMembers = async () => {
             if (!project?.id) return;
             setLoadingMembers(true);
-            const fetchMembers = async () => {
-                const { data: projectMembers } = await supabase
-                    .from("project_members")
-                    .select("id, user_id, role, users: user_id (id, first_name, last_name, picture_url, email)")
-                    .eq("project_id", project.id);
+            const { data: projectMembers } = await supabase
+                .from("project_members")
+                .select("id, user_id, role, users: user_id (id, first_name, last_name, picture_url, email)")
+                .eq("project_id", project.id);
 
-                setMembers(projectMembers || []);
-                setLoadingMembers(false);
-            };
+            setMembers(projectMembers || []);
+            setLoadingMembers(false);
+        };
+
+        useEffect(() => {
             fetchMembers();
         }, [project?.id]);
+
+        // Récupère l'utilisateur courant
+        useEffect(() => {
+            supabase.auth.getUser().then(async ({ data }) => {
+                if (!data?.user?.email) return;
+                // Récupère l'id utilisateur
+                const { data: userData } = await supabase
+                    .from("users")
+                    .select("id")
+                    .eq("email", data.user.email)
+                    .single();
+                setCurrentUserId(userData?.id || null);
+
+                // Récupère les relations ajoutées (user_friends)
+                const { data: friendsData } = await supabase
+                    .from("user_friends")
+                    .select("friend_email")
+                    .eq("user_email", data.user.email);
+
+                const friendEmails = friendsData?.map(f => f.friend_email) || [];
+                if (friendEmails.length > 0) {
+                    const { data: usersData } = await supabase
+                        .from("users")
+                        .select("id, first_name, last_name, email, picture_url")
+                        .in("email", friendEmails);
+                    setRelations(usersData || []);
+                }
+            });
+        }, []);
 
         const handleSave = async () => {
             setLoading(true);
@@ -120,6 +156,26 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                     key: Date.now().toString(),
                 });
             }
+        };
+
+        // Ajout d'un membre au projet
+        const handleAddMember = async (userId: number) => {
+            if (!project) return;
+            await supabase.from("project_members").insert({
+                project_id: project.id,
+                user_id: userId,
+                role: "Membre"
+            });
+            setShowAddModal(false);
+            // Refresh membres
+            fetchMembers();
+        };
+
+        // Suppression d'un membre (sauf soi-même)
+        const handleRemoveMember = async (memberId: number, userId: number) => {
+            if (userId === currentUserId) return;
+            await supabase.from("project_members").delete().eq("id", memberId);
+            fetchMembers();
         };
 
         return (
@@ -182,6 +238,15 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-section-title">
                     <Text size={20} bold>👥 Gestion des membres</Text>
                 </div>
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+                    <button
+                        className="add-member-btn"
+                        onClick={() => setShowAddModal(true)}
+                    >
+                        <FaUserPlus style={{ marginRight: 8 }} />
+                        Ajouter des membres
+                    </button>
+                </div>
                 <div className="project-members-list">
                     {loadingMembers ? (
                         <Text size={16} color="secondary">Chargement...</Text>
@@ -191,19 +256,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         members.map((member) => (
                             <div className="relation-card" key={member.id}>
                                 {member.users?.picture_url ? (
-                                    <div style={{ position: "relative", display: "inline-block" }}>
-                                        <img
-                                            src={member.users.picture_url}
-                                            alt={member.users.first_name}
-                                            className="relation-avatar"
-                                        />
-                                        {/* Optionnel : UserStatusDot si tu veux */}
-                                    </div>
-                                ) : (
-                                    <div
+                                    <img
+                                        src={member.users.picture_url}
+                                        alt={member.users.first_name}
                                         className="relation-avatar"
-                                        style={{ position: "relative", display: "inline-block" }}
                                     />
+                                ) : (
+                                    <div className="relation-avatar" />
                                 )}
                                 <div className="relation-info">
                                     <span className="relation-name">
@@ -213,11 +272,73 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                         {member.role}
                                     </span>
                                 </div>
-                                {/* Ajoute ici les actions (changer rôle, retirer, etc.) */}
+                                {member.users?.id !== currentUserId && (
+                                    <button
+                                        className="remove-member-btn"
+                                        title="Retirer ce membre"
+                                        onClick={() => handleRemoveMember(member.id, member.users?.id)}
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                )}
                             </div>
                         ))
                     )}
                 </div>
+                {/* Modal d'ajout de membres */}
+                {showAddModal && (
+                    <Modal onClose={() => setShowAddModal(false)}>
+                        <div className="add-member-modal">
+                            <Text size={20} bold>Ajouter des membres</Text>
+                            <input
+                                className="add-member-search"
+                                type="text"
+                                placeholder="Rechercher une relation..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                            />
+                            <div className="add-member-list">
+                                {relations
+                                    .filter(r =>
+                                        (r.first_name + " " + r.last_name)
+                                            .toLowerCase()
+                                            .includes(search.toLowerCase())
+                                    )
+                                    .filter(r =>
+                                        !members.some(m => m.users?.id === r.id)
+                                    )
+                                    .map(r => (
+                                        <div className="relation-card" key={r.id}>
+                                            {r.picture_url ? (
+                                                <img
+                                                    src={r.picture_url}
+                                                    alt={r.first_name}
+                                                    className="relation-avatar"
+                                                />
+                                            ) : (
+                                                <div className="relation-avatar" />
+                                            )}
+                                            <div className="relation-info">
+                                                <span className="relation-name">
+                                                    {r.first_name} {r.last_name}
+                                                </span>
+                                                <span className="relation-status">
+                                                    Relation ajoutée
+                                                </span>
+                                            </div>
+                                            <button
+                                                className="add-member-round-btn"
+                                                title="Ajouter ce membre"
+                                                onClick={() => handleAddMember(r.id)}
+                                            >
+                                                <FaUserPlus />
+                                            </button>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    </Modal>
+                )}
                 {/* 3. Structure du projet */}
                 <div className="project-settings-section-title">
                     <Text size={20} bold>🧩 Structure du projet</Text>
