@@ -13,6 +13,9 @@ interface Project {
     num_tasks: number;
     num_members: number;
     members?: any[];
+    description?: string;
+    goal?: string;
+    tags?: string[];
 }
 
 interface ProjectOverlayProps {
@@ -34,9 +37,66 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
     ];
 
     React.useEffect(() => {
-        // Réinitialise la tab sélectionnée à l'ouverture d'un projet
         setSelectedTab(0);
     }, [project]);
+
+    // Nouveau composant pour l’onglet paramètres
+    function ProjectSettingsPanel() {
+        return (
+            <div className="project-settings-panel">
+                {/* 1. Informations générales */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>📝 Informations générales</Text>
+                </div>
+                <div className="project-settings-row">
+                    <Text size={14} bold>Nom du projet</Text>
+                    <input type="text" value={project?.name || ""} disabled />
+                </div>
+                <div className="project-settings-row">
+                    <Text size={14} bold>Description courte</Text>
+                    <textarea value={project?.description || ""} disabled />
+                </div>
+                <div className="project-settings-row">
+                    <Text size={14} bold>Objectif du projet</Text>
+                    <textarea value={project?.goal || ""} disabled />
+                </div>
+                <div className="project-settings-row">
+                    <Text size={14} bold>Tags / catégories</Text>
+                    <input type="text" value={project?.tags?.join(", ") || ""} disabled />
+                </div>
+
+                {/* 2. Gestion des membres */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>👥 Gestion des membres</Text>
+                </div>
+                {/* À compléter avec la logique d’ajout/retrait et rôles */}
+
+                {/* 3. Structure du projet */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>🧩 Structure du projet</Text>
+                </div>
+                {/* À compléter avec les dates, état, périmètre */}
+
+                {/* 4. Modèles & préférences */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>🧾 Modèles & préférences</Text>
+                </div>
+                {/* À compléter avec workflow, unités, KPIs */}
+
+                {/* 5. Nettoyage & Archivage */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>📂 Nettoyage & Archivage</Text>
+                </div>
+                {/* À compléter avec boutons archiver, dupliquer, supprimer */}
+
+                {/* 6. Confidentialité / Accès */}
+                <div className="project-settings-section-title">
+                    <Text size={20} bold>🔒 Confidentialité / Accès</Text>
+                </div>
+                {/* À compléter avec visibilité, lien partageable */}
+            </div>
+        );
+    }
 
     return (
         <AnimatePresence>
@@ -79,12 +139,18 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                             ))}
                         </div>
                         <div className="project-overlay-details" style={{ alignItems: "flex-start" }}>
-                            <Text size={20}>
-                                {project.num_tasks} tâche{project.num_tasks > 1 ? "s" : ""}
-                            </Text>
-                            <Text size={20}>
-                                Progression : {project.progression}%
-                            </Text>
+                            {selectedTab === 6 ? (
+                                <ProjectSettingsPanel />
+                            ) : (
+                                <>
+                                    <Text size={20}>
+                                        {project.num_tasks} tâche{project.num_tasks > 1 ? "s" : ""}
+                                    </Text>
+                                    <Text size={20}>
+                                        Progression : {project.progression}%
+                                    </Text>
+                                </>
+                            )}
                         </div>
                         <button
                             className="project-overlay-close"
