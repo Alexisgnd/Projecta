@@ -272,26 +272,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
 // Remplace l'export principal :
 function App() {
-  useEffect(() => {
-    const setOffline = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user && user.email) {
-        await supabase
-          .from('users')
-          .update({ status: "offline" })
-          .eq('email', user.email);
-      }
-    };
-
-    const handleBeforeUnload = () => {
-      // Appelle la fonction async sans attendre (fire and forget)
-      setOffline();
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
-
   return (
     <BrowserRouter>
       <UserUpdateProvider>
