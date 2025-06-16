@@ -106,11 +106,11 @@
     flex-direction: column;
     gap: 8px;
     align-items: center;
+    width: 100%;
 }
 
 .project-settings-panel {
     width: 100%;
-    max-width: 520px;
     margin: 0 auto;
 }
 
@@ -146,5 +146,12 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin-bottom: 12px;
+}
+
+.project-settings-general-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
     margin-bottom: 12px;
 }

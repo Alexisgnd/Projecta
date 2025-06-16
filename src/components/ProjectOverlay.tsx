@@ -2,6 +2,7 @@ import React from "react";
 import Text from "./Text";
 import { motion, AnimatePresence } from "framer-motion";
 import "./ProjectOverlay.css";
+import Input from "./Input";
 
 interface Project {
     id: number;
@@ -48,21 +49,27 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-section-title">
                     <Text size={20} bold>📝 Informations générales</Text>
                 </div>
-                <div className="project-settings-row">
-                    <Text size={14} bold>Nom du projet</Text>
-                    <input type="text" value={project?.name || ""} disabled />
-                </div>
-                <div className="project-settings-row">
-                    <Text size={14} bold>Description courte</Text>
-                    <textarea value={project?.description || ""} disabled />
-                </div>
-                <div className="project-settings-row">
-                    <Text size={14} bold>Objectif du projet</Text>
-                    <textarea value={project?.goal || ""} disabled />
-                </div>
-                <div className="project-settings-row">
-                    <Text size={14} bold>Tags / catégories</Text>
-                    <input type="text" value={project?.tags?.join(", ") || ""} disabled />
+                <div className="project-settings-general-grid">
+                    <Input
+                        header="Nom du projet"
+                        value={project?.name || ""}
+                        disabled
+                    />
+                    <Input
+                        header="Description courte"
+                        value={project?.description || ""}
+                        disabled
+                    />
+                    <Input
+                        header="Objectif du projet"
+                        value={project?.goal || ""}
+                        disabled
+                    />
+                    <Input
+                        header="Tags / catégories"
+                        value={project?.tags?.join(", ") || ""}
+                        disabled
+                    />
                 </div>
 
                 {/* 2. Gestion des membres */}
