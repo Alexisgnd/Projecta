@@ -3,7 +3,7 @@ import './Projects.css';
 import Text from '../components/Text';
 import ProjectCard from '../components/ProjectCard';
 import supabase from '../supabaseClient';
-import { motion, AnimatePresence } from "framer-motion";
+import ProjectOverlay from '../components/ProjectOverlay';
 
 interface Project {
     id: number;
@@ -14,7 +14,7 @@ interface Project {
     color: string;
     num_tasks: number;
     num_members: number;
-    members?: any[]; // Ajoute cette propriété pour stocker les membres
+    members?: any[];
 }
 
 const Projects: React.FC = () => {
@@ -103,60 +103,11 @@ const Projects: React.FC = () => {
                         })}
                     </div>
                 )}
-                {/* Overlay animé : DOIT ÊTRE ICI */}
-                <AnimatePresence>
-                    {selectedProject && (
-                        <motion.div
-                            className="project-expand-overlay"
-                            initial={{ borderRadius: 32, scale: 0.9, opacity: 0 }}
-                            animate={{
-                                borderRadius: 0,
-                                scale: 1,
-                                opacity: 1,
-                            }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                            style={{
-                                background: selectedProject.color || "#a259ff",
-                            }}
-                            onClick={() => setSelectedProject(null)}
-                        >
-                            <div className="project-expand-content" onClick={e => e.stopPropagation()} style={{ alignItems: "stretch" }}>
-                                {/* Titre aligné en haut à gauche */}
-                                <div className="project-expand-header">
-                                    <Text size={40} bold>
-                                        {selectedProject.name}
-                                    </Text>
-                                </div>
-                                {/* Menu onglets horizontal */}
-                                <div className="project-tabs-row">
-                                    <button className="project-tab-btn selected">📌 Vue d’ensemble</button>
-                                    <button className="project-tab-btn">🧾 Tâches / Kanban</button>
-                                    <button className="project-tab-btn">📊 Indicateurs & KPI</button>
-                                    <button className="project-tab-btn">🗓️ Planning / Gantt</button>
-                                    <button className="project-tab-btn">📂 Documents du projet</button>
-                                    <button className="project-tab-btn">📒 Journal de bord</button>
-                                    <button className="project-tab-btn">⚙️ Paramètres du projet</button>
-                                </div>
-                                {/* Contenu de l’onglet sélectionné */}
-                                <div className="project-expand-details" style={{ alignItems: "flex-start" }}>
-                                    <Text size={20}>
-                                        {selectedProject.num_tasks} tâche{selectedProject.num_tasks > 1 ? "s" : ""}
-                                    </Text>
-                                    <Text size={20}>
-                                        Progression : {selectedProject.progression}%
-                                    </Text>
-                                </div>
-                                <button
-                                    className="project-expand-close"
-                                    onClick={() => setSelectedProject(null)}
-                                >
-                                    Fermer
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* Utilise le nouveau composant ProjectOverlay */}
+                <ProjectOverlay
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                />
             </div>
         </div>
     );

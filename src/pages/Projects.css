@@ -38,54 +38,6 @@
     }
 }
 
-.project-expand-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2000;
-    display: flex;
-    align-items: flex-start;
-    background: #a259ff;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
-    overflow: auto;
-    transition: background 0.3s;
-}
-
-.project-expand-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 600px;
-    padding: 64px 32px 32px 32px;
-    box-sizing: border-box;
-    color: #fff;
-    text-align: center;
-}
-
-.project-expand-close {
-    margin-top: 48px;
-    padding: 12px 32px;
-    border-radius: 12px;
-    border: none;
-    background: #fff;
-    color: #a259ff;
-    font-weight: 700;
-    font-size: 18px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-}
-
-.project-expand-close:hover {
-    background: #f3f4f6;
-    color: #a259ff;
-}
-
 .projects-list {
     display: flex;
     gap: 24px;
@@ -95,55 +47,4 @@
 
 .project-card-wrapper {
     cursor: pointer;
-}
-
-.project-expand-details {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-}
-
-.project-expand-header {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 0;
-    margin-top: -12px;
-    margin-left: 0;
-    padding-bottom: 18px;
-}
-
-.project-tabs-row {
-    display: flex;
-    flex-direction: row;
-    gap: 0;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.18);
-    margin-bottom: 32px;
-    overflow-y: hidden;
-    background: none;
-    width: fit-content;
-}
-
-.project-tab-btn {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    border: none;
-    border-radius: 10px 10px 0 0;
-    padding: 10px 18px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: -2px;
-    transition: background 0.18s, color 0.18s;
-    margin-right: 2px;
-}
-
-.project-tab-btn.selected,
-.project-tab-btn:focus {
-    background: #fff;
-    color: #a259ff;
-    outline: none;
-    box-shadow: 0 2px 8px #0001;
-    z-index: 2;
 }
