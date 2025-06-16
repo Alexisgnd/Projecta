@@ -25,22 +25,50 @@ const Projects: React.FC = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             setLoading(true);
-            const { data: projectsData, error } = await supabase
-                .from('projects')
-                .select('*');
-            if (error || !projectsData) {
+
+            // 1. Récupère l'utilisateur courant
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user || !user.email) {
                 setLoading(false);
                 return;
             }
 
-            // 2. Pour chaque projet, récupère les membres (user_id)
-            const projectIds = projectsData.map(p => p.id);
+            // 2. Récupère son id
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id')
+                .eq('email', user.email)
+                .single();
+            const userId = userData?.id;
+            if (!userId) {
+                setLoading(false);
+                return;
+            }
+
+            // 3. Récupère tous les project_ids où il est membre (table project_members)
+            const { data: memberLinks } = await supabase
+                .from('project_members')
+                .select('project_id')
+                .eq('user_id', userId);
+
+            const memberProjectIds = (memberLinks || []).map((m: any) => m.project_id);
+
+            let projects: Project[] = [];
+            if (memberProjectIds.length > 0) {
+                // 4. Récupère les projets correspondants
+                const { data: projectsData } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .in('id', memberProjectIds);
+                projects = projectsData || [];
+            }
+
+            // 5. Pour chaque projet, récupère les membres (avatars)
             const { data: membersData } = await supabase
                 .from('project_members')
                 .select('project_id, user_id')
-                .in('project_id', projectIds);
+                .in('project_id', memberProjectIds);
 
-            // 3. Récupère les infos utilisateurs pour tous les membres uniques
             const userIds = [...new Set((membersData || []).map(m => m.user_id))];
             let usersMap: Record<number, any> = {};
             if (userIds.length > 0) {
@@ -51,11 +79,10 @@ const Projects: React.FC = () => {
                 usersMap = Object.fromEntries((usersData || []).map(u => [u.id, u]));
             }
 
-            // 4. Associe les avatars à chaque projet
-            const projectsWithMembers = projectsData.map(project => {
+            const projectsWithMembers = projects.map(project => {
                 const members = (membersData || [])
                     .filter(m => m.project_id === project.id)
-                    .map(m => usersMap[m.user_id]?.picture_url || '/assets/avatar1.png'); // fallback si pas d'avatar
+                    .map(m => usersMap[m.user_id]?.picture_url || '/assets/avatar1.png');
                 return { ...project, members };
             });
 
@@ -103,7 +130,6 @@ const Projects: React.FC = () => {
                         })}
                     </div>
                 )}
-                {/* Utilise le nouveau composant ProjectOverlay */}
                 <ProjectOverlay
                     project={selectedProject}
                     onClose={() => setSelectedProject(null)}
