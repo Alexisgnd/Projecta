@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import supabase from "../supabaseClient";
 import Text from "./Text";
 import { motion, AnimatePresence } from "framer-motion";
 import "./ProjectOverlay.css";
 import Input from "./Input";
 import Alert from "./Alert";
-import supabase from "../supabaseClient";
 import Button from "./Button";
 import TagInput from "./TagInput";
 
@@ -48,6 +48,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
 
     // Nouveau composant pour l’onglet paramètres
     function ProjectSettingsPanel() {
+        // États pour les infos générales
         const [name, setName] = React.useState(project?.name || "");
         const [description, setDescription] = React.useState(project?.description || "");
         const [goal, setGoal] = React.useState(project?.goal || "");
@@ -61,6 +62,10 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             key?: string;
         } | null>(null);
 
+        // États pour les membres
+        const [members, setMembers] = useState<any[]>([]);
+        const [loadingMembers, setLoadingMembers] = useState(false);
+
         // Met à jour les états locaux si le projet change
         React.useEffect(() => {
             setName(project?.name || "");
@@ -69,6 +74,22 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             setTagsArr(project?.tags || []);
             setTagsColors(project?.tags_colors || {});
         }, [project]);
+
+        // Récupère les membres du projet avec leurs infos utilisateur
+        useEffect(() => {
+            if (!project?.id) return;
+            setLoadingMembers(true);
+            const fetchMembers = async () => {
+                const { data: projectMembers } = await supabase
+                    .from("project_members")
+                    .select("id, user_id, role, users: user_id (id, first_name, last_name, picture_url, email)")
+                    .eq("project_id", project.id);
+
+                setMembers(projectMembers || []);
+                setLoadingMembers(false);
+            };
+            fetchMembers();
+        }, [project?.id]);
 
         const handleSave = async () => {
             setLoading(true);
@@ -161,8 +182,42 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-section-title">
                     <Text size={20} bold>👥 Gestion des membres</Text>
                 </div>
-                {/* À compléter avec la logique d’ajout/retrait et rôles */}
-
+                <div className="project-members-list">
+                    {loadingMembers ? (
+                        <Text size={16} color="secondary">Chargement...</Text>
+                    ) : members.length === 0 ? (
+                        <Text size={16} color="secondary">Aucun membre dans ce projet.</Text>
+                    ) : (
+                        members.map((member) => (
+                            <div className="relation-card" key={member.id}>
+                                {member.users?.picture_url ? (
+                                    <div style={{ position: "relative", display: "inline-block" }}>
+                                        <img
+                                            src={member.users.picture_url}
+                                            alt={member.users.first_name}
+                                            className="relation-avatar"
+                                        />
+                                        {/* Optionnel : UserStatusDot si tu veux */}
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="relation-avatar"
+                                        style={{ position: "relative", display: "inline-block" }}
+                                    />
+                                )}
+                                <div className="relation-info">
+                                    <span className="relation-name">
+                                        {member.users?.first_name} {member.users?.last_name}
+                                    </span>
+                                    <span className="relation-status">
+                                        {member.role}
+                                    </span>
+                                </div>
+                                {/* Ajoute ici les actions (changer rôle, retirer, etc.) */}
+                            </div>
+                        ))
+                    )}
+                </div>
                 {/* 3. Structure du projet */}
                 <div className="project-settings-section-title">
                     <Text size={20} bold>🧩 Structure du projet</Text>
