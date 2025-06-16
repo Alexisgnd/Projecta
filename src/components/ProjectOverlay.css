@@ -21,11 +21,14 @@
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    max-width: 600px;
-    padding: 64px 32px 32px 32px;
+    max-width: 1200px;
+    min-width: 900px;
+    padding: 32px 48px 24px 48px;
     box-sizing: border-box;
     color: #fff;
     text-align: center;
+    min-height: 400px;
+    overflow: auto;
 }
 
 .project-overlay-close {
@@ -58,7 +61,8 @@
 .project-overlay-tabs {
     display: flex;
     flex-direction: row;
-    gap: 0;
+    gap: 30px;
+    /* Ajoute un espace entre chaque tab */
     border-bottom: 2px solid rgba(255, 255, 255, 0.18);
     margin-bottom: 32px;
     overflow-y: hidden;
@@ -77,7 +81,14 @@
     cursor: pointer;
     margin-bottom: -2px;
     transition: background 0.18s, color 0.18s;
-    margin-right: 2px;
+    /* Supprime la bordure et le margin-right */
+    border-right: none;
+    margin-right: 0;
+}
+
+.project-overlay-tab:last-child {
+    border-right: none;
+    margin-right: 0;
 }
 
 .project-overlay-tab.selected,

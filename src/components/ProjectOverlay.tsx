@@ -119,7 +119,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                     <div
                         className="project-overlay-content"
                         onClick={e => e.stopPropagation()}
-                        style={{ alignItems: "stretch" }}
                     >
                         <div className="project-overlay-header">
                             <Text size={40} bold>
@@ -138,7 +137,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                 </button>
                             ))}
                         </div>
-                        <div className="project-overlay-details" style={{ alignItems: "flex-start" }}>
+                        <div className="project-overlay-details">
                             {selectedTab === 6 ? (
                                 <ProjectSettingsPanel />
                             ) : (
