@@ -15,6 +15,7 @@ import Alert from './components/Alert';
 import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
 import ProfilePreviewModal from './components/ProfilePreviewModal';
 import Relations from './pages/Relations';
+import Projects from './pages/Projects';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -308,6 +309,14 @@ function App() {
               element={
                 <MainLayout>
                   <Relations />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <MainLayout>
+                  <Projects />
                 </MainLayout>
               }
             />

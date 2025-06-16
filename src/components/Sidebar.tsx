@@ -245,13 +245,12 @@ const Sidebar: React.FC = () => {
         </div>
         {/* Projets */}
         <div
-          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''} disabled`}
-          // onClick={() => navigate('/projects')}
-          style={{ cursor: 'not-allowed', opacity: 0.5 }}
-          title="Fonctionnalité désactivée"
+          className={`sidebar-item${location.pathname === '/projects' ? ' active' : ''}`}
+          onClick={() => navigate('/projects')}
+          style={{ cursor: 'pointer' }}
         >
           <FaFolderOpen size={22} className="sidebar-icon" />
-          <Text size={16} color="#757575">PROJETS</Text>
+          <Text size={16} color={location.pathname === '/projects' ? "#3730A3" : "#757575"} bold={location.pathname === '/projects'}>PROJETS</Text>
         </div>
         {/* Recherches / Rapports globaux (désactivé) */}
         <div

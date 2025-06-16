@@ -54,6 +54,13 @@
   color: #757575;
   padding: 12px 16px;
   border-radius: 16px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-item:hover {
+  background: #e0e7ff;
+  color: #3730A3;
+  cursor: pointer;
 }
 
 .sidebar-item.active {
@@ -62,7 +69,8 @@
   margin-bottom: 8px;
 }
 
-.sidebar-item.active .sidebar-icon {
+.sidebar-item.active .sidebar-icon,
+.sidebar-item:hover .sidebar-icon {
   color: #3730A3;
 }
 
