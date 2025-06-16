@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import supabase from "../supabaseClient";
+import { FaUserPlus, FaTimes } from "react-icons/fa";
 import Text from "./Text";
 import { motion, AnimatePresence } from "framer-motion";
 import "./ProjectOverlay.css";
@@ -7,7 +8,6 @@ import Input from "./Input";
 import Alert from "./Alert";
 import Button from "./Button";
 import TagInput from "./TagInput";
-import { FaUserPlus, FaTimes } from "react-icons/fa";
 import Modal from "./Modal";
 
 interface Project {
@@ -65,12 +65,30 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         } | null>(null);
 
         // États pour les membres
-        const [members, setMembers] = useState<any[]>([]);
-        const [loadingMembers, setLoadingMembers] = useState(false);
-        const [showAddModal, setShowAddModal] = useState(false);
-        const [relations, setRelations] = useState<any[]>([]);
-        const [search, setSearch] = useState("");
-        const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+        const [members, setMembers] = React.useState<any[]>([]);
+        const [relations, setRelations] = React.useState<any[]>([]);
+        const [loadingMembers, setLoadingMembers] = React.useState(false);
+        const [showAddModal, setShowAddModal] = React.useState(false);
+        const [search, setSearch] = React.useState("");
+        const [currentUserEmail, setCurrentUserEmail] = React.useState<string | null>(null);
+        const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
+
+        // Récupère l'id numérique de l'utilisateur courant
+        React.useEffect(() => {
+            supabase.auth.getUser().then(async ({ data }) => {
+                const email = data?.user?.email;
+                if (!email) return;
+                setCurrentUserEmail(email);
+                const { data: userData } = await supabase
+                    .from("users")
+                    .select("id")
+                    .eq("email", email)
+                    .single();
+                if (userData?.id) {
+                    setCurrentUserId(Number(userData.id));
+                }
+            });
+        }, []);
 
         // Met à jour les états locaux si le projet change
         React.useEffect(() => {
@@ -81,51 +99,75 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             setTagsColors(project?.tags_colors || {});
         }, [project]);
 
-        // Fonction pour récupérer les membres du projet avec leurs infos utilisateur
+        // Récupère les membres du projet via project_members
         const fetchMembers = async () => {
             if (!project?.id) return;
             setLoadingMembers(true);
+            // 1. Récupère les liens membres pour ce projet
             const { data: projectMembers } = await supabase
                 .from("project_members")
-                .select("id, user_id, role, users: user_id (id, first_name, last_name, picture_url, email)")
+                .select("id, user_id, role")
                 .eq("project_id", project.id);
 
-            setMembers(projectMembers || []);
+            const userIds = (projectMembers || []).map((m: any) => m.user_id);
+            let usersMap: Record<number, any> = {};
+            if (userIds.length > 0) {
+                // 2. Récupère les infos utilisateurs
+                const { data: usersData } = await supabase
+                    .from("users")
+                    .select("id, first_name, last_name, picture_url, email")
+                    .in("id", userIds);
+                usersMap = Object.fromEntries((usersData || []).map(u => [u.id, u]));
+            }
+
+            // 3. Fusionne
+            setMembers(
+                (projectMembers || []).map((m: any) => ({
+                    ...m,
+                    user: usersMap[m.user_id] || {},
+                }))
+            );
             setLoadingMembers(false);
         };
 
-        useEffect(() => {
+        // Récupère les relations ajoutées (amis) qui ne sont PAS membres du projet
+        const fetchRelations = async () => {
+            if (!currentUserEmail) return;
+            // 2. Récupère les emails des amis
+            const { data: friendsData } = await supabase
+                .from("user_friends")
+                .select("friend_email")
+                .eq("user_email", currentUserEmail);
+
+            const friendEmails = friendsData?.map(f => f.friend_email) || [];
+            if (friendEmails.length === 0) {
+                setRelations([]);
+                return;
+            }
+
+            // 3. Récupère les infos utilisateurs de ces amis
+            const { data: usersData } = await supabase
+                .from("users")
+                .select("id, first_name, last_name, email, picture_url")
+                .in("email", friendEmails);
+
+            // 4. Exclure ceux déjà membres du projet
+            const memberIds = members.map(m => m.user?.id);
+            const notYetMembers = (usersData || []).filter(u => !memberIds.includes(u.id));
+            setRelations(notYetMembers);
+        };
+
+        // Rafraîchit les membres et relations à chaque ouverture de la modal ou changement de projet
+        React.useEffect(() => {
             fetchMembers();
         }, [project?.id]);
 
-        // Récupère l'utilisateur courant
-        useEffect(() => {
-            supabase.auth.getUser().then(async ({ data }) => {
-                if (!data?.user?.email) return;
-                // Récupère l'id utilisateur
-                const { data: userData } = await supabase
-                    .from("users")
-                    .select("id")
-                    .eq("email", data.user.email)
-                    .single();
-                setCurrentUserId(userData?.id || null);
-
-                // Récupère les relations ajoutées (user_friends)
-                const { data: friendsData } = await supabase
-                    .from("user_friends")
-                    .select("friend_email")
-                    .eq("user_email", data.user.email);
-
-                const friendEmails = friendsData?.map(f => f.friend_email) || [];
-                if (friendEmails.length > 0) {
-                    const { data: usersData } = await supabase
-                        .from("users")
-                        .select("id, first_name, last_name, email, picture_url")
-                        .in("email", friendEmails);
-                    setRelations(usersData || []);
-                }
-            });
-        }, []);
+        React.useEffect(() => {
+            if (showAddModal && members.length > 0) {
+                fetchRelations();
+            }
+            // eslint-disable-next-line
+        }, [showAddModal, members, currentUserEmail]);
 
         const handleSave = async () => {
             setLoading(true);
@@ -255,10 +297,10 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                     ) : (
                         members.map((member) => (
                             <div className="relation-card" key={member.id}>
-                                {member.users?.picture_url ? (
+                                {member.user?.picture_url ? (
                                     <img
-                                        src={member.users.picture_url}
-                                        alt={member.users.first_name}
+                                        src={member.user.picture_url}
+                                        alt={member.user.first_name}
                                         className="relation-avatar"
                                     />
                                 ) : (
@@ -266,24 +308,24 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                 )}
                                 <div className="relation-info">
                                     <span className="relation-name">
-                                        {member.users?.first_name} {member.users?.last_name}
+                                        {member.user?.first_name} {member.user?.last_name}
                                     </span>
                                     <span className="relation-status">
                                         {member.role}
                                     </span>
                                 </div>
-                                {member.users?.id !== currentUserId && (
+                                {member.user?.id !== currentUserId && (
                                     <button
                                         className="remove-member-btn"
                                         title="Retirer ce membre"
-                                        onClick={() => handleRemoveMember(member.id, member.users?.id)}
+                                        onClick={() => handleRemoveMember(member.id, member.user?.id)}
                                     >
                                         <FaTimes />
                                     </button>
                                 )}
                             </div>
-                        ))
-                    )}
+                        )))
+                    }
                 </div>
                 {/* Modal d'ajout de membres */}
                 {showAddModal && (
@@ -303,9 +345,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                         (r.first_name + " " + r.last_name)
                                             .toLowerCase()
                                             .includes(search.toLowerCase())
-                                    )
-                                    .filter(r =>
-                                        !members.some(m => m.users?.id === r.id)
                                     )
                                     .map(r => (
                                         <div className="relation-card" key={r.id}>
@@ -364,7 +403,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 {/* À compléter avec visibilité, lien partageable */}
             </div>
         );
-    }
+    };
 
     return (
         <AnimatePresence>
