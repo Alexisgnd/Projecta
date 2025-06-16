@@ -234,14 +234,14 @@ const Sidebar: React.FC = () => {
       </div>
       {/* Menu */}
       <div className="sidebar-menu">
-        {/* Dashboard */}
+        {/* Dashboard (désactivé) */}
         <div
-          className={`sidebar-item${location.pathname === '/dashboard' ? ' active' : ''}`}
-          onClick={() => navigate('/dashboard')}
-          style={{ cursor: 'pointer' }}
+          className="sidebar-item disabled"
+          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
         >
           <FaHome size={22} className="sidebar-icon" />
-          <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
+          <Text size={16} color="#757575">DASHBOARD</Text>
         </div>
         {/* Projets */}
         <div

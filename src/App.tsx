@@ -111,7 +111,7 @@ function AuthPage() {
           .from('users')
           .update({ status: "online" })
           .eq('email', email);
-        navigate('/dashboard');
+        navigate('/projects'); // <-- redirection vers projets
       } else {
         setError('Mot de passe incorrect')
         setAlertKey(Date.now().toString());
@@ -149,7 +149,7 @@ function AuthPage() {
       if (insertError) {
         setError("Erreur lors de l'ajout dans la base")
       } else {
-        navigate('/dashboard');
+        navigate('/projects'); // <-- redirection vers projets
       }
     } else {
       handleCheck()
