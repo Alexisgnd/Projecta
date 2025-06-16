@@ -21,6 +21,23 @@ interface ProjectOverlayProps {
 }
 
 const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => {
+    const [selectedTab, setSelectedTab] = React.useState(0);
+
+    const tabs = [
+        "📌 Vue d’ensemble",
+        "🧾 Tâches / Kanban",
+        "📊 Indicateurs & KPI",
+        "🗓️ Planning / Gantt",
+        "📂 Documents du projet",
+        "📒 Journal de bord",
+        "⚙️ Paramètres du projet"
+    ];
+
+    React.useEffect(() => {
+        // Réinitialise la tab sélectionnée à l'ouverture d'un projet
+        setSelectedTab(0);
+    }, [project]);
+
     return (
         <AnimatePresence>
             {project && (
@@ -50,13 +67,16 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                             </Text>
                         </div>
                         <div className="project-overlay-tabs">
-                            <button className="project-overlay-tab selected">📌 Vue d’ensemble</button>
-                            <button className="project-overlay-tab">🧾 Tâches / Kanban</button>
-                            <button className="project-overlay-tab">📊 Indicateurs & KPI</button>
-                            <button className="project-overlay-tab">🗓️ Planning / Gantt</button>
-                            <button className="project-overlay-tab">📂 Documents du projet</button>
-                            <button className="project-overlay-tab">📒 Journal de bord</button>
-                            <button className="project-overlay-tab">⚙️ Paramètres du projet</button>
+                            {tabs.map((tab, idx) => (
+                                <button
+                                    key={tab}
+                                    className={`project-overlay-tab${selectedTab === idx ? " selected" : ""}`}
+                                    onClick={() => setSelectedTab(idx)}
+                                    type="button"
+                                >
+                                    {tab}
+                                </button>
+                            ))}
                         </div>
                         <div className="project-overlay-details" style={{ alignItems: "flex-start" }}>
                             <Text size={20}>
