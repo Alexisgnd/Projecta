@@ -1,12 +1,12 @@
-.dashboard-root {
+.projects-root {
     display: flex;
     min-height: 100vh;
     width: 100%;
     overflow: hidden;
-    margin-left: 260px; /* Ajouté pour décaler le contenu à droite de la sidebar */
+    margin-left: 260px;
 }
 
-.dashboard-container {
+.projects-container {
     flex: 1;
     background: linear-gradient(270deg, #fafdff, #eef4ff, #e3ecff, #fafdff);
     background-size: 600% 600%;
@@ -14,12 +14,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    /* alignement à gauche */
     justify-content: flex-start;
-    /* alignement en haut */
     gap: 4px;
     padding: 30px 30px;
-    overflow: auto; /* Permet le scroll interne si besoin */
+    overflow: auto;
     max-width: 100%;
     max-height: 100vh;
     box-sizing: border-box;

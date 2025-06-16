@@ -44,7 +44,7 @@
   border: 2px solid #fff;
   object-fit: cover;
   background: #eee;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .project-card-extra {
@@ -62,7 +62,7 @@
   border: 2px solid #fff;
   left: 72px;
   top: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .project-card-title {
@@ -86,7 +86,8 @@
 .project-card-progress-bar {
   position: relative;
   height: 10px;
-  background: #e0b3ff;
+  background: #d1d5db;
+  /* gris plus foncé pour meilleur contraste */
   border-radius: 8px;
   margin-top: 8px;
   width: 100%;
@@ -101,6 +102,7 @@
   border-radius: 8px 0 0 8px;
   left: 0;
   top: 0;
+  z-index: 2;
 }
 
 .project-card-progress-circle {
@@ -114,4 +116,5 @@
   border-radius: 50%;
   box-sizing: border-box;
   z-index: 3;
+  pointer-events: none;
 }

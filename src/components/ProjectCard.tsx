@@ -1,6 +1,20 @@
 import React from 'react';
 import './ProjectCard.css';
 
+// Ajoute cette fonction utilitaire en haut du fichier
+function isColorLight(hex: string): boolean {
+  // Enlève le # si présent
+  hex = hex.replace('#', '');
+  // Convertit en RGB
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  // Calcul de la luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.7; // seuil à ajuster si besoin
+}
+
 interface ProjectCardProps {
   title: string;
   tasks: number;
@@ -16,12 +30,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   progress,
   members,
   extraMembers = 0,
-  backgroundColor = "#a259ff", // Valeur par défaut
+  backgroundColor = "#a259ff",
 }) => {
+  // Détermine la couleur du texte selon le fond
+  const textColor = isColorLight(backgroundColor.replace(/[^#a-fA-F0-9]/g, '')) ? "#222" : "#fff";
+
   return (
     <div
       className="project-card"
-      style={{ background: backgroundColor }}
+      style={{ background: backgroundColor, color: textColor }}
     >
       <div className="project-card-folder-shape" />
       <div className="project-card-members">
@@ -40,9 +57,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
         )}
       </div>
-      <div className="project-card-title">{title}</div>
+      <div className="project-card-title" style={{ color: textColor }}>{title}</div>
       <div className="project-card-info">
-        <span>{tasks} Task</span>
+        <span>
+          {tasks} Tâche{tasks > 1 ? 's' : ''}
+        </span>
         <span>{progress}%</span>
       </div>
       <div className="project-card-progress-bar">
@@ -52,7 +71,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         />
         <div
           className="project-card-progress-circle"
-          style={{ left: `calc(${progress}% - 12px)` }}
+          style={{
+            left: `calc(${progress}% - 10px)`, // Centrage du rond
+            display: progress === 0 ? 'none' : undefined // Cache le rond si 0%
+          }}
         />
       </div>
     </div>

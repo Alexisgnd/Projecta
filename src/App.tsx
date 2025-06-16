@@ -7,10 +7,15 @@ import { SetStateAction, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Ajout de l'import
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Settings from './pages/Settings'
 import Sidebar from './components/Sidebar';
 import { UserUpdateProvider } from './UserContext';
+import Alert from './components/Alert';
+import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
+import ProfilePreviewModal from './components/ProfilePreviewModal';
+import Relations from './pages/Relations';
+import Projects from './pages/Projects';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -24,6 +29,8 @@ function AuthPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  // Ajoute une clé pour forcer le remount de l'alerte
+  const [alertKey, setAlertKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false)
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -62,21 +69,23 @@ function AuthPage() {
       password !== confirmPassword
     ))
 
+  // Vérifie si l'email est déjà utilisé
+  const checkEmailExists = async (email: string) => {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return data !== null;
+  };
+
   // Vérifie si l'utilisateur existe et adapte le mode (connexion ou inscription)
   const handleCheck = async () => {
     setLoading(true)
     setError(null)
-    const { data, error } = await supabase
-      .from('users')
-      .select('email')
-      .eq('email', email)
-      .maybeSingle()
+    const exists = await checkEmailExists(email)
     setLoading(false)
-    if (error) {
-      setError("Erreur lors de la vérification de l'email")
-      return
-    }
-    if (data) {
+    if (exists) {
       setButtonText('Connexion')
       setSubtitle('Bienvenue ! Nous sommes ravis de vous revoir !')
       setTitle('Connexion')
@@ -97,9 +106,15 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (!error) {
+        // Met à jour le status en "online" après connexion
+        await supabase
+          .from('users')
+          .update({ status: "online" })
+          .eq('email', email);
         navigate('/dashboard');
       } else {
-        setError('Mot de passe incorrect ou utilisateur inexistant')
+        setError('Mot de passe incorrect')
+        setAlertKey(Date.now().toString());
       }
     } else if (mode === 'register') {
       setLoading(true)
@@ -125,7 +140,10 @@ function AuthPage() {
         .insert([{
           email,
           first_name: firstName,
-          last_name: lastName
+          last_name: lastName,
+          status: "online", // Ajout du status par défaut
+          primary_color: "#F3F4F6", // Blanc grisé
+          secondary_color: "#BDBDBD" // Gris plus foncé
         }])
       setLoading(false)
       if (insertError) {
@@ -215,7 +233,19 @@ function AuthPage() {
             )}
           </div>
 
+          {/* Remplace ceci :
           {error && <Text size={14} color="danger">{error}</Text>}
+          */}
+          {error && (
+            <Alert
+              key={alertKey}
+              type="error"
+              title="Erreur de connexion"
+              onClose={() => setError(null)}
+            >
+              {error}
+            </Alert>
+          )}
 
           <Button
             text={loading ? 'Chargement...' : buttonText}
@@ -246,34 +276,53 @@ function App() {
   return (
     <BrowserRouter>
       <UserUpdateProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div className="app-root">
-                {/* AuthPage sans sidebar */}
-                <AuthPage />
-              </div>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <MainLayout>
-                <Settings />
-              </MainLayout>
-            }
-          />
-          {/* Ajoute d'autres routes ici si besoin */}
-        </Routes>
+        <ProfilePreviewProvider>
+          <ProfilePreviewModal />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="app-root">
+                  {/* AuthPage sans sidebar */}
+                  <AuthPage />
+                </div>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <MainLayout>
+                  <Settings />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/relations"
+              element={
+                <MainLayout>
+                  <Relations />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <MainLayout>
+                  <Projects />
+                </MainLayout>
+              }
+            />
+            {/* Ajoute d'autres routes ici si besoin */}
+          </Routes>
+        </ProfilePreviewProvider>
       </UserUpdateProvider>
     </BrowserRouter>
   );

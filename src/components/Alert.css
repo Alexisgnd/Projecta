@@ -1,0 +1,128 @@
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin: 24px 0;
+  font-family: inherit;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
+  background: #fff;
+}
+
+.alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin-top: 2px;
+  font-weight: bold;
+}
+
+.alert-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.alert-message {
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+.alert-error {
+  background: linear-gradient(90deg, #ff9966 0%, #ff5e62 100%);
+  color: #fff;
+}
+
+.alert-error .alert-icon {
+  background: #fff2;
+  color: #fff;
+}
+
+.alert-success {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+}
+
+.alert-success .alert-icon {
+  background: #fff2;
+  color: #fff;
+}
+
+.alert-info {
+  background: linear-gradient(90deg, #56ccf2 0%, #2f80ed 100%);
+  color: #fff;
+}
+
+.alert-info .alert-icon {
+  background: #fff2;
+  color: #fff;
+}
+
+.alert-warning {
+  background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+  color: #222;
+}
+
+.alert-warning .alert-icon {
+  background: #fff4;
+  color: #222;
+}
+
+.alert-floating {
+  position: fixed;
+  min-width: 380px;
+  max-width: 90vw;
+  left: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateX(120vw) translateY(100px) scale(0.98);
+  transition:
+    opacity 0.4s cubic-bezier(.4,0,.2,1),
+    transform 0.6s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+
+.alert-in {
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.alert-out {
+  opacity: 0;
+  transform: translateX(-80vw) translateY(100px) scale(0.96);
+  pointer-events: none;
+}
+
+.alert-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+.alert-close:hover {
+  opacity: 1;
+}
+
+/* Pour éviter que le bouton ne décale le contenu */
+.alert-floating .alert-content {
+  margin-right: 32px;
+}
