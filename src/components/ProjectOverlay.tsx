@@ -52,20 +52,20 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
     }, [project]);
 
     // Nouveau composant pour l’onglet paramètres
-    function ProjectSettingsPanel() {
-        // États pour les infos générales
-        const [name, setName] = React.useState(project?.name || "");
-        const [description, setDescription] = React.useState(project?.description || "");
-        const [tagsArr, setTagsArr] = React.useState<string[]>(project?.tags || []);
-        const [tagsColors, setTagsColors] = React.useState<{ [tag: string]: string }>(project?.tags_colors || {});
-        const [loading, setLoading] = React.useState(false);
-        const [alert, setAlert] = React.useState<{
-            type: "error" | "success" | "info" | "warning";
-            title: string;
-            message: React.ReactNode;
-            key?: string;
-        } | null>(null);
-
+    const ProjectSettingsPanel = ({
+        name,
+        setName,
+        description,
+        setDescription,
+        tagsArr,
+        setTagsArr,
+        tagsColors,
+        setTagsColors,
+        loading,
+        alert,
+        setAlert,
+        // Ajoute ici les autres props nécessaires
+    }: any) => {
         // États pour les membres
         const [members, setMembers] = React.useState<any[]>([]);
         const [relations, setRelations] = React.useState<any[]>([]);
@@ -75,7 +75,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         const [currentUserEmail, setCurrentUserEmail] = React.useState<string | null>(null);
         const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
 
-        // États pour les infos générales
+        // États pour les dates et statut
         const [startDate, setStartDate] = React.useState(project?.start_date || "");
         const [endDate, setEndDate] = React.useState(project?.end_date || "");
         const [status, setStatus] = React.useState(project?.status || "en cours");
@@ -178,39 +178,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             // eslint-disable-next-line
         }, [showAddModal, members, currentUserEmail]);
 
-        const handleSave = async () => {
-            setLoading(true);
-            setAlert(null);
-            const { error } = await supabase
-                .from("projects")
-                .update({
-                    name,
-                    description,
-                    tags: tagsArr,
-                    tags_colors: tagsColors,
-                    start_date: startDate,
-                    end_date: endDate,
-                    status,
-                })
-                .eq("id", project?.id);
-            setLoading(false);
-            if (error) {
-                setAlert({
-                    type: "error",
-                    title: "Erreur",
-                    message: "La mise à jour a échoué.",
-                    key: Date.now().toString(),
-                });
-            } else {
-                setAlert({
-                    type: "success",
-                    title: "Succès",
-                    message: "Projet mis à jour avec succès.",
-                    key: Date.now().toString(),
-                });
-            }
-        };
-
         // Ajout d'un membre au projet
         const handleAddMember = async (userId: number) => {
             if (!project) return;
@@ -250,6 +217,20 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
                         disabled={loading}
                     />
+                    <Input
+                        header="Date de début"
+                        type="date"
+                        value={startDate}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
+                        disabled={loading}
+                    />
+                    <Input
+                        header="Date de fin prévisionnelle"
+                        type="date"
+                        value={endDate}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
+                        disabled={loading}
+                    />
                     <div>
                         <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>Tags / catégories</div>
                         <TagInput
@@ -262,25 +243,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         />
                     </div>
                 </div>
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-                    <Button
-                        text={loading ? "Enregistrement..." : "Valider les changements"}
-                        variant="primary"
-                        style={{ minWidth: 180, padding: 25 }}
-                        onClick={handleSave}
-                        disabled={loading}
-                    />
-                </div>
-                {alert && (
-                    <Alert
-                        key={alert.key}
-                        type={alert.type}
-                        title={alert.title}
-                        onClose={() => setAlert(null)}
-                    >
-                        {alert.message}
-                    </Alert>
-                )}
                 {/* 2. Gestion des membres */}
                 <div className="project-settings-section-title">
                     <Text size={20} bold>👥 Gestion des membres</Text>
@@ -383,25 +345,11 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         </div>
                     </Modal>
                 )}
-                {/* 3. Structure du projet */}
+                {/* 3. Statut du projet */}
                 <div className="project-settings-section-title">
-                    <Text size={20} bold>🧩 Structure du projet</Text>
+                    <Text size={20} bold>État du projet</Text>
                 </div>
                 <div className="project-settings-general-grid">
-                    <Input
-                        header="Date de début"
-                        type="date"
-                        value={startDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-                        disabled={loading}
-                    />
-                    <Input
-                        header="Date de fin prévisionnelle"
-                        type="date"
-                        value={endDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-                        disabled={loading}
-                    />
                     <div>
                         <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>État du projet</div>
                         <select
@@ -435,8 +383,64 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                     <Text size={20} bold>🔒 Confidentialité / Accès</Text>
                 </div>
                 {/* À compléter avec visibilité, lien partageable */}
+
+                {alert && (
+                    <Alert
+                        key={alert.key}
+                        type={alert.type}
+                        title={alert.title}
+                        onClose={() => setAlert(null)}
+                    >
+                        {alert.message}
+                    </Alert>
+                )}
             </div>
         );
+    };
+
+    const [loading, setLoading] = React.useState(false);
+    const [alert, setAlert] = React.useState<{
+        type: "error" | "success" | "info" | "warning";
+        title: string;
+        message: React.ReactNode;
+        key?: string;
+    } | null>(null);
+
+    const [name, setName] = React.useState(project?.name || "");
+    const [description, setDescription] = React.useState(project?.description || "");
+    const [tagsArr, setTagsArr] = React.useState<string[]>(project?.tags || []);
+    const [tagsColors, setTagsColors] = React.useState<{ [tag: string]: string }>(project?.tags_colors || {});
+    // ...ajoute les autres états nécessaires...
+
+    const handleSave = async () => {
+        setLoading(true);
+        setAlert(null);
+        const { error } = await supabase
+            .from("projects")
+            .update({
+                name,
+                description,
+                tags: tagsArr,
+                tags_colors: tagsColors,
+                // ...autres champs...
+            })
+            .eq("id", project?.id);
+        setLoading(false);
+        if (error) {
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "La mise à jour a échoué.",
+                key: Date.now().toString(),
+            });
+        } else {
+            setAlert({
+                type: "success",
+                title: "Succès",
+                message: "Projet mis à jour avec succès.",
+                key: Date.now().toString(),
+            });
+        }
     };
 
     return (
@@ -480,7 +484,20 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         </div>
                         <div className="project-overlay-details">
                             {selectedTab === 6 ? (
-                                <ProjectSettingsPanel />
+                                <ProjectSettingsPanel
+                                    name={name}
+                                    setName={setName}
+                                    description={description}
+                                    setDescription={setDescription}
+                                    tagsArr={tagsArr}
+                                    setTagsArr={setTagsArr}
+                                    tagsColors={tagsColors}
+                                    setTagsColors={setTagsColors}
+                                    loading={loading}
+                                    alert={alert}
+                                    setAlert={setAlert}
+                                // ...autres props nécessaires...
+                                />
                             ) : (
                                 <>
                                     <Text size={20}>
@@ -492,12 +509,18 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                 </>
                             )}
                         </div>
-                        <button
-                            className="project-overlay-close"
-                            onClick={onClose}
-                        >
-                            Fermer
-                        </button>
+                        {/* Bouton en bas à droite */}
+                        {selectedTab === 6 && (
+                            <div className="project-overlay-actions">
+                                <Button
+                                    text={loading ? "Enregistrement..." : "Valider les changements"}
+                                    variant="primary"
+                                    style={{ minWidth: 180, padding: 25 }}
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                />
+                            </div>
+                        )}
                     </div>
                 </motion.div>
             )}
