@@ -24,6 +24,9 @@ interface Project {
     goal?: string;
     tags?: string[];
     tags_colors?: { [tag: string]: string };
+    start_date?: string;
+    end_date?: string;
+    status?: string;
 }
 
 interface ProjectOverlayProps {
@@ -73,6 +76,11 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         const [currentUserEmail, setCurrentUserEmail] = React.useState<string | null>(null);
         const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
 
+        // États pour les infos générales
+        const [startDate, setStartDate] = React.useState(project?.start_date || "");
+        const [endDate, setEndDate] = React.useState(project?.end_date || "");
+        const [status, setStatus] = React.useState(project?.status || "en cours");
+
         // Récupère l'id numérique de l'utilisateur courant
         React.useEffect(() => {
             supabase.auth.getUser().then(async ({ data }) => {
@@ -97,6 +105,9 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             setGoal(project?.goal || "");
             setTagsArr(project?.tags || []);
             setTagsColors(project?.tags_colors || {});
+            setStartDate(project?.start_date || "");
+            setEndDate(project?.end_date || "");
+            setStatus(project?.status || "en cours");
         }, [project]);
 
         // Récupère les membres du projet via project_members
@@ -180,6 +191,9 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                     goal,
                     tags: tagsArr,
                     tags_colors: tagsColors,
+                    start_date: startDate,
+                    end_date: endDate,
+                    status,
                 })
                 .eq("id", project?.id);
             setLoading(false);
@@ -382,7 +396,36 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-section-title">
                     <Text size={20} bold>🧩 Structure du projet</Text>
                 </div>
-                {/* À compléter avec les dates, état, périmètre */}
+                <div className="project-settings-general-grid">
+                    <Input
+                        header="Date de début"
+                        type="date"
+                        value={startDate}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
+                        disabled={loading}
+                    />
+                    <Input
+                        header="Date de fin prévisionnelle"
+                        type="date"
+                        value={endDate}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
+                        disabled={loading}
+                    />
+                    <div>
+                        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>État du projet</div>
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            disabled={loading}
+                            style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc", width: "100%" }}
+                        >
+                            <option value="en cours">En cours</option>
+                            <option value="en pause">En pause</option>
+                            <option value="terminé">Terminé</option>
+                            <option value="annulé">Annulé</option>
+                        </select>
+                    </div>
+                </div>
 
                 {/* 4. Modèles & préférences */}
                 <div className="project-settings-section-title">
