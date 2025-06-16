@@ -56,7 +56,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         // États pour les infos générales
         const [name, setName] = React.useState(project?.name || "");
         const [description, setDescription] = React.useState(project?.description || "");
-        const [goal, setGoal] = React.useState(project?.goal || "");
         const [tagsArr, setTagsArr] = React.useState<string[]>(project?.tags || []);
         const [tagsColors, setTagsColors] = React.useState<{ [tag: string]: string }>(project?.tags_colors || {});
         const [loading, setLoading] = React.useState(false);
@@ -102,7 +101,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         React.useEffect(() => {
             setName(project?.name || "");
             setDescription(project?.description || "");
-            setGoal(project?.goal || "");
             setTagsArr(project?.tags || []);
             setTagsColors(project?.tags_colors || {});
             setStartDate(project?.start_date || "");
@@ -188,7 +186,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 .update({
                     name,
                     description,
-                    goal,
                     tags: tagsArr,
                     tags_colors: tagsColors,
                     start_date: startDate,
@@ -251,12 +248,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         header="Description courte"
                         value={description}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
-                        disabled={loading}
-                    />
-                    <Input
-                        header="Objectif du projet"
-                        value={goal}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoal(e.target.value)}
                         disabled={loading}
                     />
                     <div>
