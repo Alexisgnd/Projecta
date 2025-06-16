@@ -242,6 +242,20 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                             placeholder="ex: interne, client, urgent"
                         />
                     </div>
+                    <div>
+                        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>État du projet</div>
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            disabled={loading}
+                            style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc", width: "100%" }}
+                        >
+                            <option value="en cours">En cours</option>
+                            <option value="en pause">En pause</option>
+                            <option value="terminé">Terminé</option>
+                            <option value="annulé">Annulé</option>
+                        </select>
+                    </div>
                 </div>
                 {/* 2. Gestion des membres */}
                 <div className="project-settings-section-title">
@@ -345,31 +359,10 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         </div>
                     </Modal>
                 )}
-                {/* 3. Statut du projet */}
-                <div className="project-settings-section-title">
-                    <Text size={20} bold>État du projet</Text>
-                </div>
-                <div className="project-settings-general-grid">
-                    <div>
-                        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#000" }}>État du projet</div>
-                        <select
-                            value={status}
-                            onChange={e => setStatus(e.target.value)}
-                            disabled={loading}
-                            style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc", width: "100%" }}
-                        >
-                            <option value="en cours">En cours</option>
-                            <option value="en pause">En pause</option>
-                            <option value="terminé">Terminé</option>
-                            <option value="annulé">Annulé</option>
-                        </select>
-                    </div>
-                </div>
-
                 {/* 4. Modèles & préférences */}
-                <div className="project-settings-section-title">
+                {/* <div className="project-settings-section-title">
                     <Text size={20} bold>🧾 Modèles & préférences</Text>
-                </div>
+                </div> */}
                 {/* À compléter avec workflow, unités, KPIs */}
 
                 {/* 5. Nettoyage & Archivage */}
