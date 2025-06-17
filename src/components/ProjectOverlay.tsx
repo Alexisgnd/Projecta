@@ -117,16 +117,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         }
     };
 
-    // Simple gestion des couleurs de tags (clé:valeur séparés par virgule)
-    const handleTagsColorsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        try {
-            const obj = JSON.parse(e.target.value);
-            setTagsColors(obj);
-        } catch {
-            setTagsColors({});
-        }
-    };
-
     const tabs = [
         "📌 Vue d’ensemble",
         "🧾 Tâches / Kanban",
