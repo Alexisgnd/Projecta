@@ -7,6 +7,7 @@ import { FaCheck } from "react-icons/fa";
 import "./ProjectOverlay.css";
 import Alert from "./Alert";
 import supabase from "../supabaseClient";
+import TagInput from "./TagInput";
 
 interface Project {
     id: number;
@@ -116,11 +117,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         }
     };
 
-    // Simple gestion des tags (séparés par virgule)
-    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTags(e.target.value.split(",").map(t => t.trim()).filter(Boolean));
-    };
-
     // Simple gestion des couleurs de tags (clé:valeur séparés par virgule)
     const handleTagsColorsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
@@ -206,10 +202,12 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                         />
                                     </div>
                                     <div className="form-row">
-                                        <Input
+                                        <TagInput
                                             header="Tags (séparés par des virgules)"
-                                            value={tags.join(", ")}
-                                            onChange={handleTagsChange}
+                                            tags={tags}
+                                            setTags={setTags}
+                                            tagsColors={tagsColors}
+                                            setTagsColors={setTagsColors}
                                             placeholder="ex: urgent, client, interne"
                                         />
                                     </div>
