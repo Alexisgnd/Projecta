@@ -5,6 +5,7 @@ import Button from "./Button";
 import TagInput from "./TagInput";
 import supabase from "../supabaseClient";
 import Text from "./Text";
+import Alert from "./Alert";
 import "./ProjectCreateModal.css";
 
 const defaultColor = "#a259ff";
@@ -22,14 +23,28 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
     const [tagsColors, setTagsColors] = useState<{ [key: string]: string }>({});
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
-    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    // Alert state
+    const [alert, setAlert] = useState<{
+        type: "error" | "success" | "info" | "warning";
+        title: string;
+        message: React.ReactNode;
+    } | null>(null);
+
+    const isCreateDisabled = name.trim() === "";
 
     const handleCreate = async () => {
-        setError(null);
+        setLoading(true);
+        setAlert(null);
         const { data: { user } } = await supabase.auth.getUser();
-        // Récupère l'id utilisateur
         if (!user || !user.email) {
-            setError("Utilisateur non authentifié");
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "Utilisateur non authentifié",
+            });
+            setLoading(false);
             return;
         }
         const { data: userData } = await supabase
@@ -39,10 +54,15 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
             .single();
         const userId = userData?.id;
         if (!userId) {
-            setError("Impossible de trouver l'utilisateur");
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "Impossible de trouver l'utilisateur",
+            });
+            setLoading(false);
             return;
         }
-        const { data, error: insertError } = await supabase
+        const { data: project, error: insertError } = await supabase
             .from("projects")
             .insert([{
                 user_id: userId,
@@ -59,10 +79,40 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
             }])
             .select("*")
             .single();
-        if (insertError) {
-            setError("Erreur lors de la création du projet");
+        if (insertError || !project) {
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "Erreur lors de la création du projet",
+            });
+            setLoading(false);
+            return;
+        }
+
+        // Ajoute le créateur comme Owner dans project_members
+        const { error: memberError } = await supabase
+            .from("project_members")
+            .insert([{
+                project_id: project.id,
+                user_id: userId,
+                role: "Owner"
+            }]);
+        setLoading(false);
+        if (memberError) {
+            setAlert({
+                type: "warning",
+                title: "Projet créé",
+                message: "Projet créé mais erreur lors de l'ajout du propriétaire.",
+            });
         } else {
-            onCreated(data);
+            setAlert({
+                type: "success",
+                title: "Succès",
+                message: "Projet créé avec succès !",
+            });
+            setTimeout(() => {
+                onCreated(project);
+            }, 1200);
         }
     };
 
@@ -78,10 +128,23 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
                     <Input header="Date de début" type="date" value={start} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)} />
                     <Input header="Date de fin" type="date" value={end} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)} />
                 </div>
-                {error && <Text color="danger">{error}</Text>}
+                {alert && (
+                    <Alert
+                        type={alert.type}
+                        title={alert.title}
+                        onClose={() => setAlert(null)}
+                    >
+                        {alert.message}
+                    </Alert>
+                )}
                 <div className="project-create-modal-actions">
                     <Button text="Annuler" variant="failure" onClick={onClose} />
-                    <Button text="Créer" variant="primary" onClick={handleCreate} />
+                    <Button
+                        text="Créer"
+                        variant="primary"
+                        onClick={handleCreate}
+                        disabled={isCreateDisabled || loading}
+                    />
                 </div>
             </div>
         </Modal>
