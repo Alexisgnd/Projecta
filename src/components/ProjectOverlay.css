@@ -9,7 +9,6 @@
     z-index: 2000;
     display: flex;
     align-items: flex-start;
-    background: #a259ff;
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
     overflow: auto;
     transition: background 0.3s;
@@ -88,4 +87,78 @@
     gap: 8px;
     align-items: center;
     width: 100%;
+}
+
+/* Formulaire paramètres projet */
+.project-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 90%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 36px 32px 28px 32px;
+    color: #222;
+    box-shadow: 0 4px 32px 0 rgba(79, 70, 229, 0.10);
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+.project-settings-form .input-container {
+    margin-bottom: 0;
+}
+
+.project-settings-form .input-header {
+    color: #6b21a8;
+    font-size: 1.05rem;
+}
+
+.project-settings-form select.input-field {
+    background: #F3F4F6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    color: #222;
+    font-size: 1rem;
+    padding: 18px 24px;
+    height: 65px;
+    width: 100%;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.18s;
+}
+
+.project-settings-form select.input-field:focus {
+    border: 1.5px solid #a259ff;
+}
+
+.project-settings-form textarea.input-field {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.project-settings-form .input-field[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 700px) {
+    .project-settings-form {
+        padding: 18px 6px;
+        max-width: 100vw;
+    }
+}
+
+/* Positionnement du bouton de validation */
+.project-validate-btn {
+    position: absolute;
+    right: 48px;
+    bottom: 40px;
+    z-index: 10;
 }

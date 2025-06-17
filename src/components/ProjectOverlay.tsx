@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Text from "./Text";
 import Button from "./Button";
+import Input from "./Input";
 import { FaCheck } from "react-icons/fa";
 import "./ProjectOverlay.css";
 
@@ -128,86 +129,64 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         <div className="project-overlay-details">
                             {selectedTab === 6 ? (
                                 <form
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: 16,
-                                        maxWidth: 500,
-                                    }}
+                                    className="project-settings-form"
                                     onSubmit={e => { e.preventDefault(); handleSave(); }}
                                 >
-                                    <label>
-                                        Nom du projet
-                                        <input
-                                            type="text"
-                                            value={name}
-                                            onChange={e => setName(e.target.value)}
-                                        />
-                                    </label>
-                                    <label>
-                                        Description
-                                        <textarea
-                                            value={description}
-                                            onChange={e => setDescription(e.target.value)}
-                                        />
-                                    </label>
-                                    <label>
-                                        Progression (%)
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            value={progression}
-                                            onChange={e => setProgression(Number(e.target.value))}
-                                        />
-                                    </label>
-                                    <label>
-                                        Couleur
-                                        <input
-                                            type="color"
-                                            value={color}
-                                            onChange={e => setColor(e.target.value)}
-                                        />
-                                    </label>
-                                    <label>
-                                        Nombre de tâches
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            value={numTasks}
-                                            onChange={e => setNumTasks(Number(e.target.value))}
-                                        />
-                                    </label>
-                                    <label>
-                                        Nombre de membres
-                                        <input
-                                            type="number"
-                                            min={1}
-                                            value={numMembers}
-                                            onChange={e => setNumMembers(Number(e.target.value))}
-                                        />
-                                    </label>
-                                    <label>
-                                        Tags (séparés par des virgules)
-                                        <input
-                                            type="text"
-                                            value={tags.join(", ")}
-                                            onChange={handleTagsChange}
-                                            placeholder="ex: urgent, client, interne"
-                                        />
-                                    </label>
-                                    <label>
-                                        Couleurs des tags (JSON)
-                                        <input
-                                            type="text"
-                                            value={JSON.stringify(tagsColors)}
-                                            onChange={handleTagsColorsChange}
-                                            placeholder='ex: {"urgent":"#ff0000"}'
-                                        />
-                                    </label>
-                                    <label>
-                                        Statut
+                                    <Input
+                                        header="Nom du projet"
+                                        value={name}
+                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)}
+                                    />
+                                    <Input
+                                        header="Description"
+                                        value={description}
+                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)}
+                                        type="textarea"
+                                    />
+                                    <Input
+                                        header="Progression (%)"
+                                        type="number"
+                                        min={0}
+                                        max={100}
+                                        value={progression}
+                                        onChange={(e: { target: { value: any; }; }) => setProgression(Number(e.target.value))}
+                                    />
+                                    <Input
+                                        header="Couleur"
+                                        type="color"
+                                        value={color}
+                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)}
+                                    />
+                                    <Input
+                                        header="Nombre de tâches"
+                                        type="number"
+                                        min={0}
+                                        value={numTasks}
+                                        onChange={(e: { target: { value: any; }; }) => setNumTasks(Number(e.target.value))}
+                                    />
+                                    <Input
+                                        header="Nombre de membres"
+                                        type="number"
+                                        min={1}
+                                        value={numMembers}
+                                        onChange={(e: { target: { value: any; }; }) => setNumMembers(Number(e.target.value))}
+                                    />
+                                    <Input
+                                        header="Tags (séparés par des virgules)"
+                                        value={tags.join(", ")}
+                                        onChange={handleTagsChange}
+                                        placeholder="ex: urgent, client, interne"
+                                    />
+                                    <Input
+                                        header="Couleurs des tags (JSON)"
+                                        value={JSON.stringify(tagsColors)}
+                                        onChange={handleTagsColorsChange}
+                                        placeholder='ex: {"urgent":"#ff0000"}'
+                                    />
+                                    <div>
+                                        <div className="input-header">Statut</div>
                                         <select
+                                            className="input-field"
                                             value={status}
                                             onChange={e => setStatus(e.target.value)}
                                         >
@@ -217,23 +196,19 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                             <option value="terminé">Terminé</option>
                                             <option value="annulé">Annulé</option>
                                         </select>
-                                    </label>
-                                    <label>
-                                        Date de début
-                                        <input
-                                            type="date"
-                                            value={start}
-                                            onChange={e => setStart(e.target.value)}
-                                        />
-                                    </label>
-                                    <label>
-                                        Date de fin
-                                        <input
-                                            type="date"
-                                            value={end}
-                                            onChange={e => setEnd(e.target.value)}
-                                        />
-                                    </label>
+                                    </div>
+                                    <Input
+                                        header="Date de début"
+                                        type="date"
+                                        value={start}
+                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)}
+                                    />
+                                    <Input
+                                        header="Date de fin"
+                                        type="date"
+                                        value={end}
+                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)}
+                                    />
                                 </form>
                             ) : (
                                 <>
@@ -248,16 +223,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
 
                         {/* Bouton de validation en bas à droite sur l’onglet paramètres */}
                         {selectedTab === 6 && (
-                            <div style={{
-                                position: "absolute",
-                                right: 32,
-                                bottom: 32,
-                            }}>
+                            <div className="project-validate-btn">
                                 <Button
                                     text="Valider les changements"
                                     variant="success"
                                     onClick={handleSave}
                                     prefixIcon={<FaCheck />}
+                                    size="large"
                                 />
                             </div>
                         )}
