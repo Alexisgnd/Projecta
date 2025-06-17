@@ -52,6 +52,14 @@
   background: #15803D;
 }
 
+.button.failure {
+  background: #ef4444;
+}
+.button.failure:active,
+.button.failure.selected {
+  background: #991b1b;
+}
+
 .button:hover {
   filter: brightness(1.08);
   box-shadow: 0 6px 24px 0 rgba(79, 70, 229, 0.25);
