@@ -5,6 +5,7 @@ import ProjectCard from '../components/ProjectCard';
 import supabase from '../supabaseClient';
 import ProjectOverlay from '../components/ProjectOverlay';
 import Button from '../components/Button';
+import ProjectCreateModal from '../components/ProjectCreateModal';
 
 interface Project {
     id: number;
@@ -22,6 +23,7 @@ const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -104,7 +106,7 @@ const Projects: React.FC = () => {
                     <Button
                         text="Nouveau projet"
                         variant="primary"
-                        onClick={() => {/* action à définir */ }}
+                        onClick={() => setShowCreateModal(true)}
                     />
                 </div>
                 <Text size={16} color="secondary">
@@ -143,6 +145,15 @@ const Projects: React.FC = () => {
                     project={selectedProject}
                     onClose={() => setSelectedProject(null)}
                 />
+                {showCreateModal && (
+                    <ProjectCreateModal
+                        onClose={() => setShowCreateModal(false)}
+                        onCreated={newProject => {
+                            setProjects(prev => [...prev, newProject]);
+                            setShowCreateModal(false);
+                        }}
+                    />
+                )}
             </div>
         </div>
     );
