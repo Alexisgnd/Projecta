@@ -8,6 +8,8 @@ import "./ProjectOverlay.css";
 import Alert from "./Alert";
 import supabase from "../supabaseClient";
 import TagInput from "./TagInput";
+import ProfilePreviewModal from "./ProfilePreviewModal";
+import { UserStatusDot } from "./UserStatus";
 
 interface Project {
     id: number;
@@ -127,6 +129,53 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         "⚙️ Paramètres du projet",
     ];
 
+    // Ajoute un état pour les membres du projet
+    const [members, setMembers] = React.useState<any[]>([]);
+    const [membersLoading, setMembersLoading] = React.useState(false);
+    const [previewUser, setPreviewUser] = React.useState<any | null>(null);
+
+    // Récupère les membres du projet à l'ouverture de l'overlay ou changement de projet
+    useEffect(() => {
+        const fetchMembers = async () => {
+            if (!project) return;
+            setMembersLoading(true);
+            // Récupère les membres depuis project_members
+            const { data: memberLinks } = await supabase
+                .from("project_members")
+                .select("user_id, role")
+                .eq("project_id", project.id);
+
+            if (!memberLinks || memberLinks.length === 0) {
+                setMembers([]);
+                setMembersLoading(false);
+                return;
+            }
+
+            // Récupère les infos utilisateurs
+            const userIds = memberLinks.map((m: any) => m.user_id);
+            const { data: users } = await supabase
+                .from("users")
+                .select("id, first_name, last_name, picture_url, status")
+                .in("id", userIds);
+
+            // Fusionne infos membres et users
+            const membersList = memberLinks.map((m: any) => ({
+                ...users?.find((u: any) => u.id === m.user_id),
+                role: m.role,
+            }));
+
+            setMembers(membersList);
+            setMembersLoading(false);
+        };
+        fetchMembers();
+    }, [project]);
+
+    // Handlers pour les actions de la zone de danger
+    const handleDeleteProject = async () => { /* TODO: logique de suppression */ };
+    const handleArchiveProject = async () => { /* TODO: logique d'archivage */ };
+    const handlePauseProject = async () => { /* TODO: logique de pause */ };
+    const handleDuplicateProject = async () => { /* TODO: logique de duplication */ };
+
     return (
         <AnimatePresence>
             {project && (
@@ -221,6 +270,78 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)}
                                         />
                                     </div>
+                                    {/* --- Gestion des membres --- */}
+                                    <div className="form-row">
+                                        <div style={{ width: "100%" }}>
+                                            <Text size={18} bold>Gestion des membres</Text>
+                                            {membersLoading ? (
+                                                <Text size={16} color="secondary">Chargement des membres...</Text>
+                                            ) : members.length === 0 ? (
+                                                <Text size={16} color="secondary">Aucun membre dans ce projet.</Text>
+                                            ) : (
+                                                <div className="project-members-list">
+                                                    {members.map(member => (
+                                                        <div
+                                                            className={`project-member-card${member.role === "Owner" ? " project-member-owner" : ""}`}
+                                                            key={member.id}
+                                                        >
+                                                            <div
+                                                                className="project-member-avatar"
+                                                                onClick={() => setPreviewUser(member)}
+                                                            >
+                                                                <img
+                                                                    src={member.picture_url || "/assets/avatar1.png"}
+                                                                    alt={member.first_name || member.last_name}
+                                                                />
+                                                                <UserStatusDot status={member.status} />
+                                                            </div>
+                                                            <div className="project-member-info">
+                                                                <span className="project-member-name">
+                                                                    {member.first_name || ""} {member.last_name || ""}
+                                                                </span>
+                                                                <span className="project-member-role project-member-role-left">
+                                                                    {member.role}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        {previewUser && (
+                                            <ProfilePreviewModal user={previewUser} onClose={() => setPreviewUser(null)} />
+                                        )}
+                                    </div>
+                                    {/* --- Fin gestion des membres --- */}
+                                    {/* --- Zone de danger --- */}
+                                    <div className="form-row">
+                                        <div className="danger-zone">
+                                            <Text size={18} bold color="danger">Zone de danger</Text>
+                                            <div className="danger-zone-actions">
+                                                <Button
+                                                    text="Supprimer le projet"
+                                                    variant="failure"
+                                                    onClick={handleDeleteProject}
+                                                />
+                                                <Button
+                                                    text="Archiver le projet"
+                                                    variant="secondary"
+                                                    onClick={handleArchiveProject}
+                                                />
+                                                <Button
+                                                    text="Mettre en pause"
+                                                    variant="warning"
+                                                    onClick={handlePauseProject}
+                                                />
+                                                <Button
+                                                    text="Dupliquer"
+                                                    variant="primary"
+                                                    onClick={handleDuplicateProject}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* --- Fin zone de danger --- */}
                                 </form>
                             ) : (
                                 <>
