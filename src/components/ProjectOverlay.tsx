@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Text from "./Text";
+import Button from "./Button";
+import { FaCheck } from "react-icons/fa"; // <-- Ajout de l'icône check
 import "./ProjectOverlay.css";
 
 interface Project {
@@ -31,6 +33,12 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
 
     useEffect(() => setSelectedTab(0), [project]);
 
+    // Handler mock pour la validation
+    const handleSave = () => {
+        // Ici tu peux ajouter la logique de sauvegarde plus tard
+        alert("Changements validés (mock)");
+    };
+
     return (
         <AnimatePresence>
             {project && (
@@ -58,8 +66,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                             {tabs.map((tab, idx) => (
                                 <button
                                     key={tab}
-                                    className={`project-overlay-tab${selectedTab === idx ? " selected" : ""
-                                        }`}
+                                    className={`project-overlay-tab${selectedTab === idx ? " selected" : ""}`}
                                     onClick={() => setSelectedTab(idx)}
                                     type="button"
                                 >
@@ -84,6 +91,22 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                 </>
                             )}
                         </div>
+
+                        {/* Bouton de validation en bas à droite sur l’onglet paramètres */}
+                        {selectedTab === 6 && (
+                            <div style={{
+                                position: "absolute",
+                                right: 32,
+                                bottom: 32,
+                            }}>
+                                <Button
+                                    text="Valider les changements"
+                                    variant="success"
+                                    onClick={handleSave}
+                                    prefixIcon={<FaCheck />}
+                                />
+                            </div>
+                        )}
                     </div>
                 </motion.div>
             )}
