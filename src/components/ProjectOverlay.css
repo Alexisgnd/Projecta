@@ -284,3 +284,53 @@
 .remove-member-btn:hover {
     background: #b91c1c;
 }
+
+.project-cleanup-actions {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.project-cleanup-btn {
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, filter 0.18s;
+    background: #f3f4f6;
+    color: #222;
+}
+
+.project-cleanup-btn.archive {
+    background: #e0e7ff;
+    color: #3730A3;
+}
+
+.project-cleanup-btn.archive:hover:enabled {
+    filter: brightness(0.97);
+}
+
+.project-cleanup-btn.duplicate {
+    background: #fef9c3;
+    color: #b45309;
+}
+
+.project-cleanup-btn.duplicate:hover:enabled {
+    filter: brightness(0.97);
+}
+
+.project-cleanup-btn.delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.project-cleanup-btn.delete:hover:enabled {
+    filter: brightness(0.95);
+}
+
+.project-cleanup-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

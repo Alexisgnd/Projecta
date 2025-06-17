@@ -198,6 +198,108 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
             fetchMembers();
         };
 
+        // Handler: Archiver le projet
+        const handleArchiveProject = async () => {
+            setAlert(null);
+            setLoading(true);
+            const { error } = await supabase
+                .from("projects")
+                .update({ status: "archivé" })
+                .eq("id", project?.id);
+            setLoading(false);
+            if (error) {
+                setAlert({
+                    type: "error",
+                    title: "Erreur",
+                    message: "L'archivage du projet a échoué.",
+                    key: Date.now().toString(),
+                });
+            } else {
+                setAlert({
+                    type: "success",
+                    title: "Succès",
+                    message: "Projet archivé avec succès.",
+                    key: Date.now().toString(),
+                });
+            }
+        };
+
+        // Handler: Dupliquer le projet
+        const handleDuplicateProject = async () => {
+            setAlert(null);
+            setLoading(true);
+            // Récupère le projet courant
+            const { data: currentProject, error: fetchError } = await supabase
+                .from("projects")
+                .select("*")
+                .eq("id", project?.id)
+                .single();
+            if (fetchError || !currentProject) {
+                setLoading(false);
+                setAlert({
+                    type: "error",
+                    title: "Erreur",
+                    message: "Impossible de dupliquer le projet.",
+                    key: Date.now().toString(),
+                });
+                return;
+            }
+            // Crée un nouveau projet avec les mêmes infos (sauf id, dates, etc.)
+            const { error: insertError } = await supabase
+                .from("projects")
+                .insert({
+                    ...currentProject,
+                    id: undefined,
+                    name: currentProject.name + " (copie)",
+                    created_at: new Date().toISOString(),
+                    status: "en cours",
+                });
+            setLoading(false);
+            if (insertError) {
+                setAlert({
+                    type: "error",
+                    title: "Erreur",
+                    message: "La duplication du projet a échoué.",
+                    key: Date.now().toString(),
+                });
+            } else {
+                setAlert({
+                    type: "success",
+                    title: "Succès",
+                    message: "Projet dupliqué avec succès.",
+                    key: Date.now().toString(),
+                });
+            }
+        };
+
+        // Handler: Supprimer le projet
+        const handleDeleteProject = async () => {
+            setAlert(null);
+            setLoading(true);
+            const { error } = await supabase
+                .from("projects")
+                .delete()
+                .eq("id", project?.id);
+            setLoading(false);
+            if (error) {
+                setAlert({
+                    type: "error",
+                    title: "Erreur",
+                    message: "La suppression du projet a échoué.",
+                    key: Date.now().toString(),
+                });
+            } else {
+                setAlert({
+                    type: "success",
+                    title: "Succès",
+                    message: "Projet supprimé avec succès.",
+                    key: Date.now().toString(),
+                });
+                // Optionnel: fermer l'overlay après suppression
+                if (typeof onClose === "function") onClose();
+            }
+        };
+
         return (
             <div className="project-settings-panel">
                 {/* 1. Informations générales */}
@@ -369,7 +471,29 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 <div className="project-settings-section-title">
                     <Text size={20} bold>📂 Nettoyage & Archivage</Text>
                 </div>
-                {/* À compléter avec boutons archiver, dupliquer, supprimer */}
+                <div className="project-cleanup-actions">
+                    <button
+                        className="project-cleanup-btn archive"
+                        onClick={handleArchiveProject}
+                        disabled={loading}
+                    >
+                        Archiver le projet
+                    </button>
+                    <button
+                        className="project-cleanup-btn duplicate"
+                        onClick={handleDuplicateProject}
+                        disabled={loading}
+                    >
+                        Dupliquer le projet
+                    </button>
+                    <button
+                        className="project-cleanup-btn delete"
+                        onClick={handleDeleteProject}
+                        disabled={loading}
+                    >
+                        Supprimer le projet
+                    </button>
+                </div>
 
                 {/* 6. Confidentialité / Accès */}
                 <div className="project-settings-section-title">
