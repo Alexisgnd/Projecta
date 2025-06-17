@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import supabase from "../supabaseClient";
 import { FaUserPlus, FaTimes } from "react-icons/fa";
 import Text from "./Text";
@@ -21,11 +21,12 @@ interface Project {
     num_members: number;
     members?: any[];
     description?: string;
+    goal?: string;
     tags?: string[];
     tags_colors?: { [tag: string]: string };
+    start_date?: string;
+    end_date?: string;
     status?: string;
-    start?: string | null;
-    end?: string | null;
 }
 
 interface ProjectOverlayProps {
@@ -34,7 +35,7 @@ interface ProjectOverlayProps {
 }
 
 const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => {
-    const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedTab, setSelectedTab] = React.useState(0);
 
     const tabs = [
         "📌 Vue d’ensemble",
@@ -46,7 +47,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         "⚙️ Paramètres du projet"
     ];
 
-    useEffect(() => {
+    React.useEffect(() => {
         setSelectedTab(0);
     }, [project]);
 
@@ -66,21 +67,21 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         // Ajoute ici les autres props nécessaires
     }: any) => {
         // États pour les membres
-        const [members, setMembers] = useState<any[]>([]);
-        const [relations, setRelations] = useState<any[]>([]);
-        const [loadingMembers, setLoadingMembers] = useState(false);
-        const [showAddModal, setShowAddModal] = useState(false);
-        const [search, setSearch] = useState("");
-        const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
-        const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+        const [members, setMembers] = React.useState<any[]>([]);
+        const [relations, setRelations] = React.useState<any[]>([]);
+        const [loadingMembers, setLoadingMembers] = React.useState(false);
+        const [showAddModal, setShowAddModal] = React.useState(false);
+        const [search, setSearch] = React.useState("");
+        const [currentUserEmail, setCurrentUserEmail] = React.useState<string | null>(null);
+        const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
 
         // États pour les dates et statut
-        const [startDate, setStartDate] = useState(project?.start ? project.start.substring(0, 10) : "");
-        const [endDate, setEndDate] = useState(project?.end ? project.end.substring(0, 10) : "");
-        const [status, setStatus] = useState(project?.status || "en cours");
+        const [startDate, setStartDate] = React.useState(project?.start_date || "");
+        const [endDate, setEndDate] = React.useState(project?.end_date || "");
+        const [status, setStatus] = React.useState(project?.status || "en cours");
 
         // Récupère l'id numérique de l'utilisateur courant
-        useEffect(() => {
+        React.useEffect(() => {
             supabase.auth.getUser().then(async ({ data }) => {
                 const email = data?.user?.email;
                 if (!email) return;
@@ -97,13 +98,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         }, []);
 
         // Met à jour les états locaux si le projet change
-        useEffect(() => {
+        React.useEffect(() => {
             setName(project?.name || "");
             setDescription(project?.description || "");
             setTagsArr(project?.tags || []);
             setTagsColors(project?.tags_colors || {});
-            setStartDate(project?.start ? project.start.substring(0, 10) : "");
-            setEndDate(project?.end ? project.end.substring(0, 10) : "");
+            setStartDate(project?.start_date || "");
+            setEndDate(project?.end_date || "");
             setStatus(project?.status || "en cours");
         }, [project]);
 
@@ -166,11 +167,11 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         };
 
         // Rafraîchit les membres et relations à chaque ouverture de la modal ou changement de projet
-        useEffect(() => {
+        React.useEffect(() => {
             fetchMembers();
         }, [project?.id]);
 
-        useEffect(() => {
+        React.useEffect(() => {
             if (showAddModal && members.length > 0) {
                 fetchRelations();
             }
@@ -326,7 +327,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                         disabled={loading}
                     />
                     <Input
-                        header="Date de fin"
+                        header="Date de fin prévisionnelle"
                         type="date"
                         value={endDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
@@ -514,21 +515,18 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         );
     };
 
-    const [loading, setLoading] = useState(false);
-    const [alert, setAlert] = useState<{
+    const [loading, setLoading] = React.useState(false);
+    const [alert, setAlert] = React.useState<{
         type: "error" | "success" | "info" | "warning";
         title: string;
         message: React.ReactNode;
         key?: string;
     } | null>(null);
 
-    const [name, setName] = useState(project?.name || "");
-    const [description, setDescription] = useState(project?.description || "");
-    const [tagsArr, setTagsArr] = useState<string[]>(project?.tags || []);
-    const [tagsColors, setTagsColors] = useState<{ [tag: string]: string }>(project?.tags_colors || {});
-    const [startDate, setStartDate] = useState(project?.start ? project.start.substring(0, 10) : "");
-    const [endDate, setEndDate] = useState(project?.end ? project.end.substring(0, 10) : "");
-    const [status, setStatus] = useState(project?.status || "en cours");
+    const [name, setName] = React.useState(project?.name || "");
+    const [description, setDescription] = React.useState(project?.description || "");
+    const [tagsArr, setTagsArr] = React.useState<string[]>(project?.tags || []);
+    const [tagsColors, setTagsColors] = React.useState<{ [tag: string]: string }>(project?.tags_colors || {});
     // ...ajoute les autres états nécessaires...
 
     const handleSave = async () => {
@@ -541,9 +539,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                 description,
                 tags: tagsArr,
                 tags_colors: tagsColors,
-                start: startDate ? new Date(startDate).toISOString() : null,
-                end: endDate ? new Date(endDate).toISOString() : null,
-                status,
                 // ...autres champs...
             })
             .eq("id", project?.id);
@@ -618,9 +613,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                     loading={loading}
                                     alert={alert}
                                     setAlert={setAlert}
-                                    setStartDate={startDate}
-                                    setEndDate={endDate}
-                                    setStatus={status}
                                 // ...autres props nécessaires...
                                 />
                             ) : (
