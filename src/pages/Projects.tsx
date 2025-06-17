@@ -4,6 +4,7 @@ import Text from '../components/Text';
 import ProjectCard from '../components/ProjectCard';
 import supabase from '../supabaseClient';
 import ProjectOverlay from '../components/ProjectOverlay';
+import Button from '../components/Button';
 
 interface Project {
     id: number;
@@ -95,9 +96,17 @@ const Projects: React.FC = () => {
     return (
         <div className="projects-root">
             <div className="projects-container">
-                <Text size={32} bold color="primary">
-                    Projets
-                </Text>
+                {/* Ligne titre + bouton */}
+                <div className="projects-header-row">
+                    <Text size={32} bold color="primary">
+                        Projets
+                    </Text>
+                    <Button
+                        text="Nouveau projet"
+                        variant="primary"
+                        onClick={() => {/* action à définir */ }}
+                    />
+                </div>
                 <Text size={16} color="secondary">
                     Vous avez {projects.length} projet{projects.length > 1 ? 's' : ''}
                 </Text>

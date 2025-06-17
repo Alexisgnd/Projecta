@@ -48,3 +48,12 @@
 .project-card-wrapper {
     cursor: pointer;
 }
+
+.projects-header-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 24px;
+}
