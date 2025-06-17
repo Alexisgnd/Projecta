@@ -5,6 +5,8 @@ import Button from "./Button";
 import Input from "./Input";
 import { FaCheck } from "react-icons/fa";
 import "./ProjectOverlay.css";
+import Alert from "./Alert";
+import supabase from "../supabaseClient";
 
 interface Project {
     id: number;
@@ -58,10 +60,60 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
         setEnd(project?.end ? project.end.substring(0, 10) : "");
     }, [project]);
 
-    // Handler mock pour la validation
-    const handleSave = () => {
-        // Ici tu peux ajouter la logique de sauvegarde plus tard
-        alert("Changements validés (mock)");
+    // Ajoute un état pour l'alerte
+    const [alert, setAlert] = React.useState<{
+        type: "error" | "success" | "info" | "warning";
+        title: string;
+        message: React.ReactNode;
+        key?: string;
+    } | null>(null);
+
+    // Nouvelle fonction handleSave qui envoie à Supabase
+    const handleSave = async () => {
+        if (!project) return;
+        setAlert({
+            type: "info",
+            title: "Sauvegarde...",
+            message: "Enregistrement des modifications en cours.",
+            key: Date.now().toString(),
+        });
+
+        // Conversion des dates au format ISO ou null si vide
+        const startDate = start ? new Date(start).toISOString() : null;
+        const endDate = end ? new Date(end).toISOString() : null;
+
+        const { error } = await supabase
+            .from("projects")
+            .update({
+                name,
+                description,
+                color,
+                progression,
+                num_tasks: numTasks,
+                num_members: numMembers,
+                tags,
+                tags_colors: tagsColors,
+                status,
+                start: startDate,
+                end: endDate,
+            })
+            .eq("id", project.id);
+
+        if (error) {
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "Erreur lors de la sauvegarde des modifications.",
+                key: Date.now().toString(),
+            });
+        } else {
+            setAlert({
+                type: "success",
+                title: "Succès",
+                message: "Modifications sauvegardées.",
+                key: Date.now().toString(),
+            });
+        }
     };
 
     // Simple gestion des tags (séparés par virgule)
@@ -198,6 +250,17 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                     size="large"
                                 />
                             </div>
+                        )}
+                        {/* Affichage de l'alerte flottante */}
+                        {alert && (
+                            <Alert
+                                key={alert.key}
+                                type={alert.type}
+                                title={alert.title}
+                                onClose={() => setAlert(null)}
+                            >
+                                {alert.message}
+                            </Alert>
                         )}
                     </div>
                 </motion.div>
