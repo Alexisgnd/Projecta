@@ -60,6 +60,14 @@
   background: #991b1b;
 }
 
+.button.warning {
+  background: #f59e42;
+}
+.button.warning:active,
+.button.warning.selected {
+  background: #b45309;
+}
+
 .button:hover {
   filter: brightness(1.08);
   box-shadow: 0 6px 24px 0 rgba(79, 70, 229, 0.25);
