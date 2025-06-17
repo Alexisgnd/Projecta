@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./TagInput.css";
 
 function getRandomDotColor() {
@@ -28,7 +28,7 @@ const TagInput: React.FC<TagInputProps> = ({
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Ajoute une couleur par défaut si absente
-    React.useEffect(() => {
+    useEffect(() => {
         tags.forEach(tag => {
             if (!tagsColors[tag]) {
                 setTagsColors({
