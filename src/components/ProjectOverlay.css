@@ -201,3 +201,14 @@
         gap: 10px;
     }
 }
+
+.project-back-btn {
+    position: fixed;
+    left: 48px;
+    bottom: 40px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    animation: fadeInBtn 0.3s;
+    margin-left: 260px;
+}

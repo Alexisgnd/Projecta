@@ -151,16 +151,22 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
 
                         {/* Onglets */}
                         <nav className="project-overlay-tabs">
-                            {tabs.map((tab, idx) => (
-                                <button
-                                    key={tab}
-                                    className={`project-overlay-tab${selectedTab === idx ? " selected" : ""}`}
-                                    onClick={() => setSelectedTab(idx)}
-                                    type="button"
-                                >
-                                    {tab}
-                                </button>
-                            ))}
+                            {tabs.map((tab, idx) => {
+                                // Désactive les onglets 2 (KPI) et 5 (Journal)
+                                const isDisabled = idx === 2 || idx === 5;
+                                return (
+                                    <button
+                                        key={tab}
+                                        className={`project-overlay-tab${selectedTab === idx ? " selected" : ""}`}
+                                        onClick={() => !isDisabled && setSelectedTab(idx)}
+                                        type="button"
+                                        disabled={isDisabled}
+                                        style={isDisabled ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                                    >
+                                        {tab}
+                                    </button>
+                                );
+                            })}
                         </nav>
 
                         {/* Contenu de l’onglet */}
@@ -250,6 +256,16 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                 {alert.message}
                             </Alert>
                         )}
+                    </div>
+                    {/* Bouton retour en bas à gauche */}
+                    <div className="project-back-btn">
+                        <Button
+                            text="Retour sur la liste des projets"
+                            variant="secondary"
+                            onClick={onClose}
+                            prefixIcon={<span style={{ fontSize: 18, marginRight: 6 }}>←</span>}
+                            size="large"
+                        />
                     </div>
                 </motion.div>
             )}
