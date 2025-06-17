@@ -93,7 +93,7 @@
 .project-settings-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 32px; /* Augmente l'espacement vertical entre chaque ligne */
     width: 90%;
     background: #fff;
     border-radius: 14px;
@@ -139,13 +139,15 @@
 }
 
 .project-settings-form .input-field[type="color"] {
-    width: 60px;
-    height: 40px;
+    width: 100%;      /* Prend toute la largeur de l'input */
+    height: 65px;     /* Même hauteur que les autres inputs */
     padding: 0;
     background: none;
     border: none;
     box-shadow: none;
     margin-top: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 @media (max-width: 700px) {
@@ -168,4 +170,34 @@
 @keyframes fadeInBtn {
     from { opacity: 0; transform: translateY(30px);}
     to   { opacity: 1; transform: translateY(0);}
+}
+
+/* Nouvelle ligne pour aligner couleur et tags */
+.form-row.inline {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.form-row.inline > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.form-row > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

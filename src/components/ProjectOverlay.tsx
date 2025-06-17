@@ -132,83 +132,49 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                     className="project-settings-form"
                                     onSubmit={e => { e.preventDefault(); handleSave(); }}
                                 >
-                                    <Input
-                                        header="Nom du projet"
-                                        value={name}
-                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)}
-                                    />
-                                    <Input
-                                        header="Description"
-                                        value={description}
-                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)}
-                                        type="textarea"
-                                    />
-                                    <Input
-                                        header="Progression (%)"
-                                        type="number"
-                                        min={0}
-                                        max={100}
-                                        value={progression}
-                                        onChange={(e: { target: { value: any; }; }) => setProgression(Number(e.target.value))}
-                                    />
-                                    <Input
-                                        header="Couleur"
-                                        type="color"
-                                        value={color}
-                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)}
-                                    />
-                                    <Input
-                                        header="Nombre de tâches"
-                                        type="number"
-                                        min={0}
-                                        value={numTasks}
-                                        onChange={(e: { target: { value: any; }; }) => setNumTasks(Number(e.target.value))}
-                                    />
-                                    <Input
-                                        header="Nombre de membres"
-                                        type="number"
-                                        min={1}
-                                        value={numMembers}
-                                        onChange={(e: { target: { value: any; }; }) => setNumMembers(Number(e.target.value))}
-                                    />
-                                    <Input
-                                        header="Tags (séparés par des virgules)"
-                                        value={tags.join(", ")}
-                                        onChange={handleTagsChange}
-                                        placeholder="ex: urgent, client, interne"
-                                    />
-                                    <Input
-                                        header="Couleurs des tags (JSON)"
-                                        value={JSON.stringify(tagsColors)}
-                                        onChange={handleTagsColorsChange}
-                                        placeholder='ex: {"urgent":"#ff0000"}'
-                                    />
-                                    <div>
-                                        <div className="input-header">Statut</div>
-                                        <select
-                                            className="input-field"
-                                            value={status}
-                                            onChange={e => setStatus(e.target.value)}
-                                        >
-                                            <option value="">-- Choisir --</option>
-                                            <option value="en cours">En cours</option>
-                                            <option value="en pause">En pause</option>
-                                            <option value="terminé">Terminé</option>
-                                            <option value="annulé">Annulé</option>
-                                        </select>
+                                    <div className="form-row inline">
+                                        <Input
+                                            header="Nom du projet"
+                                            value={name}
+                                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)}
+                                        />
+                                        <Input
+                                            header="Couleur projet"
+                                            type="color"
+                                            value={color}
+                                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)}
+                                        />
                                     </div>
-                                    <Input
-                                        header="Date de début"
-                                        type="date"
-                                        value={start}
-                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)}
-                                    />
-                                    <Input
-                                        header="Date de fin"
-                                        type="date"
-                                        value={end}
-                                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)}
-                                    />
+                                    <div className="form-row">
+                                        <Input
+                                            header="Description"
+                                            value={description}
+                                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)}
+                                            type="textarea"
+                                        />
+                                    </div>
+                                    <div className="form-row">
+                                        <Input
+                                            header="Tags (séparés par des virgules)"
+                                            value={tags.join(", ")}
+                                            onChange={handleTagsChange}
+                                            placeholder="ex: urgent, client, interne"
+                                        />
+                                    </div>
+                                    <div className="form-row">
+                                        <Input
+                                            header="Date de début"
+                                            type="date"
+                                            value={start}
+                                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)}
+                                        />
+                                        <Input
+                                            header="Date de fin"
+                                            type="date"
+                                            value={end}
+                                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)}
+                                        />
+                                    </div>
                                 </form>
                             ) : (
                                 <>
