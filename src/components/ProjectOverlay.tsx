@@ -318,26 +318,46 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
                                         <div className="danger-zone">
                                             <Text size={18} bold color="danger">Zone de danger</Text>
                                             <div className="danger-zone-actions">
-                                                <Button
-                                                    text="Supprimer le projet"
-                                                    variant="failure"
-                                                    onClick={handleDeleteProject}
-                                                />
-                                                <Button
-                                                    text="Archiver le projet"
-                                                    variant="secondary"
-                                                    onClick={handleArchiveProject}
-                                                />
-                                                <Button
-                                                    text="Mettre en pause"
-                                                    variant="warning"
-                                                    onClick={handlePauseProject}
-                                                />
-                                                <Button
-                                                    text="Dupliquer"
-                                                    variant="primary"
-                                                    onClick={handleDuplicateProject}
-                                                />
+                                                <div className="danger-zone-row">
+                                                    <Button
+                                                        text="Supprimer le projet"
+                                                        variant="failure"
+                                                        onClick={handleDeleteProject}
+                                                    />
+                                                    <Text size={15} color="danger">
+                                                        Supprime définitivement ce projet et toutes ses données.
+                                                    </Text>
+                                                </div>
+                                                <div className="danger-zone-row">
+                                                    <Button
+                                                        text="Archiver le projet"
+                                                        variant="failure"
+                                                        onClick={handleArchiveProject}
+                                                    />
+                                                    <Text size={15} color="danger">
+                                                        Rend le projet inactif, mais récupérable plus tard.
+                                                    </Text>
+                                                </div>
+                                                <div className="danger-zone-row">
+                                                    <Button
+                                                        text="Mettre en pause"
+                                                        variant="warning"
+                                                        onClick={handlePauseProject}
+                                                    />
+                                                    <Text size={15} color="warning">
+                                                        Suspend temporairement l’activité du projet.
+                                                    </Text>
+                                                </div>
+                                                <div className="danger-zone-row">
+                                                    <Button
+                                                        text="Dupliquer"
+                                                        variant="primary"
+                                                        onClick={handleDuplicateProject}
+                                                    />
+                                                    <Text size={15} color="primary">
+                                                        Crée une copie de ce projet.
+                                                    </Text>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

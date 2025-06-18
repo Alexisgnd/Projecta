@@ -28,6 +28,7 @@
     text-align: center;
     min-height: 400px;
     overflow: auto;
+    padding-bottom: 120px; /* Ajoute un espace pour les boutons fixes en bas */
 }
 
 .project-overlay-header {
@@ -307,9 +308,16 @@
 
 .danger-zone-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 18px;
     margin-top: 8px;
+}
+
+.danger-zone-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
 }
 
 .danger-zone .Button,
