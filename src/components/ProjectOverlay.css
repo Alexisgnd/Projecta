@@ -320,6 +320,17 @@
     width: 100%;
 }
 
+.danger-zone-row > .Button,
+.danger-zone-row > button {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .danger-zone .Button,
 .danger-zone button {
     min-width: 160px;
