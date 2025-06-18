@@ -29,9 +29,10 @@ interface Project {
 interface ProjectOverlayProps {
     project: Project | null;
     onClose: () => void;
+    onProjectChanged?: () => void; // <-- Ajout ici
 }
 
-const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => {
+const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onProjectChanged }) => {
     const [selectedTab, setSelectedTab] = React.useState(0);
 
     // Ajout des états pour tous les champs
@@ -171,7 +172,40 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose }) => 
     }, [project]);
 
     // Handlers pour les actions de la zone de danger
-    const handleDeleteProject = async () => { /* TODO: logique de suppression */ };
+    const handleDeleteProject = async () => {
+        if (!project) return;
+        setAlert({
+            type: "info",
+            title: "Suppression...",
+            message: "Suppression du projet en cours.",
+            key: Date.now().toString(),
+        });
+
+        const { error } = await supabase
+            .from("projects")
+            .delete()
+            .eq("id", project.id);
+
+        if (error) {
+            setAlert({
+                type: "error",
+                title: "Erreur",
+                message: "Erreur lors de la suppression du projet.",
+                key: Date.now().toString(),
+            });
+        } else {
+            setAlert({
+                type: "success",
+                title: "Projet supprimé",
+                message: "Le projet a bien été supprimé.",
+                key: Date.now().toString(),
+            });
+            setTimeout(() => {
+                onClose();
+                if (onProjectChanged) onProjectChanged(); // <-- Ajout ici
+            }, 1200);
+        }
+    };
     const handleArchiveProject = async () => { /* TODO: logique d'archivage */ };
     const handlePauseProject = async () => { /* TODO: logique de pause */ };
     const handleDuplicateProject = async () => { /* TODO: logique de duplication */ };
