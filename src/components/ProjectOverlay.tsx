@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import Text from "./Text";
 import Button from "./Button";
 import Input from "./Input";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes, FaUserPlus } from "react-icons/fa";
 import "./ProjectOverlay.css";
 import Alert from "./Alert";
 import supabase from "../supabaseClient";
 import TagInput from "./TagInput";
 import ProfilePreviewModal from "./ProfilePreviewModal";
 import { UserStatusDot } from "./UserStatus";
+import Modal from "./Modal";
 
 interface Project {
     id: number;
@@ -136,6 +137,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [previewUser, setPreviewUser] = React.useState<any | null>(null);
     // Ajoute un état pour l'id utilisateur courant (à adapter selon ton contexte)
     const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
+    const [showAddMemberModal, setShowAddMemberModal] = React.useState(false);
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -241,6 +243,106 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         setMembers(members.filter(m => m.id !== memberId));
     };
 
+    const AddMemberModal: React.FC<{
+        projectId: number;
+        currentMembers: number[];
+        onClose: () => void;
+        onAdded: () => void;
+    }> = ({ projectId, currentMembers, onClose, onAdded }) => {
+        const [search, setSearch] = React.useState("");
+        const [relations, setRelations] = React.useState<any[]>([]);
+        const [loading, setLoading] = React.useState(true);
+
+        React.useEffect(() => {
+            const fetchRelations = async () => {
+                setLoading(true);
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user || !user.email) {
+                    setLoading(false);
+                    return;
+                }
+                const { data: friendsData } = await supabase
+                    .from("user_friends")
+                    .select("friend_email")
+                    .eq("user_email", user.email);
+                const friendEmails = (friendsData || []).map((f: any) => f.friend_email);
+
+                if (friendEmails.length === 0) {
+                    setRelations([]);
+                    setLoading(false);
+                    return;
+                }
+                const { data: usersData } = await supabase
+                    .from("users")
+                    .select("*")
+                    .in("email", friendEmails)
+                    .not("id", "in", `(${currentMembers.join(",") || 0})`);
+                setRelations(usersData || []);
+                setLoading(false);
+            };
+            fetchRelations();
+        }, [projectId, currentMembers]);
+
+        const handleAdd = async (userId: number) => {
+            await supabase
+                .from("project_members")
+                .insert([{ project_id: projectId, user_id: userId, role: "Membre" }]);
+            onAdded();
+        };
+
+        const filtered = relations.filter(
+            (u: any) =>
+                (u.first_name + " " + u.last_name)
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+                (u.email || "").toLowerCase().includes(search.toLowerCase())
+        );
+
+        return (
+            <Modal onClose={onClose}>
+                <div className="add-member-modal-root">
+                    <Text size={22} bold>Ajouter un membre au projet</Text>
+                    <input
+                        className="add-member-search"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        placeholder="Nom, prénom ou email"
+                    />
+                    <div className="add-member-list">
+                        {loading ? (
+                            <Text size={16} color="secondary">Chargement...</Text>
+                        ) : filtered.length === 0 ? (
+                            <Text size={16} color="secondary">Aucun utilisateur à ajouter</Text>
+                        ) : (
+                            filtered.map(user => (
+                                <div className="add-member-card" key={user.id}>
+                                    <div className="add-member-avatar">
+                                        <img src={user.picture_url || "/assets/avatar1.png"} alt={user.first_name || user.last_name} />
+                                    </div>
+                                    <div className="add-member-info">
+                                        <span className="add-member-name">
+                                            {user.first_name} {user.last_name}
+                                        </span>
+                                        <span className="add-member-role">
+                                            {user.special_status || "Utilisateur"}
+                                        </span>
+                                    </div>
+                                    <button
+                                        className="add-member-btn"
+                                        title="Ajouter ce membre"
+                                        onClick={() => handleAdd(user.id)}
+                                    >
+                                        <FaUserPlus />
+                                    </button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            </Modal>
+        );
+    };
+
     return (
         <AnimatePresence>
             {project && (
@@ -338,7 +440,16 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     {/* --- Gestion des membres --- */}
                                     <div className="form-row">
                                         <div style={{ width: "100%" }}>
-                                            <Text size={18} bold>Gestion des membres</Text>
+                                            <div className="project-members-header">
+                                                <Text size={18} bold>Gestion des membres</Text>
+                                                <button
+                                                    className="project-add-member-btn"
+                                                    onClick={() => setShowAddMemberModal(true)}
+                                                >
+                                                    <FaUserPlus className="project-add-member-icon" />
+                                                    Ajouter un membre
+                                                </button>
+                                            </div>
                                             {membersLoading ? (
                                                 <Text size={16} color="secondary">Chargement des membres...</Text>
                                             ) : members.length === 0 ? (
@@ -485,6 +596,19 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             size="small"
                         />
                     </div>
+
+                    {/* Modal d'ajout de membre */}
+                    {showAddMemberModal && (
+                        <AddMemberModal
+                            projectId={project.id}
+                            currentMembers={members.map(m => m.id)}
+                            onClose={() => setShowAddMemberModal(false)}
+                            onAdded={() => {
+                                setShowAddMemberModal(false);
+                                if (onProjectChanged) onProjectChanged();
+                            }}
+                        />
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>
