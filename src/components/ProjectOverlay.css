@@ -28,7 +28,8 @@
     text-align: center;
     min-height: 400px;
     overflow: auto;
-    padding-bottom: 120px; /* Ajoute un espace pour les boutons fixes en bas */
+    padding-bottom: 120px;
+    /* Ajoute un espace pour les boutons fixes en bas */
 }
 
 .project-overlay-header {
@@ -43,7 +44,8 @@
 .project-overlay-tabs {
     display: flex;
     flex-direction: row;
-    gap: 30px; /* Ajoute un espace entre chaque tab */
+    gap: 30px;
+    /* Ajoute un espace entre chaque tab */
     border-bottom: 2px solid rgba(255, 255, 255, 0.18);
     margin-bottom: 32px;
     overflow-y: hidden;
@@ -94,7 +96,8 @@
 .project-settings-form {
     display: flex;
     flex-direction: column;
-    gap: 32px; /* Augmente l'espacement vertical entre chaque ligne */
+    gap: 32px;
+    /* Augmente l'espacement vertical entre chaque ligne */
     width: 90%;
     background: #fff;
     border-radius: 14px;
@@ -140,8 +143,10 @@
 }
 
 .project-settings-form .input-field[type="color"] {
-    width: 100%;      /* Prend toute la largeur de l'input */
-    height: 65px;     /* Même hauteur que les autres inputs */
+    width: 100%;
+    /* Prend toute la largeur de l'input */
+    height: 65px;
+    /* Même hauteur que les autres inputs */
     padding: 0;
     background: none;
     border: none;
@@ -160,17 +165,26 @@
 
 /* Positionnement du bouton de validation */
 .project-validate-btn {
-    position: fixed;      /* <-- change absolute to fixed */
+    position: fixed;
+    /* <-- change absolute to fixed */
     right: 48px;
     bottom: 40px;
-    z-index: 3000;        /* plus haut que l'overlay */
+    z-index: 3000;
+    /* plus haut que l'overlay */
     /* Optionnel : transition douce à l'apparition */
     animation: fadeInBtn 0.3s;
 }
 
 @keyframes fadeInBtn {
-    from { opacity: 0; transform: translateY(30px);}
-    to   { opacity: 1; transform: translateY(0);}
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Nouvelle ligne pour aligner couleur et tags */
@@ -180,7 +194,7 @@
     width: 100%;
 }
 
-.form-row.inline > * {
+.form-row.inline>* {
     flex: 1 1 0;
     min-width: 0;
 }
@@ -191,7 +205,7 @@
     width: 100%;
 }
 
-.form-row > * {
+.form-row>* {
     flex: 1 1 0;
     min-width: 0;
 }
@@ -226,7 +240,7 @@
 .project-member-card {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
     padding: 14px 20px;
     display: flex;
     align-items: center;
@@ -320,8 +334,8 @@
     width: 100%;
 }
 
-.danger-zone-row > .Button,
-.danger-zone-row > button {
+.danger-zone-row>.Button,
+.danger-zone-row>button {
     width: 220px;
     min-width: 220px;
     max-width: 220px;
@@ -334,4 +348,33 @@
 .danger-zone .Button,
 .danger-zone button {
     min-width: 160px;
+}
+
+.project-member-remove-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    border-radius: 50%;
+    border: 2px solid #dc3545;
+    background: #fff;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0;
+    padding: 0;
+    transition: background 0.15s, color 0.15s, border 0.15s;
+    box-sizing: border-box;
+}
+
+.project-member-remove-btn:hover {
+    background: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
 }

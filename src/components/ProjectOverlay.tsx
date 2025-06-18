@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Text from "./Text";
 import Button from "./Button";
 import Input from "./Input";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
 import "./ProjectOverlay.css";
 import Alert from "./Alert";
 import supabase from "../supabaseClient";
@@ -134,6 +134,24 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [members, setMembers] = React.useState<any[]>([]);
     const [membersLoading, setMembersLoading] = React.useState(false);
     const [previewUser, setPreviewUser] = React.useState<any | null>(null);
+    // Ajoute un état pour l'id utilisateur courant (à adapter selon ton contexte)
+    const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && user.email) {
+                // Récupère l'id numérique depuis la table users
+                const { data: userData } = await supabase
+                    .from("users")
+                    .select("id")
+                    .eq("email", user.email)
+                    .single();
+                if (userData && userData.id) setCurrentUserId(userData.id);
+            }
+        };
+        fetchCurrentUser();
+    }, []);
 
     // Récupère les membres du projet à l'ouverture de l'overlay ou changement de projet
     useEffect(() => {
@@ -209,6 +227,19 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const handleArchiveProject = async () => { /* TODO: logique d'archivage */ };
     const handlePauseProject = async () => { /* TODO: logique de pause */ };
     const handleDuplicateProject = async () => { /* TODO: logique de duplication */ };
+
+    // Handler pour retirer un membre
+    const handleRemoveMember = async (memberId: number) => {
+        if (!project) return;
+        // Supprime le membre de la table project_members
+        await supabase
+            .from("project_members")
+            .delete()
+            .eq("project_id", project.id)
+            .eq("user_id", memberId);
+        // Rafraîchit la liste des membres
+        setMembers(members.filter(m => m.id !== memberId));
+    };
 
     return (
         <AnimatePresence>
@@ -337,6 +368,15 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                                     {member.role}
                                                                 </span>
                                                             </div>
+                                                            {member.id !== currentUserId && (
+                                                                <button
+                                                                    className="project-member-remove-btn"
+                                                                    title="Retirer ce membre"
+                                                                    onClick={() => handleRemoveMember(member.id)}
+                                                                >
+                                                                    <FaTimes />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ))}
                                                 </div>
