@@ -419,7 +419,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     variant="success"
                                     onClick={handleSave}
                                     prefixIcon={<FaCheck />}
-                                    size="large"
+                                    size="small"
                                 />
                             </div>
                         )}
@@ -442,7 +442,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             variant="secondary"
                             onClick={onClose}
                             prefixIcon={<span style={{ fontSize: 18, marginRight: 6 }}>←</span>}
-                            size="large"
+                            size="small"
                         />
                     </div>
                 </motion.div>
