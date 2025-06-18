@@ -316,9 +316,26 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                         ) : (
                             filtered.map(user => (
                                 <div className="add-member-card" key={user.id}>
-                                    <div className="add-member-avatar">
-                                        <img src={user.picture_url || "/assets/avatar1.png"} alt={user.first_name || user.last_name} />
-                                    </div>
+                                    {/* Bloc avatar identique à Relations */}
+                                    {user.picture_url ? (
+                                        <div style={{ position: "relative", display: "inline-block" }}>
+                                            <img
+                                                src={user.picture_url}
+                                                alt={user.first_name}
+                                                className="relation-avatar"
+                                                onClick={() => setPreviewUser && setPreviewUser(user)}
+                                            />
+                                            <UserStatusDot status={user.status} />
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className="relation-avatar"
+                                            style={{ position: "relative", display: "inline-block" }}
+                                            onClick={() => setPreviewUser && setPreviewUser(user)}
+                                        >
+                                            <UserStatusDot status={user.status} />
+                                        </div>
+                                    )}
                                     <div className="add-member-info">
                                         <span className="add-member-name">
                                             {user.first_name} {user.last_name}
@@ -443,6 +460,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                             <div className="project-members-header">
                                                 <Text size={18} bold>Gestion des membres</Text>
                                                 <button
+                                                    type="button"
                                                     className="project-add-member-btn"
                                                     onClick={() => setShowAddMemberModal(true)}
                                                 >

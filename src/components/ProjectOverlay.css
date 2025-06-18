@@ -497,3 +497,16 @@
     color: #fff;
     border-color: #22c55e;
 }
+
+/* Avatar et pastille comme dans Relations */
+.relation-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #eee;
+  object-fit: cover;
+  position: relative;
+  display: inline-block;
+}
+
+/* La pastille UserStatusDot est déjà stylée dans UserStatus.css */
