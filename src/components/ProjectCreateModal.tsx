@@ -8,7 +8,7 @@ import Text from "./Text";
 import Alert from "./Alert";
 import "./ProjectCreateModal.css";
 
-const defaultColor = "#ffffff";
+const defaultColor = "#FFAAFF";
 
 interface ProjectCreateModalProps {
     onClose: () => void;
