@@ -8,7 +8,7 @@ import Text from "./Text";
 import Alert from "./Alert";
 import "./ProjectCreateModal.css";
 
-const defaultColor = "#a259ff";
+const defaultColor = "#ffffff";
 
 interface ProjectCreateModalProps {
     onClose: () => void;
@@ -121,12 +121,16 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
             <div className="project-create-modal-root">
                 <Text size={24} bold>Créer un nouveau projet</Text>
                 <div className="project-create-modal-form">
-                    <Input header="Nom du projet" value={name} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)} />
-                    <Input header="Couleur" type="color" value={color} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)} />
+                    <div className="form-row inline">
+                        <Input header="Nom du projet" value={name} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)} />
+                        <Input header="Couleur" type="color" value={color} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)} />
+                    </div>
                     <Input header="Description" value={description} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)} type="textarea" />
                     <TagInput header="Tags (séparés avec virgules)" tags={tags} setTags={setTags} tagsColors={tagsColors} setTagsColors={setTagsColors} />
-                    <Input header="Date de début" type="date" value={start} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)} />
-                    <Input header="Date de fin" type="date" value={end} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)} />
+                    <div className="form-row inline">
+                        <Input header="Date de début" type="date" value={start} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)} />
+                        <Input header="Date de fin" type="date" value={end} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)} />
+                    </div>
                 </div>
                 {alert && (
                     <Alert
