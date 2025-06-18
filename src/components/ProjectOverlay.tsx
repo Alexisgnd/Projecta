@@ -29,7 +29,7 @@ interface Project {
 interface ProjectOverlayProps {
     project: Project | null;
     onClose: () => void;
-    onProjectChanged?: () => void; // <-- Ajout ici
+    onProjectChanged?: () => void;
 }
 
 const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onProjectChanged }) => {
@@ -367,6 +367,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                         text="Archiver le projet"
                                                         variant="failure"
                                                         onClick={handleArchiveProject}
+                                                        disabled
                                                     />
                                                     <Text size={15} color="danger">
                                                         Rend le projet inactif, mais récupérable plus tard.
@@ -377,6 +378,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                         text="Mettre en pause"
                                                         variant="warning"
                                                         onClick={handlePauseProject}
+                                                        disabled
                                                     />
                                                     <Text size={15} color="warning">
                                                         Suspend temporairement l’activité du projet.
@@ -387,6 +389,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                         text="Dupliquer"
                                                         variant="primary"
                                                         onClick={handleDuplicateProject}
+                                                        disabled
                                                     />
                                                     <Text size={15} color="primary">
                                                         Crée une copie de ce projet.
