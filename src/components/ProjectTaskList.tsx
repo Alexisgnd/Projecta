@@ -15,21 +15,10 @@ interface Task {
 
 interface ProjectTaskListProps {
     projectId: number;
+    refreshKey?: number; // prop optionnelle pour forcer le rafraîchissement
 }
 
-const statusColors: Record<string, string> = {
-    "À faire": "#f59e42",
-    "En cours": "#2563eb",
-    "Terminé": "#22c55e",
-};
-
-const priorityColors: Record<string, string> = {
-    "Basse": "#a3e635",
-    "Moyenne": "#facc15",
-    "Haute": "#ef4444",
-};
-
-const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId }) => {
+const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -45,7 +34,7 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId }) => {
             setLoading(false);
         };
         fetchTasks();
-    }, [projectId]);
+    }, [projectId, refreshKey]);
 
     if (loading) return <Text size={16} color="secondary">Chargement des tâches...</Text>;
     if (tasks.length === 0) return <Text size={16} color="secondary">Aucune tâche pour ce projet.</Text>;
@@ -57,14 +46,12 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId }) => {
                     <div className="project-task-header">
                         <Text size={18} bold>{task.title}</Text>
                         <span
-                            className="project-task-status"
-                            style={{ background: statusColors[task.status] || "#e5e7eb" }}
+                            className={`project-task-status status-${task.status.replace(/\s/g, '').toLowerCase()}`}
                         >
                             {task.status}
                         </span>
                         <span
-                            className="project-task-priority"
-                            style={{ background: priorityColors[task.priority] || "#e5e7eb" }}
+                            className={`project-task-priority priority-${task.priority.replace(/\s/g, '').toLowerCase()}`}
                         >
                             {task.priority}
                         </span>

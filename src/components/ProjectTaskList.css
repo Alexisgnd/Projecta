@@ -33,6 +33,38 @@
     margin-left: 4px;
 }
 
+.project-task-status.status-àfaire {
+    background: #f59e42;
+}
+
+.project-task-status.status-encours {
+    background: #2563eb;
+}
+
+.project-task-status.status-terminé {
+    background: #22c55e;
+}
+
+.project-task-status {
+    background: #e5e7eb;
+}
+
+.project-task-priority.priority-basse {
+    background: #a3e635;
+}
+
+.project-task-priority.priority-moyenne {
+    background: #facc15;
+}
+
+.project-task-priority.priority-haute {
+    background: #ef4444;
+}
+
+.project-task-priority {
+    background: #e5e7eb;
+}
+
 .project-task-desc {
     color: #444;
     font-size: 15px;

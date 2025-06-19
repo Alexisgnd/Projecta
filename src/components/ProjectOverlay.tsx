@@ -374,6 +374,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     };
 
     const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
+    const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
 
     return (
         <AnimatePresence>
@@ -460,7 +461,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
 
                         {selectedTab === 1 && (
                             <div style={{ width: "100%" }}>
-                                <ProjectTaskList projectId={project.id} />
+                                <ProjectTaskList projectId={project.id} refreshKey={tasksRefreshKey} />
                             </div>
                         )}
 
@@ -716,7 +717,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             onClose={() => setShowCreateTaskModal(false)}
                             onTaskCreated={() => {
                                 setShowCreateTaskModal(false);
-                                if (onProjectChanged) onProjectChanged();
+                                setTasksRefreshKey(k => k + 1); // <-- Ajoute ceci pour rafraîchir la liste
                             }}
                         />
                     )}
