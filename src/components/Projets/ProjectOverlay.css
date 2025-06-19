@@ -170,9 +170,8 @@
     right: 48px;
     bottom: 40px;
     z-index: 3000;
-    /* plus haut que l'overlay */
-    /* Optionnel : transition douce à l'apparition */
     animation: fadeInBtn 0.3s;
+    margin-right: 260px;
 }
 
 @keyframes fadeInBtn {
