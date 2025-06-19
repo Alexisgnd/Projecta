@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Text from "./Text";
 import Button from "./Button";
@@ -13,6 +13,7 @@ import { UserStatusDot } from "./UserStatus";
 import Modal from "./Modal";
 import ProjectOverviewTile from "./ProjectOverviewTile";
 import CreateTaskModal from "./CreateTaskModal";
+import ProjectTaskList from "./ProjectTaskList";
 
 interface Project {
     id: number;
@@ -36,20 +37,20 @@ interface ProjectOverlayProps {
 }
 
 const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onProjectChanged }) => {
-    const [selectedTab, setSelectedTab] = React.useState(0);
+    const [selectedTab, setSelectedTab] = useState(0);
 
     // Ajout des états pour tous les champs
-    const [name, setName] = React.useState(project?.name || "");
-    const [description, setDescription] = React.useState(project?.description || "");
-    const [progression, setProgression] = React.useState(project?.progression || 0);
-    const [color, setColor] = React.useState(project?.color || "#a259ff");
-    const [numTasks, setNumTasks] = React.useState(project?.num_tasks || 0);
-    const [numMembers, setNumMembers] = React.useState(project?.num_members || 1);
-    const [tags, setTags] = React.useState<string[]>(project?.tags || []);
-    const [tagsColors, setTagsColors] = React.useState<{ [key: string]: string }>(project?.tags_colors || {});
-    const [status, setStatus] = React.useState(project?.status || "");
-    const [start, setStart] = React.useState(project?.start ? project.start.substring(0, 10) : "");
-    const [end, setEnd] = React.useState(project?.end ? project.end.substring(0, 10) : "");
+    const [name, setName] = useState(project?.name || "");
+    const [description, setDescription] = useState(project?.description || "");
+    const [progression, setProgression] = useState(project?.progression || 0);
+    const [color, setColor] = useState(project?.color || "#a259ff");
+    const [numTasks, setNumTasks] = useState(project?.num_tasks || 0);
+    const [numMembers, setNumMembers] = useState(project?.num_members || 1);
+    const [tags, setTags] = useState<string[]>(project?.tags || []);
+    const [tagsColors, setTagsColors] = useState<{ [key: string]: string }>(project?.tags_colors || {});
+    const [status, setStatus] = useState(project?.status || "");
+    const [start, setStart] = useState(project?.start ? project.start.substring(0, 10) : "");
+    const [end, setEnd] = useState(project?.end ? project.end.substring(0, 10) : "");
 
     // Remet à jour les états quand le projet change
     useEffect(() => {
@@ -68,7 +69,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     }, [project]);
 
     // Ajoute un état pour l'alerte
-    const [alert, setAlert] = React.useState<{
+    const [alert, setAlert] = useState<{
         type: "error" | "success" | "info" | "warning";
         title: string;
         message: React.ReactNode;
@@ -134,13 +135,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     ];
 
     // Ajoute un état pour les membres du projet
-    const [members, setMembers] = React.useState<any[]>([]);
-    const [membersLoading, setMembersLoading] = React.useState(false);
-    const [previewUser, setPreviewUser] = React.useState<any | null>(null);
+    const [members, setMembers] = useState<any[]>([]);
+    const [membersLoading, setMembersLoading] = useState(false);
+    const [previewUser, setPreviewUser] = useState<any | null>(null);
     // Ajoute un état pour l'id utilisateur courant (à adapter selon ton contexte)
-    const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
-    const [currentUserRole, setCurrentUserRole] = React.useState<string | null>(null);
-    const [showAddMemberModal, setShowAddMemberModal] = React.useState(false);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+    const [showAddMemberModal, setShowAddMemberModal] = useState(false);
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -257,9 +258,9 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         onClose: () => void;
         onAdded: () => void;
     }> = ({ projectId, currentMembers, onClose, onAdded }) => {
-        const [search, setSearch] = React.useState("");
-        const [relations, setRelations] = React.useState<any[]>([]);
-        const [loading, setLoading] = React.useState(true);
+        const [search, setSearch] = useState("");
+        const [relations, setRelations] = useState<any[]>([]);
+        const [loading, setLoading] = useState(true);
 
         // Déplace la déclaration de fetchRelations hors du useEffect pour pouvoir l'appeler ici :
         const fetchRelations = async () => {
@@ -372,7 +373,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         );
     };
 
-    const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
+    const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
 
     return (
         <AnimatePresence>
@@ -454,6 +455,12 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     value={project?.end ? new Date(project.end).toLocaleDateString() : "Non défini"}
                                     description="Date de fin"
                                 />
+                            </div>
+                        )}
+
+                        {selectedTab === 1 && (
+                            <div style={{ width: "100%" }}>
+                                <ProjectTaskList projectId={project.id} />
                             </div>
                         )}
 
