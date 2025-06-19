@@ -372,6 +372,23 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
 
     const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
     const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [tasksLoading, setTasksLoading] = useState(false);
+
+    const fetchTasks = React.useCallback(async () => {
+        if (!project) return;
+        setTasksLoading(true);
+        const { data } = await supabase
+            .from("tasks")
+            .select("*")
+            .eq("project_id", project.id);
+        setTasks(data || []);
+        setTasksLoading(false);
+    }, [project]);
+
+    useEffect(() => {
+        fetchTasks();
+    }, [project, tasksRefreshKey]);
 
     return (
         <AnimatePresence>
@@ -423,7 +440,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                 <ProjectOverviewTile
                                     icon={<span role="img" aria-label="Tâches">📝</span>}
                                     title="Nombre de tâches"
-                                    value={project?.num_tasks ?? 0}
+                                    value={tasks.length}
                                     description="Tâches totales dans ce projet"
                                 />
                                 <ProjectOverviewTile
