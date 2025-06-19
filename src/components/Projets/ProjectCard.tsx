@@ -61,7 +61,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         )}
       </div>
       <div className="project-card-title" style={{ color: textColor }}>{title}</div>
-      <div className="project-card-info">
+      {/* Masqué : infos tâches et progression */}
+      {/* <div className="project-card-info">
         <span>
           {tasks} Tâche{tasks > 1 ? 's' : ''}
         </span>
@@ -75,11 +76,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <div
           className="project-card-progress-circle"
           style={{
-            left: `calc(${progress}% - 10px)`, // Centrage du rond
-            display: progress === 0 ? 'none' : undefined // Cache le rond si 0%
+            left: `calc(${progress}% - 10px)`,
+            display: progress === 0 ? 'none' : undefined
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
