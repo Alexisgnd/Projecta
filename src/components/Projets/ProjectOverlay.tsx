@@ -387,7 +387,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
                     style={{ background: color }}
-                    onClick={onClose}
                 >
                     {/* Rightbar membres */}
                     <ProjectMembersBar members={members} onMemberClick={setPreviewUser} />
