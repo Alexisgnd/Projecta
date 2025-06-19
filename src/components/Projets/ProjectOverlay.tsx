@@ -127,12 +127,12 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
 
     const tabs = [
         "📌 Vue d’ensemble",
-        "🧾 Tâches / Kanban",
-        "📊 Indicateurs & KPI",
-        "🗓️ Planning / Gantt",
-        "📂 Documents du projet",
+        "🧾 Tâches",
+        "📊 Indicateurs",
+        "🗓️ Planning",
+        "📂 Documents",
         "📒 Journal de bord",
-        "⚙️ Paramètres du projet",
+        "⚙️ Paramètres",
     ];
 
     // Ajoute un état pour les membres du projet
