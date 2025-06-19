@@ -137,6 +137,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [previewUser, setPreviewUser] = React.useState<any | null>(null);
     // Ajoute un état pour l'id utilisateur courant (à adapter selon ton contexte)
     const [currentUserId, setCurrentUserId] = React.useState<number | null>(null);
+    const [currentUserRole, setCurrentUserRole] = React.useState<string | null>(null);
     const [showAddMemberModal, setShowAddMemberModal] = React.useState(false);
 
     useEffect(() => {
@@ -167,6 +168,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         if (!memberLinks || memberLinks.length === 0) {
             setMembers([]);
             setMembersLoading(false);
+            setCurrentUserRole(null);
             return;
         }
 
@@ -183,7 +185,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
 
         setMembers(membersList);
         setMembersLoading(false);
-    }, [project]);
+
+        // Détermine le rôle du user courant
+        if (currentUserId) {
+            const myMember = memberLinks.find((m: any) => m.user_id === currentUserId);
+            setCurrentUserRole(myMember?.role || null);
+        }
+    }, [project, currentUserId]);
 
     useEffect(() => {
         fetchMembers();
@@ -461,14 +469,16 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                         <div style={{ width: "100%" }}>
                                             <div className="project-members-header">
                                                 <Text size={18} bold>Gestion des membres</Text>
-                                                <button
-                                                    type="button"
-                                                    className="project-add-member-btn"
-                                                    onClick={() => setShowAddMemberModal(true)}
-                                                >
-                                                    <FaUserPlus className="project-add-member-icon" />
-                                                    Ajouter un membre
-                                                </button>
+                                                {currentUserRole === "Propriétaire" && (
+                                                    <button
+                                                        className="project-add-member-btn"
+                                                        type="button"
+                                                        onClick={() => setShowAddMemberModal(true)}
+                                                    >
+                                                        <FaUserPlus className="project-add-member-icon" />
+                                                        Ajouter un membre
+                                                    </button>
+                                                )}
                                             </div>
                                             {membersLoading ? (
                                                 <Text size={16} color="secondary">Chargement des membres...</Text>
@@ -478,7 +488,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                 <div className="project-members-list">
                                                     {members.map(member => (
                                                         <div
-                                                            className={`project-member-card${member.role === "Owner" ? " project-member-owner" : ""}`}
+                                                            className={`project-member-card${member.role === "Propriétaire" ? " project-member-Propriétaire" : ""}`}
                                                             key={member.id}
                                                         >
                                                             <div
@@ -499,7 +509,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                                     {member.role}
                                                                 </span>
                                                             </div>
-                                                            {member.id !== currentUserId && (
+                                                            {member.id !== currentUserId && currentUserRole === "Propriétaire" && (
                                                                 <button
                                                                     className="project-member-remove-btn"
                                                                     title="Retirer ce membre"
@@ -519,56 +529,58 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     </div>
                                     {/* --- Fin gestion des membres --- */}
                                     {/* --- Zone de danger --- */}
-                                    <div className="form-row">
-                                        <div className="danger-zone">
-                                            <Text size={18} bold color="danger">Zone de danger</Text>
-                                            <div className="danger-zone-actions">
-                                                <div className="danger-zone-row">
-                                                    <Button
-                                                        text="Supprimer le projet"
-                                                        variant="failure"
-                                                        onClick={handleDeleteProject}
-                                                    />
-                                                    <Text size={15} color="danger">
-                                                        Supprime définitivement ce projet et toutes ses données.
-                                                    </Text>
-                                                </div>
-                                                <div className="danger-zone-row">
-                                                    <Button
-                                                        text="Archiver le projet"
-                                                        variant="failure"
-                                                        onClick={handleArchiveProject}
-                                                        disabled
-                                                    />
-                                                    <Text size={15} color="danger">
-                                                        Rend le projet inactif, mais récupérable plus tard.
-                                                    </Text>
-                                                </div>
-                                                <div className="danger-zone-row">
-                                                    <Button
-                                                        text="Mettre en pause"
-                                                        variant="warning"
-                                                        onClick={handlePauseProject}
-                                                        disabled
-                                                    />
-                                                    <Text size={15} color="warning">
-                                                        Suspend temporairement l’activité du projet.
-                                                    </Text>
-                                                </div>
-                                                <div className="danger-zone-row">
-                                                    <Button
-                                                        text="Dupliquer"
-                                                        variant="primary"
-                                                        onClick={handleDuplicateProject}
-                                                        disabled
-                                                    />
-                                                    <Text size={15} color="primary">
-                                                        Crée une copie de ce projet.
-                                                    </Text>
+                                    {currentUserRole === "Propriétaire" && (
+                                        <div className="form-row">
+                                            <div className="danger-zone">
+                                                <Text size={18} bold color="danger">Zone de danger</Text>
+                                                <div className="danger-zone-actions">
+                                                    <div className="danger-zone-row">
+                                                        <Button
+                                                            text="Supprimer le projet"
+                                                            variant="failure"
+                                                            onClick={handleDeleteProject}
+                                                        />
+                                                        <Text size={15} color="danger">
+                                                            Supprime définitivement ce projet et toutes ses données.
+                                                        </Text>
+                                                    </div>
+                                                    <div className="danger-zone-row">
+                                                        <Button
+                                                            text="Archiver le projet"
+                                                            variant="failure"
+                                                            onClick={handleArchiveProject}
+                                                            disabled
+                                                        />
+                                                        <Text size={15} color="danger">
+                                                            Rend le projet inactif, mais récupérable plus tard.
+                                                        </Text>
+                                                    </div>
+                                                    <div className="danger-zone-row">
+                                                        <Button
+                                                            text="Mettre en pause"
+                                                            variant="warning"
+                                                            onClick={handlePauseProject}
+                                                            disabled
+                                                        />
+                                                        <Text size={15} color="warning">
+                                                            Suspend temporairement l’activité du projet.
+                                                        </Text>
+                                                    </div>
+                                                    <div className="danger-zone-row">
+                                                        <Button
+                                                            text="Dupliquer"
+                                                            variant="primary"
+                                                            onClick={handleDuplicateProject}
+                                                            disabled
+                                                        />
+                                                        <Text size={15} color="primary">
+                                                            Crée une copie de ce projet.
+                                                        </Text>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
                                     {/* --- Fin zone de danger --- */}
                                 </form>
                             ) : (
