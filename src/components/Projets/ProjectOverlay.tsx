@@ -8,7 +8,7 @@ import "./ProjectOverlay.css";
 import Alert from "../Elements/Alert";
 import supabase from "../../supabaseClient";
 import TagInput from "../Elements/TagInput";
-import ProfilePreviewModal from "../User Profile/ProfilePreviewModal";
+import ProfilePreviewModal from "../Modals/ProfilePreviewModal";
 import { UserStatusDot } from "../User Profile/UserStatus";
 import Modal from "../Modals/Modal";
 import ProjectOverviewTile from "./ProjectOverviewTile";

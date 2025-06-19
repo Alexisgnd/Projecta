@@ -13,7 +13,7 @@ import Sidebar from './components/Elements/Sidebar';
 import { UserUpdateProvider } from './UserContext';
 import Alert from './components/Elements/Alert';
 import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
-import ProfilePreviewModal from './components/User Profile/ProfilePreviewModal';
+import ProfilePreviewModal from './components/Modals/ProfilePreviewModal';
 import Relations from './pages/Relations';
 import Projects from './pages/Projects';
 

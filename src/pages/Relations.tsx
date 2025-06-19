@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Text from "../components/Elements/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
-import ProfilePreviewModal from "../components/User Profile/ProfilePreviewModal";
+import ProfilePreviewModal from "../components/Modals/ProfilePreviewModal";
 import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa";
 import Alert from "../components/Elements/Alert"; // Pour afficher l'alerte
 import { UserStatusDot } from "../components/User Profile/UserStatus";
