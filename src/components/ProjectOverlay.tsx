@@ -387,8 +387,8 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                         {/* Onglets */}
                         <nav className="project-overlay-tabs">
                             {tabs.map((tab, idx) => {
-                                // Désactive les onglets 2 (KPI) et 5 (Journal)
-                                const isDisabled = idx === 2 || idx === 5;
+                                // Désactive les onglets 2 (KPI), 3 (Planning/Gantt), 4 (Documents) et 5 (Journal)
+                                const isDisabled = idx === 2 || idx === 3 || idx === 4 || idx === 5;
                                 return (
                                     <button
                                         key={tab}
