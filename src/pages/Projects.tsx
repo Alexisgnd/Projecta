@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Projects.css';
-import Text from '../components/Text';
-import ProjectCard from '../components/ProjectCard';
+import Text from '../components/Elements/Text';
+import ProjectCard from '../components/Projets/ProjectCard';
 import supabase from '../supabaseClient';
-import ProjectOverlay from '../components/ProjectOverlay';
-import Button from '../components/Button';
-import ProjectCreateModal from '../components/ProjectCreateModal';
+import ProjectOverlay from '../components/Projets/ProjectOverlay';
+import Button from '../components/Buttons/Button';
+import ProjectCreateModal from '../components/Modals/ProjectCreateModal';
 
 interface Project {
     id: number;

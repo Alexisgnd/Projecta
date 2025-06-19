@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
-import Input from "./Input";
-import Button from "./Button";
-import supabase from "../supabaseClient";
-import Text from "./Text";
+import Input from "../Elements/Input";
+import Button from "../Buttons/Button";
+import supabase from "../../supabaseClient";
+import Text from "../Elements/Text";
 
 import "./CreateTaskModal.css";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useProfilePreview } from "../contexts/ProfilePreviewContext";
-import supabase from "../supabaseClient";
-import Text from "./Text";
+import { useProfilePreview } from "../../contexts/ProfilePreviewContext";
+import supabase from "../../supabaseClient";
+import Text from "../Elements/Text";
 
 interface ProfilePreviewModalProps {
   user?: any; // optionnel, si non fourni on affiche le profil connecté

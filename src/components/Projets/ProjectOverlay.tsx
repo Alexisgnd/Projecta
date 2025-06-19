@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Text from "./Text";
-import Button from "./Button";
-import Input from "./Input";
+import Text from "../Elements/Text";
+import Button from "../Buttons/Button";
+import Input from "../Elements/Input";
 import { FaCheck, FaTimes, FaUserPlus } from "react-icons/fa";
 import "./ProjectOverlay.css";
-import Alert from "./Alert";
-import supabase from "../supabaseClient";
-import TagInput from "./TagInput";
-import ProfilePreviewModal from "./ProfilePreviewModal";
-import { UserStatusDot } from "./UserStatus";
-import Modal from "./Modal";
+import Alert from "../Elements/Alert";
+import supabase from "../../supabaseClient";
+import TagInput from "../Elements/TagInput";
+import ProfilePreviewModal from "../User Profile/ProfilePreviewModal";
+import { UserStatusDot } from "../User Profile/UserStatus";
+import Modal from "../Modals/Modal";
 import ProjectOverviewTile from "./ProjectOverviewTile";
-import CreateTaskModal from "./CreateTaskModal";
+import CreateTaskModal from "../Modals/CreateTaskModal";
 import ProjectTaskList from "./ProjectTaskList";
 
 interface Project {

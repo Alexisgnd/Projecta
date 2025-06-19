@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
-import Input from "./Input";
-import Button from "./Button";
-import TagInput from "./TagInput";
-import supabase from "../supabaseClient";
-import Text from "./Text";
-import Alert from "./Alert";
+import Input from "../Elements/Input";
+import Button from "../Buttons/Button";
+import TagInput from "../Elements/TagInput";
+import supabase from "../../supabaseClient";
+import Text from "../Elements/Text";
+import Alert from "../Elements/Alert";
 import "./ProjectCreateModal.css";
 
 const defaultColor = "#FFAAFF";

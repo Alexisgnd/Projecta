@@ -1,6 +1,6 @@
 import React from 'react';
 import './Dashboard.css';
-import Text from '../components/Text';
+import Text from '../components/Elements/Text';
 
 const Dashboard: React.FC = () => {
     return (

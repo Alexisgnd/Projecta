@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Text from "../components/Text";
+import Text from "../components/Elements/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
-import ProfilePreviewModal from "../components/ProfilePreviewModal";
+import ProfilePreviewModal from "../components/User Profile/ProfilePreviewModal";
 import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa";
-import Alert from "../components/Alert"; // Pour afficher l'alerte
-import { UserStatusDot } from "../components/UserStatus";
+import Alert from "../components/Elements/Alert"; // Pour afficher l'alerte
+import { UserStatusDot } from "../components/User Profile/UserStatus";
 
 // Récupère les emails des relations approuvées
 const getUserRelations = async (userEmail: string) => {

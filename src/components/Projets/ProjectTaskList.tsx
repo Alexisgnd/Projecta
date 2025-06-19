@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import supabase from "../supabaseClient";
-import Text from "./Text";
+import supabase from "../../supabaseClient";
+import Text from "../Elements/Text";
 import "./ProjectTaskList.css";
 
 interface Task {

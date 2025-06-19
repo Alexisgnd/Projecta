@@ -3,10 +3,10 @@ import { FaHome, FaFolderOpen, FaSearch, FaPlug, FaUsers, FaQuestionCircle, FaCo
 import Text from './Text';
 import './Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import supabase from '../supabaseClient';
-import { useUserUpdate } from '../UserContext';
-import { useProfilePreview } from '../contexts/ProfilePreviewContext';
-import { USER_STATUSES, UserStatusDot } from "./UserStatus";
+import supabase from '../../supabaseClient';
+import { useUserUpdate } from '../../UserContext';
+import { useProfilePreview } from '../../contexts/ProfilePreviewContext';
+import { USER_STATUSES, UserStatusDot } from "../User Profile/UserStatus";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
