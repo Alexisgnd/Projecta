@@ -509,3 +509,12 @@
     position: relative;
     display: inline-block;
 }
+
+.project-tiles-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    width: 100%;
+    justify-content: flex-start;
+}

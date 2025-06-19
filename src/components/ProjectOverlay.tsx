@@ -11,6 +11,7 @@ import TagInput from "./TagInput";
 import ProfilePreviewModal from "./ProfilePreviewModal";
 import { UserStatusDot } from "./UserStatus";
 import Modal from "./Modal";
+import ProjectOverviewTile from "./ProjectOverviewTile";
 
 interface Project {
     id: number;
@@ -412,6 +413,47 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             })}
                         </nav>
 
+                        {selectedTab === 0 && (
+                            <div className="project-tiles-row">
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Tâches">📝</span>}
+                                    title="Nombre de tâches"
+                                    value={project?.num_tasks ?? 0}
+                                    description="Tâches totales dans ce projet"
+                                />
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Progression">📈</span>}
+                                    title="Progression"
+                                    value={(project?.progression ?? 0) + " %"}
+                                    description="Avancement global"
+                                />
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Membres">👥</span>}
+                                    title="Membres"
+                                    value={project?.num_members ?? 1}
+                                    description="Participants au projet"
+                                />
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Statut">🚦</span>}
+                                    title="Statut"
+                                    value={project?.status || "En cours"}
+                                    description="État du projet"
+                                />
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Début">📅</span>}
+                                    title="Début"
+                                    value={project?.start ? new Date(project.start).toLocaleDateString() : "Non défini"}
+                                    description="Date de début"
+                                />
+                                <ProjectOverviewTile
+                                    icon={<span role="img" aria-label="Fin">🏁</span>}
+                                    title="Fin"
+                                    value={project?.end ? new Date(project.end).toLocaleDateString() : "Non défini"}
+                                    description="Date de fin"
+                                />
+                            </div>
+                        )}
+
                         {/* Contenu de l’onglet */}
                         <div className="project-overlay-details">
                             {selectedTab === 6 ? (
@@ -591,11 +633,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                 </form>
                             ) : (
                                 <>
-                                    <Text size={20}>
-                                        {project.num_tasks} tâche
-                                        {project.num_tasks > 1 ? "s" : ""}
-                                    </Text>
-                                    <Text size={20}>Progression : {project.progression}%</Text>
                                 </>
                             )}
                         </div>
