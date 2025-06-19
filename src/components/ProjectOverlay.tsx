@@ -176,7 +176,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
             const userIds = memberLinks.map((m: any) => m.user_id);
             const { data: users } = await supabase
                 .from("users")
-                .select("id, first_name, last_name, picture_url, status")
+                .select("id, first_name, last_name, email, picture_url, status, primary_color, secondary_color, banner_url")
                 .in("id", userIds);
 
             // Fusionne infos membres et users
