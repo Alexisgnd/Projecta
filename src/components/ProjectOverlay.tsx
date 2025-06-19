@@ -424,12 +424,14 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                             header="Nom du projet"
                                             value={name}
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)}
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                         <Input
                                             header="Couleur projet"
                                             type="color"
                                             value={color}
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColor(e.target.value)}
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                     </div>
                                     <div className="form-row">
@@ -438,6 +440,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                             value={description}
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)}
                                             type="textarea"
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                     </div>
                                     <div className="form-row">
@@ -448,6 +451,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                             tagsColors={tagsColors}
                                             setTagsColors={setTagsColors}
                                             placeholder="ex: urgent, client, interne"
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                     </div>
                                     <div className="form-row">
@@ -456,12 +460,14 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                             type="date"
                                             value={start}
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setStart(e.target.value)}
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                         <Input
                                             header="Date de fin"
                                             type="date"
                                             value={end}
                                             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setEnd(e.target.value)}
+                                            disabled={currentUserRole !== "Propriétaire"}
                                         />
                                     </div>
                                     {/* --- Gestion des membres --- */}
@@ -603,6 +609,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     onClick={handleSave}
                                     prefixIcon={<FaCheck />}
                                     size="small"
+                                    disabled={currentUserRole !== "Propriétaire"}
                                 />
                             </div>
                         )}
