@@ -14,6 +14,7 @@ import Modal from "../Modals/Modal";
 import ProjectOverviewTile from "./ProjectOverviewTile";
 import CreateTaskModal from "../Modals/CreateTaskModal";
 import ProjectTaskList from "./ProjectTaskList";
+import ProjectMembersBar from "../Elements/ProjectMembersBar";
 
 interface Project {
     id: number;
@@ -388,9 +389,13 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                     style={{ background: color }}
                     onClick={onClose}
                 >
+                    {/* Rightbar membres */}
+                    <ProjectMembersBar members={members} onMemberClick={setPreviewUser} />
+                    {/* Contenu principal */}
                     <div
                         className="project-overlay-content"
-                        onClick={(e) => e.stopPropagation()}
+                        style={{ marginRight: 260 }}
+                        onClick={e => e.stopPropagation()}
                     >
                         <header className="project-overlay-header">
                             <Text size={40} bold>
