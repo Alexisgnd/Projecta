@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
 import supabase from "../../supabaseClient";
 import Text from "../Elements/Text";
+import Button from "../Buttons/Button";
+import CreateTaskModal from "../Modals/CreateTaskModal";
 import "./ProjectTaskList.css";
-
-interface Task {
-    id: number;
-    title: string;
-    description: string | null;
-    status: string;
-    priority: string;
-    due_date: string | null;
-    assigned_to: number | null;
-}
+import { Task } from "../../InterfaceTask";
 
 interface ProjectTaskListProps {
     projectId: number;
@@ -21,6 +14,10 @@ interface ProjectTaskListProps {
 const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Nouveaux états pour l'édition
+    const [editTask, setEditTask] = useState<Task | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -65,9 +62,56 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                                 Échéance : {new Date(task.due_date).toLocaleDateString()}
                             </span>
                         )}
+                        <div className="project-task-actions">
+                            <Button
+                                text="Modifier"
+                                variant="secondary"
+                                size="small"
+                                onClick={() => {
+                                    setEditTask(task);
+                                    setShowEditModal(true);
+                                }}
+                            />
+                            <Button
+                                text="Supprimer"
+                                variant="failure"
+                                size="small"
+                                onClick={() => {/* TODO: logique de suppression */ }}
+                            />
+                        </div>
                     </div>
                 </div>
             ))}
+            {/* Modal d'édition */}
+            {showEditModal && editTask && (
+                <CreateTaskModal
+                    projectId={projectId}
+                    assignerId={editTask.assigner || null}
+                    onClose={() => {
+                        setShowEditModal(false);
+                        setEditTask(null);
+                    }}
+                    onTaskCreated={() => {
+                        setShowEditModal(false);
+                        setEditTask(null);
+                        // Rafraîchit la liste
+                        const fetchTasks = async () => {
+                            setLoading(true);
+                            const { data } = await supabase
+                                .from("tasks")
+                                .select("*")
+                                .eq("project_id", projectId)
+                                .order("due_date", { ascending: true });
+                            setTasks(data || []);
+                            setLoading(false);
+                        };
+                        fetchTasks();
+                    }}
+                    // Passe la tâche à éditer en prop (à ajouter dans CreateTaskModal)
+                    task={editTask}
+                    isEdit
+                />
+            )}
         </div>
     );
 };

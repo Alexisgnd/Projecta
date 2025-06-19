@@ -75,4 +75,12 @@
     margin-top: 8px;
     font-size: 13px;
     color: #757575;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project-task-actions {
+    display: flex;
+    gap: 8px;
 }

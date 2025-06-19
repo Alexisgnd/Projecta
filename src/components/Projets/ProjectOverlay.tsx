@@ -21,7 +21,6 @@ interface Project {
     name: string;
     color: string;
     progression: number;
-    num_tasks: number;
     description?: string;
     tags?: string[];
     tags_colors?: { [key: string]: string };
@@ -44,7 +43,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [description, setDescription] = useState(project?.description || "");
     const [progression, setProgression] = useState(project?.progression || 0);
     const [color, setColor] = useState(project?.color || "#a259ff");
-    const [numTasks, setNumTasks] = useState(project?.num_tasks || 0);
     const [tags, setTags] = useState<string[]>(project?.tags || []);
     const [tagsColors, setTagsColors] = useState<{ [key: string]: string }>(project?.tags_colors || {});
     const [status, setStatus] = useState(project?.status || "");
@@ -58,7 +56,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         setDescription(project?.description || "");
         setProgression(project?.progression || 0);
         setColor(project?.color || "#a259ff");
-        setNumTasks(project?.num_tasks || 0);
         setTags(project?.tags || []);
         setTagsColors(project?.tags_colors || {});
         setStatus(project?.status || "");
@@ -95,7 +92,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                 description,
                 color,
                 progression,
-                num_tasks: numTasks,
                 tags,
                 tags_colors: tagsColors,
                 status,

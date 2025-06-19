@@ -17,7 +17,7 @@ function isColorLight(hex: string): boolean {
 
 interface ProjectCardProps {
   title: string;
-  tasks: number;
+  tasks?: number;
   progress: number; // 0-100
   members: string[]; // URLs des avatars
   extraMembers?: number;

@@ -14,7 +14,6 @@ interface Project {
     name: string;
     progression: number;
     color: string;
-    num_tasks: number;
     members?: any[];
 }
 
@@ -130,7 +129,6 @@ const Projects: React.FC = () => {
                                 <div key={project.id} className="project-card-wrapper">
                                     <ProjectCard
                                         title={project.name}
-                                        tasks={project.num_tasks}
                                         progress={project.progression}
                                         members={members}
                                         extraMembers={extraMembers}
