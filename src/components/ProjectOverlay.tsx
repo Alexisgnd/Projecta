@@ -156,40 +156,38 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     }, []);
 
     // Récupère les membres du projet à l'ouverture de l'overlay ou changement de projet
-    useEffect(() => {
-        const fetchMembers = async () => {
-            if (!project) return;
-            setMembersLoading(true);
-            // Récupère les membres depuis project_members
-            const { data: memberLinks } = await supabase
-                .from("project_members")
-                .select("user_id, role")
-                .eq("project_id", project.id);
+    const fetchMembers = React.useCallback(async () => {
+        if (!project) return;
+        setMembersLoading(true);
+        const { data: memberLinks } = await supabase
+            .from("project_members")
+            .select("user_id, role")
+            .eq("project_id", project.id);
 
-            if (!memberLinks || memberLinks.length === 0) {
-                setMembers([]);
-                setMembersLoading(false);
-                return;
-            }
-
-            // Récupère les infos utilisateurs
-            const userIds = memberLinks.map((m: any) => m.user_id);
-            const { data: users } = await supabase
-                .from("users")
-                .select("id, first_name, last_name, email, picture_url, status, primary_color, secondary_color, banner_url")
-                .in("id", userIds);
-
-            // Fusionne infos membres et users
-            const membersList = memberLinks.map((m: any) => ({
-                ...users?.find((u: any) => u.id === m.user_id),
-                role: m.role,
-            }));
-
-            setMembers(membersList);
+        if (!memberLinks || memberLinks.length === 0) {
+            setMembers([]);
             setMembersLoading(false);
-        };
-        fetchMembers();
+            return;
+        }
+
+        const userIds = memberLinks.map((m: any) => m.user_id);
+        const { data: users } = await supabase
+            .from("users")
+            .select("id, first_name, special_status, description, last_name, email, picture_url, status, primary_color, secondary_color, banner_url")
+            .in("id", userIds);
+
+        const membersList = memberLinks.map((m: any) => ({
+            ...users?.find((u: any) => u.id === m.user_id),
+            role: m.role,
+        }));
+
+        setMembers(membersList);
+        setMembersLoading(false);
     }, [project]);
+
+    useEffect(() => {
+        fetchMembers();
+    }, [project, fetchMembers]);
 
     // Handlers pour les actions de la zone de danger
     const handleDeleteProject = async () => {
@@ -253,33 +251,35 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         const [relations, setRelations] = React.useState<any[]>([]);
         const [loading, setLoading] = React.useState(true);
 
-        React.useEffect(() => {
-            const fetchRelations = async () => {
-                setLoading(true);
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user || !user.email) {
-                    setLoading(false);
-                    return;
-                }
-                const { data: friendsData } = await supabase
-                    .from("user_friends")
-                    .select("friend_email")
-                    .eq("user_email", user.email);
-                const friendEmails = (friendsData || []).map((f: any) => f.friend_email);
-
-                if (friendEmails.length === 0) {
-                    setRelations([]);
-                    setLoading(false);
-                    return;
-                }
-                const { data: usersData } = await supabase
-                    .from("users")
-                    .select("*")
-                    .in("email", friendEmails)
-                    .not("id", "in", `(${currentMembers.join(",") || 0})`);
-                setRelations(usersData || []);
+        // Déplace la déclaration de fetchRelations hors du useEffect pour pouvoir l'appeler ici :
+        const fetchRelations = async () => {
+            setLoading(true);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user || !user.email) {
                 setLoading(false);
-            };
+                return;
+            }
+            const { data: friendsData } = await supabase
+                .from("user_friends")
+                .select("friend_email")
+                .eq("user_email", user.email);
+            const friendEmails = (friendsData || []).map((f: any) => f.friend_email);
+
+            if (friendEmails.length === 0) {
+                setRelations([]);
+                setLoading(false);
+                return;
+            }
+            const { data: usersData } = await supabase
+                .from("users")
+                .select("*")
+                .in("email", friendEmails)
+                .not("id", "in", `(${currentMembers.join(",") || 0})`);
+            setRelations(usersData || []);
+            setLoading(false);
+        };
+
+        React.useEffect(() => {
             fetchRelations();
         }, [projectId, currentMembers]);
 
@@ -288,6 +288,8 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                 .from("project_members")
                 .insert([{ project_id: projectId, user_id: userId, role: "Membre" }]);
             onAdded();
+            // Rafraîchit la liste des relations pour que le membre ajouté disparaisse de la liste
+            fetchRelations();
         };
 
         const filtered = relations.filter(
@@ -623,6 +625,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             onClose={() => setShowAddMemberModal(false)}
                             onAdded={() => {
                                 setShowAddMemberModal(false);
+                                fetchMembers();
                                 if (onProjectChanged) onProjectChanged();
                             }}
                         />
