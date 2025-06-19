@@ -241,13 +241,14 @@
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
-    padding: 14px 20px;
+    padding: 18px 24px;
     display: flex;
     align-items: center;
     gap: 18px;
     transition: box-shadow 0.2s;
     position: relative;
     justify-content: flex-start;
+    min-height: 80px;
 }
 
 .project-member-owner {
@@ -256,25 +257,24 @@
 }
 
 .project-member-avatar {
-    width: 42px;
-    height: 42px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
-    background: #f3f4f6;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    background: #eee;
+    object-fit: cover;
     position: relative;
+    display: inline-block;
+    overflow: visible;
     cursor: pointer;
 }
 
 .project-member-avatar img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
     border-radius: 50%;
+    object-fit: cover;
 }
+
 
 .project-member-info {
     display: flex;
@@ -284,17 +284,18 @@
 }
 
 .project-member-name {
-    font-size: 1.08rem;
-    font-weight: 600;
-    color: #222;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #3730A3;
+    /* même bleu que Relations */
 }
 
 .project-member-role {
-    font-size: 0.98rem;
-    color: #a259ff;
+    font-size: 0.95rem;
+    color: #757575;
+    /* gris discret */
     font-weight: 500;
-    opacity: 0.85;
-    width: 100%;
+    opacity: 1;
 }
 
 .project-member-role-left {
@@ -500,13 +501,11 @@
 
 /* Avatar et pastille comme dans Relations */
 .relation-avatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: #eee;
-  object-fit: cover;
-  position: relative;
-  display: inline-block;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    position: relative;
+    display: inline-block;
 }
-
-/* La pastille UserStatusDot est déjà stylée dans UserStatus.css */
