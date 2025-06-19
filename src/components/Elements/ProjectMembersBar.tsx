@@ -1,6 +1,6 @@
 import React from "react";
-import "../User Profile/UserStatus.css";
 import { UserStatusDot } from "../User Profile/UserStatus";
+import "./ProjectMembersBar.css";
 
 interface Member {
     id: number;
@@ -28,12 +28,12 @@ const ProjectMembersBar: React.FC<ProjectMembersBarProps> = ({ members, onMember
                     className="project-members-bar-item"
                     onClick={() => onMemberClick && onMemberClick(member)}
                 >
-                    <div className="project-member-avatar">
+                    <div className="relation-avatar">
                         <img
                             src={member.picture_url || "/assets/avatar1.png"}
                             alt={`${member.first_name} ${member.last_name}`}
                         />
-                        <span className="project-member-status-dot">
+                        <span className="user-status-dot-wrapper">
                             <UserStatusDot status={member.status} />
                         </span>
                     </div>
