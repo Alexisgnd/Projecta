@@ -488,7 +488,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                 <div className="project-members-list">
                                                     {members.map(member => (
                                                         <div
-                                                            className={`project-member-card${member.role === "Propriétaire" ? " project-member-Propriétaire" : ""}`}
+                                                            className={`project-member-card${member.role === "Propriétaire" ? " project-member-owner" : ""}`}
                                                             key={member.id}
                                                         >
                                                             <div
