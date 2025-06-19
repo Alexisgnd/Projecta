@@ -89,13 +89,13 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
             return;
         }
 
-        // Ajoute le créateur comme Owner dans project_members
+        // Ajoute le créateur comme Propriétaire dans project_members
         const { error: memberError } = await supabase
             .from("project_members")
             .insert([{
                 project_id: project.id,
                 user_id: userId,
-                role: "Owner"
+                role: "Propriétaire",
             }]);
         setLoading(false);
         if (memberError) {
