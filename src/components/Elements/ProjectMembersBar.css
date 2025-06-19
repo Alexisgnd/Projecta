@@ -45,6 +45,45 @@
     background: #f3f4f6;
 }
 
+.project-member-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: inline-block;
+}
+
+.project-member-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+    display: block;
+}
+
+.project-member-status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    /* La pastille UserStatusDot fait 12px comme dans Relations/Sidebar */
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.user-status-dot {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: #4ade80;
+    /* Couleur par défaut, écrasée par le composant */
+}
+
 .project-members-bar-avatar {
     width: 44px;
     height: 44px;
