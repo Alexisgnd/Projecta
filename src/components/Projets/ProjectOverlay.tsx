@@ -598,9 +598,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                                 </div>
                                             )}
                                         </div>
-                                        {previewUser && (
-                                            <ProfilePreviewModal user={previewUser} onClose={() => setPreviewUser(null)} />
-                                        )}
                                     </div>
                                     {/* --- Fin gestion des membres --- */}
                                     {/* --- Zone de danger --- */}
@@ -724,6 +721,9 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                 setTasksRefreshKey(k => k + 1); // <-- Ajoute ceci pour rafraîchir la liste
                             }}
                         />
+                    )}
+                    {previewUser && (
+                        <ProfilePreviewModal user={previewUser} onClose={() => setPreviewUser(null)} />
                     )}
                 </motion.div>
             )}
