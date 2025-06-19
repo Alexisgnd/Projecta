@@ -15,7 +15,6 @@ interface Project {
     progression: number;
     color: string;
     num_tasks: number;
-    num_members: number;
     members?: any[];
 }
 

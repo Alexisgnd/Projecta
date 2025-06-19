@@ -75,7 +75,6 @@ const ProjectCreateModal: React.FC<ProjectCreateModalProps> = ({ onClose, onCrea
                 end: end ? new Date(end).toISOString() : null,
                 progression: 0,
                 num_tasks: 0,
-                num_members: 1,
             }])
             .select("*")
             .single();

@@ -23,7 +23,6 @@ interface Project {
     progression: number;
     num_tasks: number;
     description?: string;
-    num_members?: number;
     tags?: string[];
     tags_colors?: { [key: string]: string };
     status?: string;
@@ -46,7 +45,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [progression, setProgression] = useState(project?.progression || 0);
     const [color, setColor] = useState(project?.color || "#a259ff");
     const [numTasks, setNumTasks] = useState(project?.num_tasks || 0);
-    const [numMembers, setNumMembers] = useState(project?.num_members || 1);
     const [tags, setTags] = useState<string[]>(project?.tags || []);
     const [tagsColors, setTagsColors] = useState<{ [key: string]: string }>(project?.tags_colors || {});
     const [status, setStatus] = useState(project?.status || "");
@@ -61,7 +59,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         setProgression(project?.progression || 0);
         setColor(project?.color || "#a259ff");
         setNumTasks(project?.num_tasks || 0);
-        setNumMembers(project?.num_members || 1);
         setTags(project?.tags || []);
         setTagsColors(project?.tags_colors || {});
         setStatus(project?.status || "");
@@ -99,7 +96,6 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                 color,
                 progression,
                 num_tasks: numTasks,
-                num_members: numMembers,
                 tags,
                 tags_colors: tagsColors,
                 status,
@@ -439,7 +435,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                 <ProjectOverviewTile
                                     icon={<span role="img" aria-label="Membres">👥</span>}
                                     title="Membres"
-                                    value={project?.num_members ?? 1}
+                                    value={members.length}
                                     description="Participants au projet"
                                 />
                                 <ProjectOverviewTile
