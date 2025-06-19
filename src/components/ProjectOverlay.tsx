@@ -12,6 +12,7 @@ import ProfilePreviewModal from "./ProfilePreviewModal";
 import { UserStatusDot } from "./UserStatus";
 import Modal from "./Modal";
 import ProjectOverviewTile from "./ProjectOverviewTile";
+import CreateTaskModal from "./CreateTaskModal";
 
 interface Project {
     id: number;
@@ -229,7 +230,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
             });
             setTimeout(() => {
                 onClose();
-                if (onProjectChanged) onProjectChanged(); // <-- Ajout ici
+                if (onProjectChanged) onProjectChanged();
             }, 1200);
         }
     };
@@ -371,6 +372,8 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
         );
     };
 
+    const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
+
     return (
         <AnimatePresence>
             {project && (
@@ -450,6 +453,18 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                                     title="Fin"
                                     value={project?.end ? new Date(project.end).toLocaleDateString() : "Non défini"}
                                     description="Date de fin"
+                                />
+                            </div>
+                        )}
+
+                        {selectedTab === 1 && currentUserRole === "Propriétaire" && (
+                            <div className="project-validate-btn">
+                                <Button
+                                    text="Créer une tâche"
+                                    variant="success"
+                                    onClick={() => setShowCreateTaskModal(true)}
+                                    prefixIcon={<FaCheck />}
+                                    size="small"
                                 />
                             </div>
                         )}
@@ -682,6 +697,18 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             onAdded={() => {
                                 setShowAddMemberModal(false);
                                 fetchMembers();
+                                if (onProjectChanged) onProjectChanged();
+                            }}
+                        />
+                    )}
+
+                    {showCreateTaskModal && project && (
+                        <CreateTaskModal
+                            projectId={project.id}
+                            assignerId={currentUserId}
+                            onClose={() => setShowCreateTaskModal(false)}
+                            onTaskCreated={() => {
+                                setShowCreateTaskModal(false);
                                 if (onProjectChanged) onProjectChanged();
                             }}
                         />
