@@ -8,10 +8,11 @@ import { Task } from "../../InterfaceTask";
 
 interface ProjectTaskListProps {
     projectId: number;
-    refreshKey?: number; // prop optionnelle pour forcer le rafraîchissement
+    refreshKey?: number;
+    onTaskChanged?: () => void; // Ajoute cette ligne
 }
 
-const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey }) => {
+const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey, onTaskChanged }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -76,7 +77,14 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                                 text="Supprimer"
                                 variant="failure"
                                 size="small"
-                                onClick={() => {/* TODO: logique de suppression */ }}
+                                onClick={async () => {
+                                    await supabase
+                                        .from("tasks")
+                                        .delete()
+                                        .eq("id", task.id);
+                                    setTasks(tasks => tasks.filter(t => t.id !== task.id));
+                                    if (onTaskChanged) onTaskChanged(); // Ajoute ceci
+                                }}
                             />
                         </div>
                     </div>

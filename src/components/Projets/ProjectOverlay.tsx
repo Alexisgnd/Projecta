@@ -474,7 +474,11 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
 
                         {selectedTab === 1 && (
                             <div style={{ width: "100%" }}>
-                                <ProjectTaskList projectId={project.id} refreshKey={tasksRefreshKey} />
+                                <ProjectTaskList
+                                    projectId={project.id}
+                                    refreshKey={tasksRefreshKey}
+                                    onTaskChanged={() => setTasksRefreshKey(k => k + 1)}
+                                />
                             </div>
                         )}
 
