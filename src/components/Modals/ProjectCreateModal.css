@@ -1,0 +1,54 @@
+.project-create-modal-root {
+    min-width: 700px;   /* élargit la modale */
+    max-width: 900px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.project-create-modal-form {
+    margin: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.project-create-modal-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Pour cibler l'input de couleur dans le formulaire */
+input[type="color"] {
+    width: 100%;
+    height: 40px; /* ou la hauteur de tes autres inputs */
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: 6px;
+    box-shadow: none;
+    outline: none;
+    /* Pour enlever le padding interne sur certains navigateurs */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Pour Chrome/Safari : enlever le cercle par défaut */
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 6px;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+}
+
+/* Pour Firefox */
+input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 6px;
+}

@@ -1,0 +1,83 @@
+.tag-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 65px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #F3F4F6;
+    border: 1px solid #ccc;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tag-chip {
+    display: flex;
+    align-items: center;
+    border-radius: 18px;
+    padding: 6px 14px 6px 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    background: #eee;
+    color: #333;
+    position: relative;
+    transition: background 0.2s;
+    box-shadow: 0 1px 4px #0001;
+}
+
+.tag-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background: #a259ff;
+    display: inline-block;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px #0002;
+    cursor: pointer;
+    position: relative;
+}
+
+.tag-label {
+    margin-right: 4px;
+}
+
+.tag-remove {
+    margin-left: 8px;
+    font-size: 1.1em;
+    color: #a259ff;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+}
+
+.tag-input {
+    flex: 1;
+    min-width: 80px;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    outline: none;
+    color: #222;
+    padding: 8px 0;
+}
+
+.tag-color-picker {
+    position: absolute;
+    left: 50%;
+    top: 120%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px #0002;
+    padding: 0;
+    cursor: pointer;
+    z-index: 10;
+    appearance: none;
+}

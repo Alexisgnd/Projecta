@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Text from "../components/Text";
+import React, { useState, useEffect } from "react";
+import Text from "../components/Elements/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
-import ProfilePreviewModal from "../components/ProfilePreviewModal";
+import ProfilePreviewModal from "../components/Modals/ProfilePreviewModal";
 import { FaUserPlus, FaHourglassHalf, FaCheck, FaTimes } from "react-icons/fa";
-import Alert from "../components/Alert"; // Pour afficher l'alerte
-import { UserStatusDot } from "../components/UserStatus";
+import Alert from "../components/Elements/Alert"; // Pour afficher l'alerte
+import { UserStatusDot } from "../components/User Profile/UserStatus";
 
 // Récupère les emails des relations approuvées
 const getUserRelations = async (userEmail: string) => {
@@ -123,6 +123,24 @@ const Relations: React.FC = () => {
     await supabase
       .from("relations")
       .insert([{ sender_email: user.email, receiver_email: receiverEmail, status: "pending" }]);
+
+    // Récupère l'id du destinataire
+    const { data: receiver } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", receiverEmail)
+      .single();
+
+    if (receiver && receiver.id) {
+      // Ajoute la notification pour le destinataire
+      await supabase.from("notifs").insert([{
+        user_id: receiver.id,
+        title: "Nouvelle Relation",
+        content: "Nouvelle demande de relation",
+        read: false,
+        type: "friends"
+      }]);
+    }
   };
 
   // Fonction pour retirer un ami
@@ -137,6 +155,14 @@ const Relations: React.FC = () => {
     setRelations((prev) => prev.filter((r) => r.email !== friendEmail));
     showAlert("success", "Relation supprimée", "L'ami a été retiré de vos relations.");
   };
+
+  useEffect(() => {
+    const fetchCurrentUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserEmail(user?.email || null);
+    };
+    fetchCurrentUserEmail();
+  }, []);
 
   return (
     <div className="relations-root">

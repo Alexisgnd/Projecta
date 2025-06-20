@@ -1,9 +1,8 @@
 .button {
-  display: flex;
-  padding: 25px;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 0;
   align-self: stretch;
   border-radius: 6px;
   color: #fff;
@@ -13,6 +12,21 @@
   font-weight: 600;
   transition: background 0.2s;
   box-shadow: 0px 30px 60px 0px rgba(79, 70, 229, 0.15);
+  padding: 16px 32px;
+}
+
+.button.button-small {
+  padding: 6px 8px;
+  font-size: 1.1rem;
+  min-width: 0;
+}
+.button.button-medium {
+  padding: 16px 32px;
+  font-size: 1.1rem;
+}
+.button.button-large {
+  padding: 25px 40px;
+  font-size: 1.25rem;
 }
 
 .button.primary {
@@ -39,6 +53,22 @@
   background: #15803D;
 }
 
+.button.failure {
+  background: #ef4444;
+}
+.button.failure:active,
+.button.failure.selected {
+  background: #991b1b;
+}
+
+.button.warning {
+  background: #f59e42;
+}
+.button.warning:active,
+.button.warning.selected {
+  background: #b45309;
+}
+
 .button:hover {
   filter: brightness(1.08);
   box-shadow: 0 6px 24px 0 rgba(79, 70, 229, 0.25);
@@ -58,4 +88,21 @@
   box-shadow: none !important;
   filter: none !important;
   transform: none !important;
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+}
+.button-icon.prefix {
+  margin-right: 12px;
+}
+.button-icon.suffix {
+  margin-left: 12px;
+}
+
+.button.icon-only {
+  gap: 0;
+  padding: 6px 8px;
 }

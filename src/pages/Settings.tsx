@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Settings.css';
-import Text from '../components/Text';
+import Text from '../components/Elements/Text';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
-import Alert from '../components/Alert';
+import Alert from '../components/Elements/Alert';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);

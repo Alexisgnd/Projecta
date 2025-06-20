@@ -17,11 +17,12 @@ function isColorLight(hex: string): boolean {
 
 interface ProjectCardProps {
   title: string;
-  tasks: number;
+  tasks?: number;
   progress: number; // 0-100
   members: string[]; // URLs des avatars
   extraMembers?: number;
-  backgroundColor?: string; // Ajout de la prop
+  backgroundColor?: string;
+  onClick?: () => void; // gestion du clic
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -31,6 +32,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   members,
   extraMembers = 0,
   backgroundColor = "#a259ff",
+  onClick,
 }) => {
   // Détermine la couleur du texte selon le fond
   const textColor = isColorLight(backgroundColor.replace(/[^#a-fA-F0-9]/g, '')) ? "#222" : "#fff";
@@ -39,6 +41,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <div
       className="project-card"
       style={{ background: backgroundColor, color: textColor }}
+      onClick={onClick}
     >
       <div className="project-card-folder-shape" />
       <div className="project-card-members">
@@ -58,7 +61,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         )}
       </div>
       <div className="project-card-title" style={{ color: textColor }}>{title}</div>
-      <div className="project-card-info">
+      {/* Masqué : infos tâches et progression */}
+      {/* <div className="project-card-info">
         <span>
           {tasks} Tâche{tasks > 1 ? 's' : ''}
         </span>
@@ -72,11 +76,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <div
           className="project-card-progress-circle"
           style={{
-            left: `calc(${progress}% - 10px)`, // Centrage du rond
-            display: progress === 0 ? 'none' : undefined // Cache le rond si 0%
+            left: `calc(${progress}% - 10px)`,
+            display: progress === 0 ? 'none' : undefined
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

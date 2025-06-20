@@ -1,7 +1,7 @@
 import './App.css'
-import Button from './components/Button'
-import Input from './components/Input'
-import Text from './components/Text'
+import Button from './components/Buttons/Button'
+import Input from './components/Elements/Input'
+import Text from './components/Elements/Text'
 import supabase from './supabaseClient';
 import { SetStateAction, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
@@ -9,11 +9,11 @@ import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Settings from './pages/Settings'
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/Elements/Sidebar';
 import { UserUpdateProvider } from './UserContext';
-import Alert from './components/Alert';
+import Alert from './components/Elements/Alert';
 import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
-import ProfilePreviewModal from './components/ProfilePreviewModal';
+import ProfilePreviewModal from './components/Modals/ProfilePreviewModal';
 import Relations from './pages/Relations';
 import Projects from './pages/Projects';
 
@@ -111,7 +111,7 @@ function AuthPage() {
           .from('users')
           .update({ status: "online" })
           .eq('email', email);
-        navigate('/dashboard');
+        navigate('/projects'); // <-- redirection vers projets
       } else {
         setError('Mot de passe incorrect')
         setAlertKey(Date.now().toString());
@@ -149,7 +149,7 @@ function AuthPage() {
       if (insertError) {
         setError("Erreur lors de l'ajout dans la base")
       } else {
-        navigate('/dashboard');
+        navigate('/projects'); // <-- redirection vers projets
       }
     } else {
       handleCheck()

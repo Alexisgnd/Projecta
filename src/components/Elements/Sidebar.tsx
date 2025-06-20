@@ -1,27 +1,27 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { FaHome, FaFolderOpen, FaSearch, FaPlug, FaUsers, FaQuestionCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Text from './Text';
 import './Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import supabase from '../supabaseClient';
-import { useUserUpdate } from '../UserContext';
-import { useProfilePreview } from '../contexts/ProfilePreviewContext';
-import { USER_STATUSES, UserStatusDot } from "./UserStatus";
+import supabase from '../../supabaseClient';
+import { useUserUpdate } from '../../UserContext';
+import { useProfilePreview } from '../../contexts/ProfilePreviewContext';
+import { USER_STATUSES, UserStatusDot } from "../User Profile/UserStatus";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [displayName, setDisplayName] = React.useState<string>('Utilisateur');
-  const [specialStatus, setSpecialStatus] = React.useState<string>('');
-  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
-  const [activityStatus, setActivityStatus] = React.useState<string>('online');
-  const [showStatusMenu, setShowStatusMenu] = React.useState(false);
+  const [displayName, setDisplayName] = useState<string>('Utilisateur');
+  const [specialStatus, setSpecialStatus] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [activityStatus, setActivityStatus] = useState<string>('online');
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
   const { userRefreshCount } = useUserUpdate();
   const { open: openProfilePreview } = useProfilePreview();
   const statusBoxRef = useRef<HTMLDivElement>(null);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
@@ -52,7 +52,7 @@ const Sidebar: React.FC = () => {
     fetchUser();
   }, [userRefreshCount]); // <-- Ajoute la dépendance ici
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
@@ -234,14 +234,14 @@ const Sidebar: React.FC = () => {
       </div>
       {/* Menu */}
       <div className="sidebar-menu">
-        {/* Dashboard */}
+        {/* Dashboard (désactivé) */}
         <div
-          className={`sidebar-item${location.pathname === '/dashboard' ? ' active' : ''}`}
-          onClick={() => navigate('/dashboard')}
-          style={{ cursor: 'pointer' }}
+          className="sidebar-item disabled"
+          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+          title="Fonctionnalité désactivée"
         >
           <FaHome size={22} className="sidebar-icon" />
-          <Text size={16} color={location.pathname === '/dashboard' ? "#3730A3" : "#757575"} bold={location.pathname === '/dashboard'}>DASHBOARD</Text>
+          <Text size={16} color="#757575">DASHBOARD</Text>
         </div>
         {/* Projets */}
         <div

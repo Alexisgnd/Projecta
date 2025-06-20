@@ -1,0 +1,50 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.18);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop-project-details {
+    z-index: 4000 !important;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px #0002;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 320px;
+    max-width: 96vw;
+    width: auto;
+}
+
+/* Ajoute une classe pour les modals larges */
+.modal-content--wide {
+    min-width: 950px;
+    max-width: 1200px;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #888;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.18s;
+}
+.modal-close-btn:hover {
+    color: #a259ff;
+}
