@@ -36,7 +36,7 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
     onProjectResponse,
     onShowProjectDetails
 }) => (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} contentClassName="modal-content--wide">
         <div className="notifications-modal-root">
             <div className="notifications-modal-header">
                 <Text size={22} bold>Notifications</Text>

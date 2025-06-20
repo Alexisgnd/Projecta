@@ -18,12 +18,19 @@
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 2px 16px #0002;
-    min-width: 1100px;     /* élargit la largeur minimale */
-    max-width: 1400px;     /* élargit la largeur maximale */
     padding: 0;
     position: relative;
     display: flex;
     flex-direction: column;
+    min-width: 320px;
+    max-width: 96vw;
+    width: auto;
+}
+
+/* Ajoute une classe pour les modals larges */
+.modal-content--wide {
+    min-width: 950px;
+    max-width: 1200px;
 }
 
 .modal-close-btn {
