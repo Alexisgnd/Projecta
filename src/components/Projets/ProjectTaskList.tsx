@@ -5,15 +5,16 @@ import Button from "../Buttons/Button";
 import CreateTaskModal from "../Modals/CreateTaskModal";
 import "./ProjectTaskList.css";
 import { Task } from "../../InterfaceTask";
+import { TaskWithUsers } from "../../InterfaceTask";
 
 interface ProjectTaskListProps {
     projectId: number;
     refreshKey?: number;
-    onTaskChanged?: () => void; // Ajoute cette ligne
+    onTaskChanged?: () => void;
 }
 
 const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey, onTaskChanged }) => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<TaskWithUsers[]>([]);
     const [loading, setLoading] = useState(true);
 
     // Nouveaux états pour l'édition
@@ -23,12 +24,38 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
     useEffect(() => {
         const fetchTasks = async () => {
             setLoading(true);
-            const { data } = await supabase
+            // Récupère les tâches
+            const { data: tasksData } = await supabase
                 .from("tasks")
                 .select("*")
                 .eq("project_id", projectId)
                 .order("due_date", { ascending: true });
-            setTasks(data || []);
+
+            // Récupère tous les IDs utilisateurs nécessaires
+            const userIds = [
+                ...new Set(
+                    (tasksData || [])
+                        .flatMap(t => [t.assigned_to, t.assigner])
+                        .filter(Boolean)
+                )
+            ];
+            let usersMap: Record<number, any> = {};
+            if (userIds.length > 0) {
+                const { data: usersData } = await supabase
+                    .from("users")
+                    .select("id, first_name, last_name, picture_url")
+                    .in("id", userIds);
+                usersMap = Object.fromEntries((usersData || []).map(u => [u.id, u]));
+            }
+
+            // Ajoute les infos users dans chaque tâche
+            const tasksWithUsers = (tasksData || []).map(t => ({
+                ...t,
+                assigned_to_user: usersMap[t.assigned_to] || null,
+                assigner_user: usersMap[t.assigner] || null,
+            }));
+
+            setTasks(tasksWithUsers);
             setLoading(false);
         };
         fetchTasks();
@@ -54,13 +81,37 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                             {task.priority}
                         </span>
                     </div>
+                    {/* Ajoute assigné/assigner ici */}
+                    <div className="project-task-users">
+                        <span className="task-user">
+                            <span className="task-user-label">Assigné à :</span>
+                            {task.assigned_to_user
+                                ? <>
+                                    <img src={task.assigned_to_user.picture_url || "/assets/avatar1.png"} alt="" className="task-user-avatar" />
+                                    {task.assigned_to_user.first_name} {task.assigned_to_user.last_name}
+                                </>
+                                : <span className="task-user-none">Non assigné</span>
+                            }
+                        </span>
+                        <span className="task-user">
+                            <span className="task-user-label">Créée par :</span>
+                            {task.assigner_user
+                                ? <>
+                                    <img src={task.assigner_user.picture_url || "/assets/avatar1.png"} alt="" className="task-user-avatar" />
+                                    {task.assigner_user.first_name} {task.assigner_user.last_name}
+                                </>
+                                : <span className="task-user-none">Inconnu</span>
+                            }
+                        </span>
+                    </div>
                     {task.description && (
                         <div className="project-task-desc">{task.description}</div>
                     )}
                     <div className="project-task-footer">
                         {task.due_date && (
-                            <span className="project-task-due">
-                                Échéance : {new Date(task.due_date).toLocaleDateString()}
+                            <span className="project-task-due stylized-due">
+                                <span role="img" aria-label="Calendrier" style={{ marginRight: 4 }}>📅</span>
+                                {new Date(task.due_date).toLocaleDateString()}
                             </span>
                         )}
                         <div className="project-task-actions">
@@ -83,7 +134,7 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                                         .delete()
                                         .eq("id", task.id);
                                     setTasks(tasks => tasks.filter(t => t.id !== task.id));
-                                    if (onTaskChanged) onTaskChanged(); // Ajoute ceci
+                                    if (onTaskChanged) onTaskChanged();
                                 }}
                             />
                         </div>

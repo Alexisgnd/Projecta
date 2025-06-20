@@ -84,16 +84,61 @@
     margin-top: 4px;
 }
 
-.project-task-footer {
-    margin-top: 8px;
+.project-task-users {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.task-user {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     font-size: 13px;
-    color: #757575;
+    color: #444;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 2px 8px;
+}
+
+.task-user-label {
+    font-weight: 600;
+    color: #a259ff;
+    margin-right: 2px;
+}
+
+.task-user-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 2px;
+    border: 1px solid #eee;
+}
+
+.task-user-none {
+    color: #aaa;
+    font-style: italic;
+}
+
+.stylized-due {
+    background: #f59e42;
+    color: #fff;
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.project-task-footer {
+    margin-top: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.project-task-actions {
-    display: flex;
     gap: 8px;
 }
