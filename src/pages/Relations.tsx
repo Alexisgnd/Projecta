@@ -123,6 +123,24 @@ const Relations: React.FC = () => {
     await supabase
       .from("relations")
       .insert([{ sender_email: user.email, receiver_email: receiverEmail, status: "pending" }]);
+
+    // Récupère l'id du destinataire
+    const { data: receiver } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", receiverEmail)
+      .single();
+
+    if (receiver && receiver.id) {
+      // Ajoute la notification pour le destinataire
+      await supabase.from("notifs").insert([{
+        user_id: receiver.id,
+        title: "Nouvelle Relation",
+        content: "Nouvelle demande de relation",
+        read: false,
+        type: "friends"
+      }]);
+    }
   };
 
   // Fonction pour retirer un ami
