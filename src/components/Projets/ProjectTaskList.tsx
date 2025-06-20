@@ -21,43 +21,45 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
 
+    // Déplace la logique de fetch ici
+    const fetchTasks = async () => {
+        setLoading(true);
+        // Récupère les tâches
+        const { data: tasksData } = await supabase
+            .from("tasks")
+            .select("*")
+            .eq("project_id", projectId)
+            .order("due_date", { ascending: true });
+
+        // Récupère tous les IDs utilisateurs nécessaires
+        const userIds = [
+            ...new Set(
+                (tasksData || [])
+                    .flatMap(t => [t.assigned_to, t.assigner])
+                    .filter(Boolean)
+            )
+        ];
+        let usersMap: Record<number, any> = {};
+        if (userIds.length > 0) {
+            const { data: usersData } = await supabase
+                .from("users")
+                .select("id, first_name, last_name, picture_url")
+                .in("id", userIds);
+            usersMap = Object.fromEntries((usersData || []).map(u => [u.id, u]));
+        }
+
+        // Ajoute les infos users dans chaque tâche
+        const tasksWithUsers = (tasksData || []).map(t => ({
+            ...t,
+            assigned_to_user: usersMap[t.assigned_to] || null,
+            assigner_user: usersMap[t.assigner] || null,
+        }));
+
+        setTasks(tasksWithUsers);
+        setLoading(false);
+    };
+
     useEffect(() => {
-        const fetchTasks = async () => {
-            setLoading(true);
-            // Récupère les tâches
-            const { data: tasksData } = await supabase
-                .from("tasks")
-                .select("*")
-                .eq("project_id", projectId)
-                .order("due_date", { ascending: true });
-
-            // Récupère tous les IDs utilisateurs nécessaires
-            const userIds = [
-                ...new Set(
-                    (tasksData || [])
-                        .flatMap(t => [t.assigned_to, t.assigner])
-                        .filter(Boolean)
-                )
-            ];
-            let usersMap: Record<number, any> = {};
-            if (userIds.length > 0) {
-                const { data: usersData } = await supabase
-                    .from("users")
-                    .select("id, first_name, last_name, picture_url")
-                    .in("id", userIds);
-                usersMap = Object.fromEntries((usersData || []).map(u => [u.id, u]));
-            }
-
-            // Ajoute les infos users dans chaque tâche
-            const tasksWithUsers = (tasksData || []).map(t => ({
-                ...t,
-                assigned_to_user: usersMap[t.assigned_to] || null,
-                assigner_user: usersMap[t.assigner] || null,
-            }));
-
-            setTasks(tasksWithUsers);
-            setLoading(false);
-        };
         fetchTasks();
     }, [projectId, refreshKey]);
 
@@ -107,13 +109,15 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                     {task.description && (
                         <div className="project-task-desc">{task.description}</div>
                     )}
-                    <div className="project-task-footer">
-                        {task.due_date && (
+                    {task.due_date && (
+                        <div className="project-task-due-row">
                             <span className="project-task-due stylized-due">
                                 <span role="img" aria-label="Calendrier" style={{ marginRight: 4 }}>📅</span>
                                 {new Date(task.due_date).toLocaleDateString()}
                             </span>
-                        )}
+                        </div>
+                    )}
+                    <div className="project-task-footer">
                         <div className="project-task-actions">
                             <Button
                                 text="Modifier"
@@ -150,23 +154,11 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
                         setShowEditModal(false);
                         setEditTask(null);
                     }}
-                    onTaskCreated={() => {
+                    onTaskCreated={async () => {
                         setShowEditModal(false);
                         setEditTask(null);
-                        // Rafraîchit la liste
-                        const fetchTasks = async () => {
-                            setLoading(true);
-                            const { data } = await supabase
-                                .from("tasks")
-                                .select("*")
-                                .eq("project_id", projectId)
-                                .order("due_date", { ascending: true });
-                            setTasks(data || []);
-                            setLoading(false);
-                        };
-                        fetchTasks();
+                        await fetchTasks(); // Utilise la fonction globale
                     }}
-                    // Passe la tâche à éditer en prop (à ajouter dans CreateTaskModal)
                     task={editTask}
                     isEdit
                 />

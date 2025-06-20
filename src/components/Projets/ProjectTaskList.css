@@ -142,3 +142,16 @@
     justify-content: space-between;
     gap: 8px;
 }
+
+.project-task-actions {
+    display: flex;
+    gap: 12px; /* Ajoute un espace de 12px entre les boutons */
+}
+
+.project-task-due-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
