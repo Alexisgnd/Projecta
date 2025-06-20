@@ -10,6 +10,8 @@ interface Notification {
     content: string;
     created_at: string;
     read: boolean;
+    type?: string;
+    project_response?: "accepted" | "refused" | null;
 }
 
 interface NotificationsModalProps {
@@ -19,6 +21,7 @@ interface NotificationsModalProps {
     onDeleteAll: () => void;
     onMarkAsRead: (id: number) => void;
     onShowDetails: (notif: Notification) => void;
+    onProjectResponse: (id: number, response: "accepted" | "refused") => void;
 }
 
 const NotificationsModal: React.FC<NotificationsModalProps> = ({
@@ -27,7 +30,8 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
     onDelete,
     onDeleteAll,
     onMarkAsRead,
-    onShowDetails
+    onShowDetails,
+    onProjectResponse
 }) => (
     <Modal onClose={onClose}>
         <div className="notifications-modal-root">
@@ -74,32 +78,61 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                                 {notif.read ? "Lue" : "Non lue"}
                             </Text>
                             <div style={{ display: "flex", gap: 6 }}>
-                                {!notif.read && (
-                                    <Button
-                                        text=""
-                                        variant="success"
-                                        size="small"
-                                        onClick={() => onMarkAsRead(notif.id)}
-                                        title="Marquer comme lue"
-                                        prefixIcon={<span>✔️</span>}
-                                    />
+                                {notif.type === "project" ? (
+                                    notif.project_response ? (
+                                        <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
+                                            {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
+                                        </Text>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                text=""
+                                                variant="success"
+                                                size="small"
+                                                onClick={() => onProjectResponse(notif.id, "accepted")}
+                                                title="Accepter"
+                                                prefixIcon={<span>✔️</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="failure"
+                                                size="small"
+                                                onClick={() => onProjectResponse(notif.id, "refused")}
+                                                title="Refuser"
+                                                prefixIcon={<span>✖️</span>}
+                                            />
+                                        </>
+                                    )
+                                ) : (
+                                    <>
+                                        {!notif.read && (
+                                            <Button
+                                                text=""
+                                                variant="success"
+                                                size="small"
+                                                onClick={() => onMarkAsRead(notif.id)}
+                                                title="Marquer comme lue"
+                                                prefixIcon={<span>✔️</span>}
+                                            />
+                                        )}
+                                        <Button
+                                            text=""
+                                            variant="secondary"
+                                            size="small"
+                                            onClick={() => onShowDetails(notif)}
+                                            title="Voir détails"
+                                            prefixIcon={<span>🔍</span>}
+                                        />
+                                        <Button
+                                            text=""
+                                            variant="failure"
+                                            size="small"
+                                            onClick={() => onDelete(notif.id)}
+                                            title="Supprimer"
+                                            prefixIcon={<span>🗑️</span>}
+                                        />
+                                    </>
                                 )}
-                                <Button
-                                    text=""
-                                    variant="secondary"
-                                    size="small"
-                                    onClick={() => onShowDetails(notif)}
-                                    title="Voir détails"
-                                    prefixIcon={<span>🔍</span>}
-                                />
-                                <Button
-                                    text=""
-                                    variant="failure"
-                                    size="small"
-                                    onClick={() => onDelete(notif.id)}
-                                    title="Supprimer"
-                                    prefixIcon={<span>🗑️</span>}
-                                />
                             </div>
                         </div>
                     ))

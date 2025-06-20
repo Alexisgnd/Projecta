@@ -134,6 +134,19 @@ const Projects: React.FC = () => {
         setShowNotifModal(true);
     };
 
+    const handleProjectResponse = async (id: number, response: "accepted" | "refused") => {
+        await supabase.
+            from('notifs').
+            update({ project_response: response, read: true })
+            .eq('id', id);
+        setNotifications(notifications =>
+            notifications.map(n =>
+                n.id === id
+                    ? { ...n, project_response: response }
+                    : n)
+        );
+    };
+
     // Rafraîchit à l'ouverture de la page
     useEffect(() => {
         fetchProjects();
@@ -250,6 +263,7 @@ const Projects: React.FC = () => {
                     onDeleteAll={handleDeleteAllNotifs}
                     onMarkAsRead={handleMarkAsRead}
                     onShowDetails={handleShowNotifDetails}
+                    onProjectResponse={handleProjectResponse}
                 />
             )}
         </div>
