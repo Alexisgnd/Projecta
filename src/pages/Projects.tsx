@@ -128,7 +128,7 @@ const Projects: React.FC = () => {
         fetchNotifications(); // Initial fetch
         const interval = setInterval(() => {
             fetchNotifications();
-        }, 10000); // 10 secondes
+        }, 60000); // 60 secondes
         return () => clearInterval(interval);
     }, [fetchNotifications]);
 
