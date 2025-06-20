@@ -83,20 +83,12 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                             <div style={{ display: "flex", gap: 6 }}>
                                 {notif.type === "project" ? (
                                     notif.project_response ? (
-                                        <>
-                                            <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
-                                                {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
-                                            </Text>
-                                            <Button
-                                                text=""
-                                                variant="secondary"
-                                                size="small"
-                                                onClick={() => notif.project_id !== undefined && onShowProjectDetails(notif.project_id)}
-                                                title="Voir détails du projet"
-                                                prefixIcon={<span>🔍</span>}
-                                            />
-                                        </>
+                                        // Invitation déjà traitée : affiche juste le statut
+                                        <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
+                                            {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
+                                        </Text>
                                     ) : (
+                                        // Invitation non traitée : affiche accepter/refuser + voir détails
                                         <>
                                             <Button
                                                 text=""
