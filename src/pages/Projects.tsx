@@ -24,8 +24,8 @@ const Projects: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showNotifModal, setShowNotifModal] = useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
+    const [showNotifModal, setShowNotifModal] = useState(false);
 
     // Déplace fetchProjects ici pour pouvoir le passer en prop
     const fetchProjects = useCallback(async () => {
@@ -95,14 +95,39 @@ const Projects: React.FC = () => {
         setLoading(false);
     }, []);
 
+    // Récupère les notifications de l'utilisateur courant
     const fetchNotifications = useCallback(async () => {
-        // À adapter selon ta logique et ta table notifs
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !user.email) {
+            setNotifications([]);
+            return;
+        }
+        const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', user.email)
+            .single();
+        const userId = userData?.id;
+        if (!userId) {
+            setNotifications([]);
+            return;
+        }
         const { data } = await supabase
             .from('notifs')
             .select('*')
+            .eq('user_id', userId)
             .order('created_at', { ascending: false });
         setNotifications(data || []);
     }, []);
+
+    // Rafraîchit le nombre de notifications non lues très souvent (ex: toutes les 10s)
+    useEffect(() => {
+        fetchNotifications(); // Initial fetch
+        const interval = setInterval(() => {
+            fetchNotifications();
+        }, 10000); // 10 secondes
+        return () => clearInterval(interval);
+    }, [fetchNotifications]);
 
     const handleNotifClick = async () => {
         await fetchNotifications();
@@ -186,7 +211,10 @@ const Projects: React.FC = () => {
                     />
                 )}
             </div>
-            <NotificationButton count={notifications.filter(n => !n.read).length} onClick={handleNotifClick} />
+            <NotificationButton
+                count={notifications.filter(n => !n.read).length}
+                onClick={handleNotifClick}
+            />
             {showNotifModal && (
                 <NotificationsModal
                     notifications={notifications}
@@ -195,6 +223,6 @@ const Projects: React.FC = () => {
             )}
         </div>
     );
-}
+};
 
 export default Projects;

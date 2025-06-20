@@ -369,7 +369,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
     const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
     const [tasksRefreshKey, setTasksRefreshKey] = useState(0);
     const [tasks, setTasks] = useState<any[]>([]);
-    const [tasksLoading, setTasksLoading] = useState(false);
+    const [, setTasksLoading] = useState(false);
 
     const fetchTasks = React.useCallback(async () => {
         if (!project) return;
