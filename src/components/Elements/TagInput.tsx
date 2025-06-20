@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./TagInput.css";
 
 // Détecte si une couleur est au format HSL
@@ -85,7 +85,7 @@ const TagInput: React.FC<TagInputProps> = ({
     const colorInputRefs = useRef<{ [tag: string]: HTMLInputElement | null }>({});
 
     // Ajoute une couleur par défaut si absente ou convertit HSL en hex
-    React.useEffect(() => {
+    useEffect(() => {
         let changed = false;
         const newColors = { ...tagsColors };
         tags.forEach(tag => {

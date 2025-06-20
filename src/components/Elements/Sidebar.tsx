@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
   const statusBoxRef = useRef<HTMLDivElement>(null);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
@@ -52,7 +52,7 @@ const Sidebar: React.FC = () => {
     fetchUser();
   }, [userRefreshCount]); // <-- Ajoute la dépendance ici
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {

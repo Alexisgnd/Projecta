@@ -283,7 +283,7 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
             setLoading(false);
         };
 
-        React.useEffect(() => {
+        useEffect(() => {
             fetchRelations();
         }, [projectId, currentMembers]);
 
