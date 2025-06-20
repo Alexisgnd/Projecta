@@ -6,6 +6,7 @@ import supabase from '../supabaseClient';
 import ProjectOverlay from '../components/Projets/ProjectOverlay';
 import Button from '../components/Buttons/Button';
 import ProjectCreateModal from '../components/Modals/ProjectCreateModal';
+import NotificationButton from '../components/Buttons/NotificationButton';
 
 interface Project {
     id: number;
@@ -168,6 +169,7 @@ const Projects: React.FC = () => {
                     />
                 )}
             </div>
+            <NotificationButton count={1} onClick={() => { /* ouvrir panneau notifications */ }} />
         </div>
     );
 }
