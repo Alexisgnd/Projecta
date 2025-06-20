@@ -38,7 +38,7 @@ const ProjectTaskList: React.FC<ProjectTaskListProps> = ({ projectId, refreshKey
     if (tasks.length === 0) return <Text size={16} color="secondary">Aucune tâche pour ce projet.</Text>;
 
     return (
-        <div className="project-task-list-root">
+        <div className="project-task-list-grid">
             {tasks.map(task => (
                 <div className="project-task-card" key={task.id}>
                     <div className="project-task-header">
