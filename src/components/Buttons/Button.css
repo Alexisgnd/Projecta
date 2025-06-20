@@ -96,10 +96,10 @@
   font-size: 1.2em;
 }
 .button-icon.prefix {
-  margin-right: 0;
+  margin-right: 12px;
 }
 .button-icon.suffix {
-  margin-left: 6px;
+  margin-left: 12px;
 }
 
 .button.icon-only {
