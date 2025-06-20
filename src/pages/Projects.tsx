@@ -7,6 +7,7 @@ import ProjectOverlay from '../components/Projets/ProjectOverlay';
 import Button from '../components/Buttons/Button';
 import ProjectCreateModal from '../components/Modals/ProjectCreateModal';
 import NotificationButton from '../components/Buttons/NotificationButton';
+import NotificationsModal from '../components/Modals/NotificationsModal';
 
 interface Project {
     id: number;
@@ -23,6 +24,8 @@ const Projects: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showNotifModal, setShowNotifModal] = useState(false);
+    const [notifications, setNotifications] = useState<any[]>([]);
 
     // Déplace fetchProjects ici pour pouvoir le passer en prop
     const fetchProjects = useCallback(async () => {
@@ -91,6 +94,20 @@ const Projects: React.FC = () => {
         setProjects(projectsWithMembers);
         setLoading(false);
     }, []);
+
+    const fetchNotifications = useCallback(async () => {
+        // À adapter selon ta logique et ta table notifs
+        const { data } = await supabase
+            .from('notifs')
+            .select('*')
+            .order('created_at', { ascending: false });
+        setNotifications(data || []);
+    }, []);
+
+    const handleNotifClick = async () => {
+        await fetchNotifications();
+        setShowNotifModal(true);
+    };
 
     // Rafraîchit à l'ouverture de la page
     useEffect(() => {
@@ -169,7 +186,13 @@ const Projects: React.FC = () => {
                     />
                 )}
             </div>
-            <NotificationButton count={1} onClick={() => { /* ouvrir panneau notifications */ }} />
+            <NotificationButton count={notifications.filter(n => !n.read).length} onClick={handleNotifClick} />
+            {showNotifModal && (
+                <NotificationsModal
+                    notifications={notifications}
+                    onClose={() => setShowNotifModal(false)}
+                />
+            )}
         </div>
     );
 }
