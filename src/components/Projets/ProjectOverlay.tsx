@@ -704,7 +704,10 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                         <Button
                             text="Retour sur la liste des projets"
                             variant="secondary"
-                            onClick={onClose}
+                            onClick={() => {
+                                onClose();
+                                if (onProjectChanged) onProjectChanged();
+                            }}
                             prefixIcon={<span style={{ fontSize: 18, marginRight: 6 }}>←</span>}
                             size="small"
                         />

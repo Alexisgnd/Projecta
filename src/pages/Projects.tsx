@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './Projects.css';
 import Text from '../components/Elements/Text';
 import ProjectCard from '../components/Projets/ProjectCard';
@@ -24,7 +24,7 @@ const Projects: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
     // Déplace fetchProjects ici pour pouvoir le passer en prop
-    const fetchProjects = async () => {
+    const fetchProjects = useCallback(async () => {
         setLoading(true);
 
         // 1. Récupère l'utilisateur courant
@@ -89,11 +89,24 @@ const Projects: React.FC = () => {
 
         setProjects(projectsWithMembers);
         setLoading(false);
-    };
+    }, []);
 
+    // Rafraîchit à l'ouverture de la page
     useEffect(() => {
         fetchProjects();
-    }, []);
+
+        // Rafraîchit quand on revient sur l'onglet
+        const handleVisibility = () => {
+            if (document.visibilityState === "visible") {
+                fetchProjects();
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibility);
+        };
+    }, [fetchProjects]);
 
     return (
         <div className="projects-root">
