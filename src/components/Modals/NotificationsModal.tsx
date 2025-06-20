@@ -80,15 +80,29 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                             >
                                 {notif.read ? "Lue" : "Non lue"}
                             </Text>
-                            <div style={{ display: "flex", gap: 6 }}>
+                            <div className="notifications-actions-cell">
                                 {notif.type === "project" ? (
                                     notif.project_response ? (
-                                        // Invitation déjà traitée : affiche juste le statut
-                                        <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
-                                            {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
-                                        </Text>
+                                        <>
+                                            <span className="notif-project-status">
+                                                <Text
+                                                    size={15}
+                                                    bold
+                                                    color={notif.project_response === "accepted" ? "success" : "danger"}
+                                                >
+                                                    {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
+                                                </Text>
+                                            </span>
+                                            <Button
+                                                text=""
+                                                variant="failure"
+                                                size="small"
+                                                onClick={() => onDelete(notif.id)}
+                                                title="Supprimer"
+                                                prefixIcon={<span>🗑️</span>}
+                                            />
+                                        </>
                                     ) : (
-                                        // Invitation non traitée : affiche accepter/refuser + voir détails
                                         <>
                                             <Button
                                                 text=""
@@ -113,6 +127,14 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                                                 onClick={() => notif.project_id !== undefined && onShowProjectDetails(notif.project_id)}
                                                 title="Voir détails du projet"
                                                 prefixIcon={<span>🔍</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="failure"
+                                                size="small"
+                                                onClick={() => onDelete(notif.id)}
+                                                title="Supprimer"
+                                                prefixIcon={<span>🗑️</span>}
                                             />
                                         </>
                                     )
