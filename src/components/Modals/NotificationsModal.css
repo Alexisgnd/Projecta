@@ -20,6 +20,10 @@
   gap: 12px;
 }
 
+.notif-header-actions > .button {
+  margin-right: 24px;
+}
+
 .modal-close-btn {
   background: none;
   border: none;
