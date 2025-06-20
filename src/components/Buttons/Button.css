@@ -1,0 +1,108 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  align-self: stretch;
+  border-radius: 6px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  box-shadow: 0px 30px 60px 0px rgba(79, 70, 229, 0.15);
+  padding: 16px 32px;
+}
+
+.button.button-small {
+  padding: 6px 8px;
+  font-size: 1.1rem;
+  min-width: 0;
+}
+.button.button-medium {
+  padding: 16px 32px;
+  font-size: 1.1rem;
+}
+.button.button-large {
+  padding: 25px 40px;
+  font-size: 1.25rem;
+}
+
+.button.primary {
+  background: #4F46E5;
+}
+.button.primary:active,
+.button.primary.selected {
+  background: #3730A3;
+}
+
+.button.secondary {
+  background: #22D3EE;
+}
+.button.secondary:active,
+.button.secondary.selected {
+  background: #0E7490;
+}
+
+.button.success {
+  background: #22C55E;
+}
+.button.success:active,
+.button.success.selected {
+  background: #15803D;
+}
+
+.button.failure {
+  background: #ef4444;
+}
+.button.failure:active,
+.button.failure.selected {
+  background: #991b1b;
+}
+
+.button.warning {
+  background: #f59e42;
+}
+.button.warning:active,
+.button.warning.selected {
+  background: #b45309;
+}
+
+.button:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 24px 0 rgba(79, 70, 229, 0.25);
+  transform: translateY(-2px) scale(1.03);
+  transition: 
+    background 0.2s,
+    box-shadow 0.2s,
+    filter 0.2s,
+    transform 0.15s;
+}
+
+.button.disabled,
+.button:disabled {
+  background: #bdbdbd !important;
+  color: #888 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+}
+.button-icon.prefix {
+  margin-right: 12px;
+}
+.button-icon.suffix {
+  margin-left: 12px;
+}
+
+.button.icon-only {
+  gap: 0;
+  padding: 6px 8px;
+}
