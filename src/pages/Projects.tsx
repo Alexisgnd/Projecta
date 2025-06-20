@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import './Projects.css';
 import Text from '../components/Elements/Text';
 import ProjectCard from '../components/Projets/ProjectCard';
@@ -29,6 +29,7 @@ const Projects: React.FC = () => {
     const [showNotifModal, setShowNotifModal] = useState(false);
     const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false);
     const [projectDetails, setProjectDetails] = useState<any>(null);
+    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
     // Déplace fetchProjects ici pour pouvoir le passer en prop
     const fetchProjects = useCallback(async () => {
@@ -182,6 +183,35 @@ const Projects: React.FC = () => {
         }
     };
 
+    const handleFriendsResponse = async (notifId: number, response: "accepted" | "refused") => {
+        // Mets à jour la notif
+        await supabase
+            .from('notifs')
+            .update({ friends_response: response, read: true })
+            .eq('id', notifId);
+
+        setNotifications(notifications =>
+            notifications.map(n =>
+                n.id === notifId
+                    ? { ...n, friends_response: response, read: true }
+                    : n
+            )
+        );
+
+        // Si accepté, ajoute dans user_friends
+        if (response === "accepted") {
+            const notif = notifications.find(n => n.id === notifId);
+            if (notif && notif.sender_email && currentUserEmail) {
+                await supabase
+                    .from('user_friends')
+                    .insert([
+                        { user_email: currentUserEmail, friend_email: notif.sender_email },
+                        { user_email: notif.sender_email, friend_email: currentUserEmail }
+                    ]);
+            }
+        }
+    };
+
     // Rafraîchit à l'ouverture de la page
     useEffect(() => {
         fetchProjects();
@@ -236,6 +266,14 @@ const Projects: React.FC = () => {
         setProjectDetails(data);
         setShowProjectDetailsModal(true);
     };
+
+    useEffect(() => {
+        const fetchCurrentUserEmail = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUserEmail(user?.email || null);
+        };
+        fetchCurrentUserEmail();
+    }, []);
 
     return (
         <div className="projects-root">
@@ -317,6 +355,9 @@ const Projects: React.FC = () => {
                     onShowDetails={handleShowNotifDetails}
                     onProjectResponse={handleProjectResponse}
                     onShowProjectDetails={handleShowProjectDetails}
+                    onFriendsResponse={handleFriendsResponse}
+                    onShowUserDetails={function (): void {throw new Error("Function not implemented.");}}
+                    // onShowUserDetails={handleShowUserDetails}
                 />
             )}
         </div>

@@ -13,6 +13,7 @@ interface Notification {
     type?: string;
     project_response?: "accepted" | "refused" | null;
     project_id?: number;
+    friends_response?: "accepted" | "refused" | null;
 }
 
 interface NotificationsModalProps {
@@ -24,6 +25,8 @@ interface NotificationsModalProps {
     onShowDetails: (notif: Notification) => void;
     onProjectResponse: (id: number, response: "accepted" | "refused") => void;
     onShowProjectDetails: (projectId: number) => void; // Ajoute ce handler
+    onFriendsResponse: (id: number, response: "accepted" | "refused") => void;
+    onShowUserDetails: (notif: Notification) => void;
 }
 
 const NotificationsModal: React.FC<NotificationsModalProps> = ({
@@ -34,7 +37,9 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
     onMarkAsRead,
     onShowDetails,
     onProjectResponse,
-    onShowProjectDetails
+    onShowProjectDetails,
+    onFriendsResponse,
+    onShowUserDetails
 }) => (
     <Modal onClose={onClose} contentClassName="modal-content--wide">
         <div className="notifications-modal-root">
@@ -126,6 +131,53 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                                                 size="small"
                                                 onClick={() => notif.project_id !== undefined && onShowProjectDetails(notif.project_id)}
                                                 title="Voir détails du projet"
+                                                prefixIcon={<span>🔍</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="failure"
+                                                size="small"
+                                                onClick={() => onDelete(notif.id)}
+                                                title="Supprimer"
+                                                prefixIcon={<span>🗑️</span>}
+                                            />
+                                        </>
+                                    )
+                                ) : notif.type === "friends" ? (
+                                    notif.friends_response ? (
+                                        <span className="notif-project-status">
+                                            <Text
+                                                size={15}
+                                                bold
+                                                color={notif.friends_response === "accepted" ? "success" : "danger"}
+                                            >
+                                                {notif.friends_response === "accepted" ? "Acceptée" : "Refusée"}
+                                            </Text>
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                text=""
+                                                variant="success"
+                                                size="small"
+                                                onClick={() => onFriendsResponse(notif.id, "accepted")}
+                                                title="Accepter"
+                                                prefixIcon={<span>✔️</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="failure"
+                                                size="small"
+                                                onClick={() => onFriendsResponse(notif.id, "refused")}
+                                                title="Refuser"
+                                                prefixIcon={<span>✖️</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="secondary"
+                                                size="small"
+                                                onClick={() => onShowUserDetails(notif)}
+                                                title="Voir détails de l'utilisateur"
                                                 prefixIcon={<span>🔍</span>}
                                             />
                                             <Button

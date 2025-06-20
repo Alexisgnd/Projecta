@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Text from "../components/Elements/Text";
 import "./Relations.css";
 import supabase from "../supabaseClient";
@@ -137,6 +137,14 @@ const Relations: React.FC = () => {
     setRelations((prev) => prev.filter((r) => r.email !== friendEmail));
     showAlert("success", "Relation supprimée", "L'ami a été retiré de vos relations.");
   };
+
+  useEffect(() => {
+    const fetchCurrentUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserEmail(user?.email || null);
+    };
+    fetchCurrentUserEmail();
+  }, []);
 
   return (
     <div className="relations-root">
