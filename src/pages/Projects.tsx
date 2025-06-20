@@ -137,16 +137,43 @@ const Projects: React.FC = () => {
         setShowNotifModal(true);
     };
 
-    const handleProjectResponse = async (id: number, response: "accepted" | "refused") => {
-        await supabase.
-            from('notifs').
-            update({ project_response: response, read: true })
-            .eq('id', id);
+    const handleProjectResponse = async (notifId: number, response: "accepted" | "refused") => {
+        // Récupère la notif concernée
+        const notif = notifications.find(n => n.id === notifId);
+        if (!notif) return;
+
+        // Récupère l'utilisateur courant
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !user.email) return;
+
+        // Récupère son id numérique
+        const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', user.email)
+            .single();
+        const userId = userData?.id;
+        if (!userId) return;
+
+        // Si accepté, ajoute dans project_members
+        if (response === "accepted" && notif.project_id) {
+            await supabase
+                .from('project_members')
+                .insert([{ project_id: notif.project_id, user_id: userId, role: "Membre" }]);
+        }
+
+        // Mets à jour la notif
+        await supabase
+            .from('notifs')
+            .update({ project_response: response, read: true })
+            .eq('id', notifId);
+
         setNotifications(notifications =>
             notifications.map(n =>
-                n.id === id
-                    ? { ...n, project_response: response }
-                    : n)
+                n.id === notifId
+                    ? { ...n, project_response: response, read: true }
+                    : n
+            )
         );
     };
 
