@@ -175,6 +175,11 @@ const Projects: React.FC = () => {
                     : n
             )
         );
+
+        // Rafraîchit la liste des projets si accepté
+        if (response === "accepted") {
+            fetchProjects();
+        }
     };
 
     // Rafraîchit à l'ouverture de la page
