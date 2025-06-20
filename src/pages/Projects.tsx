@@ -8,6 +8,7 @@ import Button from '../components/Buttons/Button';
 import ProjectCreateModal from '../components/Modals/ProjectCreateModal';
 import NotificationButton from '../components/Buttons/NotificationButton';
 import NotificationsModal from '../components/Modals/NotificationsModal';
+import ProjectDetailsModal from '../components/Modals/ProjectDetailsModal';
 
 interface Project {
     id: number;
@@ -261,6 +262,12 @@ const Projects: React.FC = () => {
                             setProjects(prev => [...prev, newProject]);
                             setShowCreateModal(false);
                         }}
+                    />
+                )}
+                {showProjectDetailsModal && projectDetails && (
+                    <ProjectDetailsModal
+                        project={projectDetails}
+                        onClose={() => setShowProjectDetailsModal(false)}
                     />
                 )}
             </div>

@@ -22,7 +22,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, onCl
     if (!project) return null;
 
     return (
-        <Modal onClose={onClose}>
+        <Modal onClose={onClose} backdropClassName="modal-backdrop-project-details">
             <div className="project-details-modal-root">
                 <div className="project-details-modal-header">
                     <Text size={22} bold>Détails du projet</Text>

@@ -10,6 +10,10 @@
     justify-content: center;
 }
 
+.modal-backdrop-project-details {
+    z-index: 4000 !important;
+}
+
 .modal-content {
     background: #fff;
     border-radius: 16px;
