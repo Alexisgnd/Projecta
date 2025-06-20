@@ -20,7 +20,7 @@
     },
     "files": [
       "dist/",
-      "main.js",
+      "electron/",
       "package.json"
     ],
     "win": {
