@@ -7,8 +7,8 @@ function createWindow() {
         width: 1440,
         height: 900,
         fullscreen: false,
-        frame: true, // When false : Disable or not the window frame (including the toolbar)
-        autoHideMenuBar: false, // When true : Automatically hide the menu bar
+        frame: true, // Affiche les boutons natifs
+        autoHideMenuBar: true, // Masque la barre de menu (File, Edit, ...)
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
