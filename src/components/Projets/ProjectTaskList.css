@@ -25,9 +25,11 @@
     position: relative;
     min-width: 0;
     min-height: 180px;
-    aspect-ratio: 1/1;
-    /* Garde la card carrée */
-    justify-content: space-between;
+    max-height: 320px;
+    /* Permet à la card de grandir mais limite la hauteur */
+    aspect-ratio: unset;
+    /* Permet à la hauteur de s'adapter */
+    overflow: hidden;
 }
 
 .project-task-header {
@@ -82,6 +84,18 @@
     color: #444;
     font-size: 15px;
     margin-top: 4px;
+    max-height: 72px;
+    /* ~3 lignes */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /* Tronque à 3 lignes */
+    line-clamp: 3;
+    /* Standard property for compatibility */
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .project-task-users {
@@ -145,7 +159,8 @@
 
 .project-task-actions {
     display: flex;
-    gap: 12px; /* Ajoute un espace de 12px entre les boutons */
+    gap: 12px;
+    /* Ajoute un espace de 12px entre les boutons */
 }
 
 .project-task-due-row {

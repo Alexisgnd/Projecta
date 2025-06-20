@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Text from "../Elements/Text";
 import Button from "../Buttons/Button";
 import Input from "../Elements/Input";
-import { FaCheck, FaTimes, FaUserPlus } from "react-icons/fa";
+import { FaCheck, FaTimes, FaUserPlus, FaPlus } from "react-icons/fa";
 import "./ProjectOverlay.css";
 import Alert from "../Elements/Alert";
 import supabase from "../../supabaseClient";
@@ -486,9 +486,9 @@ const ProjectOverlay: React.FC<ProjectOverlayProps> = ({ project, onClose, onPro
                             <div className="project-validate-btn">
                                 <Button
                                     text="Créer une tâche"
-                                    variant="success"
+                                    variant="primary"
                                     onClick={() => setShowCreateTaskModal(true)}
-                                    prefixIcon={<FaCheck />}
+                                    prefixIcon={<FaPlus />}
                                     size="small"
                                 />
                             </div>
