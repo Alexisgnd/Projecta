@@ -14,7 +14,7 @@
   },
   "build": {
     "appId": "com.monapp.electronvite",
-    "productName": "ElectronViteReactTS",
+    "productName": "Projecta",
     "directories": {
       "output": "release"
     },
