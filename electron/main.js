@@ -20,7 +20,7 @@ function createWindow() {
     if (process.env.VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     } else {
-        mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+        mainWindow.loadFile(path.resolve(__dirname, '../dist/index.html'));
     }
 
     mainWindow.webContents.on('did-finish-load', () => {
