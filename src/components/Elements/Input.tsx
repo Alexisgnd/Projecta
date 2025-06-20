@@ -1,11 +1,16 @@
 import React from 'react';
 import './Input.css';
 
+interface SelectOption {
+  value: string | number;
+  label: string;
+}
+
 interface InputProps {
   header: string;
   placeholder?: string;
   type?: string;
-  options?: string[]; // pour les select
+  options?: string[] | SelectOption[]; // pour les select
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   [key: string]: any;
@@ -38,9 +43,13 @@ const Input: React.FC<InputProps> = ({
         onChange={onChange}
         {...props}
       >
-        {options.map(opt => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
+        {options.map(opt =>
+          typeof opt === 'string' ? (
+            <option key={opt} value={opt}>{opt}</option>
+          ) : (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          )
+        )}
       </select>
     ) : (
       <input

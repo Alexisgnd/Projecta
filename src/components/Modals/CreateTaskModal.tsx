@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import Input from "../Elements/Input";
 import Button from "../Buttons/Button";
@@ -29,8 +29,31 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     const [status, setStatus] = useState(task?.status || "À faire");
     const [priority, setPriority] = useState(task?.priority || "Moyenne");
     const [dueDate, setDueDate] = useState(task?.due_date ? task.due_date.slice(0, 10) : "");
+    const [assignedTo, setAssignedTo] = useState(task?.assigned_to || "");
+    const [members, setMembers] = useState<any[]>([]);
 
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        // Récupère les membres du projet
+        const fetchMembers = async () => {
+            const { data: memberLinks } = await supabase
+                .from("project_members")
+                .select("user_id")
+                .eq("project_id", projectId);
+            const userIds = (memberLinks || []).map(m => m.user_id);
+            if (userIds.length > 0) {
+                const { data: usersData } = await supabase
+                    .from("users")
+                    .select("id, first_name, last_name, picture_url")
+                    .in("id", userIds);
+                setMembers(usersData || []);
+            } else {
+                setMembers([]);
+            }
+        };
+        fetchMembers();
+    }, [projectId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,7 +69,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 priority,
                 due_date: dueDate ? new Date(dueDate).toISOString() : null,
                 project_id: projectId,
-                assigner: assignerId
+                assigner: assignerId,
+                assigned_to: assignedTo || null // <-- AJOUT ICI
             }).eq("id", task.id);
 
             setLoading(false);
@@ -64,7 +88,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 priority,
                 due_date: dueDate ? new Date(dueDate).toISOString() : null,
                 project_id: projectId,
-                assigner: assignerId
+                assigner: assignerId,
+                assigned_to: assignedTo || null
             }]);
 
             setLoading(false);
@@ -80,8 +105,34 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         <Modal onClose={onClose}>
             <form className="create-task-modal" onSubmit={handleSubmit}>
                 <Text size={22} bold>{isEdit ? "Modifier la tâche" : "Créer une nouvelle tâche"}</Text>
-                <Input header="Titre *" value={title} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setTitle(e.target.value)} required />
-                <Input header="Description" value={description} onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)} type="textarea" />
+                <div className="create-task-inline">
+                    <Input
+                        header="Titre *"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        required
+                    />
+                    <Input
+                        header="Assigner à *"
+                        type="select"
+                        value={assignedTo.toString()}
+                        onChange={e => setAssignedTo(Number(e.target.value))}
+                        required
+                        options={[
+                            { value: "", label: "Sélectionner un membre" },
+                            ...members.map(member => ({
+                                value: member.id,
+                                label: `${member.first_name} ${member.last_name}`
+                            }))
+                        ] as { value: string | number; label: string }[]}
+                    />
+                </div>
+                <Input
+                    header="Description"
+                    value={description}
+                    onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDescription(e.target.value)}
+                    type="textarea"
+                />
                 <div className="create-task-inline">
                     <Input
                         header="Statut"
