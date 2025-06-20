@@ -4,7 +4,7 @@ import Input from './components/Elements/Input'
 import Text from './components/Elements/Text'
 import supabase from './supabaseClient';
 import { SetStateAction, useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
@@ -274,57 +274,55 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 // Remplace l'export principal :
 function App() {
   return (
-    <BrowserRouter>
-      <UserUpdateProvider>
-        <ProfilePreviewProvider>
-          <ProfilePreviewModal />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div className="app-root">
-                  {/* AuthPage sans sidebar */}
-                  <AuthPage />
-                </div>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <MainLayout>
-                  <Settings />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/relations"
-              element={
-                <MainLayout>
-                  <Relations />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <MainLayout>
-                  <Projects />
-                </MainLayout>
-              }
-            />
-            {/* Ajoute d'autres routes ici si besoin */}
-          </Routes>
-        </ProfilePreviewProvider>
-      </UserUpdateProvider>
-    </BrowserRouter>
+    <UserUpdateProvider>
+      <ProfilePreviewProvider>
+        <ProfilePreviewModal />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="app-root">
+                {/* AuthPage sans sidebar */}
+                <AuthPage />
+              </div>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <MainLayout>
+                <Settings />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/relations"
+            element={
+              <MainLayout>
+                <Relations />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <MainLayout>
+                <Projects />
+              </MainLayout>
+            }
+          />
+          {/* Ajoute d'autres routes ici si besoin */}
+        </Routes>
+      </ProfilePreviewProvider>
+    </UserUpdateProvider>
   );
 }
 
