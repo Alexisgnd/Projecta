@@ -12,6 +12,7 @@ interface Notification {
     read: boolean;
     type?: string;
     project_response?: "accepted" | "refused" | null;
+    project_id?: number;
 }
 
 interface NotificationsModalProps {
@@ -22,6 +23,7 @@ interface NotificationsModalProps {
     onMarkAsRead: (id: number) => void;
     onShowDetails: (notif: Notification) => void;
     onProjectResponse: (id: number, response: "accepted" | "refused") => void;
+    onShowProjectDetails: (projectId: number) => void; // Ajoute ce handler
 }
 
 const NotificationsModal: React.FC<NotificationsModalProps> = ({
@@ -31,7 +33,8 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
     onDeleteAll,
     onMarkAsRead,
     onShowDetails,
-    onProjectResponse
+    onProjectResponse,
+    onShowProjectDetails
 }) => (
     <Modal onClose={onClose}>
         <div className="notifications-modal-root">
@@ -80,9 +83,19 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                             <div style={{ display: "flex", gap: 6 }}>
                                 {notif.type === "project" ? (
                                     notif.project_response ? (
-                                        <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
-                                            {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
-                                        </Text>
+                                        <>
+                                            <Text size={15} bold color={notif.project_response === "accepted" ? "success" : "danger"}>
+                                                {notif.project_response === "accepted" ? "Acceptée" : "Refusée"}
+                                            </Text>
+                                            <Button
+                                                text=""
+                                                variant="secondary"
+                                                size="small"
+                                                onClick={() => notif.project_id !== undefined && onShowProjectDetails(notif.project_id)}
+                                                title="Voir détails du projet"
+                                                prefixIcon={<span>🔍</span>}
+                                            />
+                                        </>
                                     ) : (
                                         <>
                                             <Button
@@ -100,6 +113,14 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                                                 onClick={() => onProjectResponse(notif.id, "refused")}
                                                 title="Refuser"
                                                 prefixIcon={<span>✖️</span>}
+                                            />
+                                            <Button
+                                                text=""
+                                                variant="secondary"
+                                                size="small"
+                                                onClick={() => notif.project_id !== undefined && onShowProjectDetails(notif.project_id)}
+                                                title="Voir détails du projet"
+                                                prefixIcon={<span>🔍</span>}
                                             />
                                         </>
                                     )

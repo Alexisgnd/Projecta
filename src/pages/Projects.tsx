@@ -26,6 +26,8 @@ const Projects: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false);
+    const [projectDetails, setProjectDetails] = useState<any>(null);
 
     // Déplace fetchProjects ici pour pouvoir le passer en prop
     const fetchProjects = useCallback(async () => {
@@ -114,7 +116,7 @@ const Projects: React.FC = () => {
         }
         const { data } = await supabase
             .from('notifs')
-            .select('*')
+            .select('id, title, content, created_at, read, type, project_response, project_id')
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
         setNotifications(data || []);
@@ -191,6 +193,17 @@ const Projects: React.FC = () => {
         alert(`Titre : ${notif.title}\n\n${notif.content}`);
     };
 
+    const handleShowProjectDetails = async (projectId: number) => {
+        if (!projectId) return;
+        const { data } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('id', projectId)
+            .single();
+        setProjectDetails(data);
+        setShowProjectDetailsModal(true);
+    };
+
     return (
         <div className="projects-root">
             <div className="projects-container">
@@ -264,6 +277,7 @@ const Projects: React.FC = () => {
                     onMarkAsRead={handleMarkAsRead}
                     onShowDetails={handleShowNotifDetails}
                     onProjectResponse={handleProjectResponse}
+                    onShowProjectDetails={handleShowProjectDetails}
                 />
             )}
         </div>
