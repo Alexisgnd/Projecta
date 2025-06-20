@@ -151,6 +151,33 @@ const Projects: React.FC = () => {
         };
     }, [fetchProjects]);
 
+    // Supprimer une notification
+    const handleDeleteNotif = async (id: number) => {
+        await supabase.from('notifs').delete().eq('id', id);
+        setNotifications(notifications => notifications.filter(n => n.id !== id));
+    };
+
+    // Tout supprimer
+    const handleDeleteAllNotifs = async () => {
+        if (notifications.length === 0) return;
+        const ids = notifications.map(n => n.id);
+        await supabase.from('notifs').delete().in('id', ids);
+        setNotifications([]);
+    };
+
+    // Marquer comme vue
+    const handleMarkAsRead = async (id: number) => {
+        await supabase.from('notifs').update({ read: true }).eq('id', id);
+        setNotifications(notifications =>
+            notifications.map(n => n.id === id ? { ...n, read: true } : n)
+        );
+    };
+
+    // Voir détails (ici simple alert, à remplacer par une vraie modale si besoin)
+    const handleShowNotifDetails = (notif: any) => {
+        alert(`Titre : ${notif.title}\n\n${notif.content}`);
+    };
+
     return (
         <div className="projects-root">
             <div className="projects-container">
@@ -219,6 +246,10 @@ const Projects: React.FC = () => {
                 <NotificationsModal
                     notifications={notifications}
                     onClose={() => setShowNotifModal(false)}
+                    onDelete={handleDeleteNotif}
+                    onDeleteAll={handleDeleteAllNotifs}
+                    onMarkAsRead={handleMarkAsRead}
+                    onShowDetails={handleShowNotifDetails}
                 />
             )}
         </div>

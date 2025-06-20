@@ -1,14 +1,42 @@
 .notifications-modal-root {
-    min-width: 520px;
-    max-width: 700px;
+    min-width: 950px;   /* Largeur minimale très augmentée */
+    max-width: 1200px;  /* Largeur maximale très augmentée */
     padding: 32px 18px 24px 18px;
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
+.notifications-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.notif-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+  margin-left: 8px;
+  padding: 0 6px;
+  transition: color 0.18s;
+}
+.modal-close-btn:hover {
+  color: #a259ff;
+}
+
 .notifications-table {
     width: 100%;
+    min-width: 900px;   /* Largeur minimale de la table */
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -18,9 +46,14 @@
     overflow: hidden;
 }
 
-.notifications-table-header {
+.notifications-table-header,
+.notifications-table-row {
     display: grid;
-    grid-template-columns: 1.2fr 2fr 1fr 0.7fr;
+    grid-template-columns: 1.2fr 2.5fr 1.2fr 1fr 1.7fr; /* Actions = 1.7fr, Message = 2.5fr */
+    align-items: center;
+}
+
+.notifications-table-header {
     background: #a259ff;
     color: #fff;
     font-weight: 700;
@@ -29,9 +62,6 @@
 }
 
 .notifications-table-row {
-    display: grid;
-    grid-template-columns: 1.2fr 2fr 1fr 0.7fr;
-    align-items: center;
     padding: 12px 18px;
     font-size: 15px;
     border-bottom: 1px solid #ececec;
@@ -83,4 +113,11 @@
 .notif-status.read {
     background: #22c55e;
     color: #fff;
+}
+
+/* Pour les boutons d'action */
+.notifications-table-row > div {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
 }

@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0;
   align-self: stretch;
   border-radius: 6px;
   color: #fff;
@@ -16,8 +16,9 @@
 }
 
 .button.button-small {
-  padding: 8px 16px;
-  font-size: 0.95rem;
+  padding: 6px 8px;
+  font-size: 1.1rem;
+  min-width: 0;
 }
 .button.button-medium {
   padding: 16px 32px;
@@ -95,8 +96,13 @@
   font-size: 1.2em;
 }
 .button-icon.prefix {
-  margin-right: 6px;
+  margin-right: 0;
 }
 .button-icon.suffix {
   margin-left: 6px;
+}
+
+.button.icon-only {
+  gap: 0;
+  padding: 6px 8px;
 }
