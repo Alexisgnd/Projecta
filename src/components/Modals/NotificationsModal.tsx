@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import Text from "../Elements/Text";
 import "./NotificationsModal.css";
 import Button from "../Buttons/Button";
+import supabase from "../../supabaseClient";
 
 interface Notification {
     id: number;
@@ -24,7 +25,7 @@ interface NotificationsModalProps {
     onMarkAsRead: (id: number) => void;
     onShowDetails: (notif: Notification) => void;
     onProjectResponse: (id: number, response: "accepted" | "refused") => void;
-    onShowProjectDetails: (projectId: number) => void; // Ajoute ce handler
+    onShowProjectDetails: (projectId: number) => void;
     onFriendsResponse: (id: number, response: "accepted" | "refused") => void;
     onShowUserDetails: (notif: Notification) => void;
 }
@@ -38,8 +39,6 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
     onShowDetails,
     onProjectResponse,
     onShowProjectDetails,
-    onFriendsResponse,
-    onShowUserDetails
 }) => (
     <Modal onClose={onClose} contentClassName="modal-content--wide">
         <div className="notifications-modal-root">
@@ -156,28 +155,18 @@ const NotificationsModal: React.FC<NotificationsModalProps> = ({
                                         </span>
                                     ) : (
                                         <>
-                                            <Button
-                                                text=""
-                                                variant="success"
-                                                size="small"
-                                                onClick={() => onFriendsResponse(notif.id, "accepted")}
-                                                title="Accepter"
-                                                prefixIcon={<span>✔️</span>}
-                                            />
-                                            <Button
-                                                text=""
-                                                variant="failure"
-                                                size="small"
-                                                onClick={() => onFriendsResponse(notif.id, "refused")}
-                                                title="Refuser"
-                                                prefixIcon={<span>✖️</span>}
-                                            />
+                                            {/* Boutons Accepter/Refuser MASQUÉS */}
                                             <Button
                                                 text=""
                                                 variant="secondary"
                                                 size="small"
-                                                onClick={() => onShowUserDetails(notif)}
-                                                title="Voir détails de l'utilisateur"
+                                                onClick={async () => {
+                                                    // Marque la notif comme lue, ferme la modale et navigue vers /relations
+                                                    await supabase.from("notifs").update({ read: true }).eq("id", notif.id);
+                                                    onClose();
+                                                    window.location.href = "/relations";
+                                                }}
+                                                title="Voir détails de la relation"
                                                 prefixIcon={<span>🔍</span>}
                                             />
                                             <Button

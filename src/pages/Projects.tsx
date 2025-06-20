@@ -198,10 +198,17 @@ const Projects: React.FC = () => {
             )
         );
 
-        // Si accepté, ajoute dans user_friends
-        if (response === "accepted") {
-            const notif = notifications.find(n => n.id === notifId);
-            if (notif && notif.sender_email && currentUserEmail) {
+        // Mets à jour la table relations si accepté ou refusé
+        const notif = notifications.find(n => n.id === notifId);
+        if (notif && notif.sender_email && currentUserEmail) {
+            await supabase
+                .from('relations')
+                .update({ status: response === "accepted" ? "approved" : "rejected" })
+                .eq('sender_email', notif.sender_email)
+                .eq('receiver_email', currentUserEmail);
+
+            if (response === "accepted") {
+                // Ajoute dans user_friends (dans les deux sens)
                 await supabase
                     .from('user_friends')
                     .insert([
@@ -356,8 +363,8 @@ const Projects: React.FC = () => {
                     onProjectResponse={handleProjectResponse}
                     onShowProjectDetails={handleShowProjectDetails}
                     onFriendsResponse={handleFriendsResponse}
-                    onShowUserDetails={function (): void {throw new Error("Function not implemented.");}}
-                    // onShowUserDetails={handleShowUserDetails}
+                    onShowUserDetails={function (): void { throw new Error("Function not implemented."); }}
+                // onShowUserDetails={handleShowUserDetails}
                 />
             )}
         </div>
