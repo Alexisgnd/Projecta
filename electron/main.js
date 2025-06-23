@@ -26,6 +26,23 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         autoUpdater.checkForUpdatesAndNotify();
     });
+
+    // Bloque tous les raccourcis connus pour ouvrir DevTools
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+        if (
+            input.key === 'F12' ||
+            (input.control && input.shift && input.key.toLowerCase() === 'i') ||
+            (input.meta && input.alt && input.key.toLowerCase() === 'i') ||
+            (input.control && input.alt && input.key.toLowerCase() === 'i')
+        ) {
+            event.preventDefault();
+        }
+    });
+
+    // Bloque toute ouverture programmée des DevTools
+    mainWindow.webContents.on('devtools-opened', () => {
+        mainWindow.webContents.closeDevTools();
+    });
 }
 
 app.whenReady().then(() => {
