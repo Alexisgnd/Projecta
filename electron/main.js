@@ -1,6 +1,6 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const { autoUpdater } = require('electron-updater');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { resolve } from 'path';
+import { autoUpdater } from 'electron-updater';
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -20,7 +20,7 @@ function createWindow() {
     if (process.env.VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     } else {
-        mainWindow.loadFile(path.resolve(__dirname, '../dist/index.html'));
+        mainWindow.loadFile(resolve(__dirname, '../dist/index.html'));
     }
 
     mainWindow.webContents.on('did-finish-load', () => {
@@ -66,4 +66,8 @@ autoUpdater.on('update-available', () => {
 });
 autoUpdater.on('update-downloaded', () => {
     // Optionnel : demander à l'utilisateur de redémarrer pour appliquer la mise à jour
+});
+
+ipcMain.handle('check-for-updates', async () => {
+    autoUpdater.checkForUpdatesAndNotify();
 });
