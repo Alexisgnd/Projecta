@@ -69,3 +69,12 @@
         opacity: 0;
     }
 }
+
+.notification-btn .notification-icon {
+    color: #111 !important;
+}
+
+.notification-btn svg {
+    color: #111 !important;
+    fill: #111 !important;
+}

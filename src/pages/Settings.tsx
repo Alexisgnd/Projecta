@@ -4,6 +4,7 @@ import Text from '../components/Elements/Text';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
 import Alert from '../components/Elements/Alert';
+import { removeAccents } from '../utils/string';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -206,8 +207,8 @@ const Settings: React.FC = () => {
     setUpdating(true);
     showAlert("info", "Sauvegarde...", "Enregistrement des modifications en cours.");
     const updates: any = {
-      first_name: firstName,
-      last_name: lastName,
+      first_name: removeAccents(firstName),
+      last_name: removeAccents(lastName),
       description: bio,
       special_status: mention,
       primary_color: primaryColor,
@@ -311,12 +312,12 @@ const Settings: React.FC = () => {
           {/* Avatar et boutons */}
           <div className="settings-avatar-section">
             <div
-              className="settings-avatar"
+              className="settings-avatar avatar-bg"
               style={
                 avatarPreview
-                  ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${avatarPreview})` }
                   : avatarUrl
-                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${avatarUrl})` }
                     : {}
               }
             />
@@ -347,12 +348,12 @@ const Settings: React.FC = () => {
           {/* Bannière */}
           <div className="settings-avatar-section">
             <div
-              className="settings-banner"
+              className="settings-banner banner-bg"
               style={
                 bannerPreview
-                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${bannerPreview})` }
                   : bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${bannerUrl})` }
                     : {}
               }
             />
@@ -388,11 +389,19 @@ const Settings: React.FC = () => {
           <form className="settings-form" onSubmit={handleSubmit}>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Prénom</Text></span>
-              <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
+              <input
+                type="text"
+                value={firstName}
+                onChange={e => setFirstName(removeAccents(e.target.value))}
+              />
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Nom</Text></span>
-              <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
+              <input
+                type="text"
+                value={lastName}
+                onChange={e => setLastName(removeAccents(e.target.value))}
+              />
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Adresse e-mail</Text></span>
@@ -419,10 +428,9 @@ const Settings: React.FC = () => {
               <div className="color-picker-group">
                 <input
                   type="color"
-                  className="color-input"
+                  className="color-input color-input-lg"
                   value={primaryColor}
                   onChange={e => setPrimaryColor(e.target.value)}
-                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
                 />
                 <span className="color-hex">{primaryColor}</span>
               </div>
@@ -432,10 +440,9 @@ const Settings: React.FC = () => {
               <div className="color-picker-group">
                 <input
                   type="color"
-                  className="color-input"
+                  className="color-input color-input-lg"
                   value={accentColor}
                   onChange={e => setAccentColor(e.target.value)}
-                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
                 />
                 <span className="color-hex">{accentColor}</span>
               </div>
@@ -459,22 +466,22 @@ const Settings: React.FC = () => {
             }}
           >
             <div
-              className="settings-card-banner"
+              className="settings-card-banner card-banner-bg"
               style={
                 bannerPreview
-                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${bannerPreview})` }
                   : bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${bannerUrl})` }
                     : {}
               }
             />
             <div
-              className="settings-card-avatar"
+              className="settings-card-avatar card-avatar-bg"
               style={
                 avatarPreview
-                  ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${avatarPreview})` }
                   : avatarUrl
-                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${avatarUrl})` }
                     : {}
               }
             />

@@ -4,7 +4,7 @@ import Input from './components/Elements/Input'
 import Text from './components/Elements/Text'
 import supabase from './supabaseClient';
 import { SetStateAction, useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import packageJson from '../package.json';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
@@ -16,6 +16,7 @@ import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
 import ProfilePreviewModal from './components/Modals/ProfilePreviewModal';
 import Relations from './pages/Relations';
 import Projects from './pages/Projects';
+import { removeAccents } from './utils/string';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -118,14 +119,18 @@ function AuthPage() {
       }
     } else if (mode === 'register') {
       setLoading(true)
+      // Dans handleSubmit, avant d'envoyer à Supabase :
+      const sanitizedFirstName = removeAccents(firstName);
+      const sanitizedLastName = removeAccents(lastName);
+
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            display_name: `${firstName} ${lastName}`,
-            first_name: firstName,
-            last_name: lastName
+            display_name: `${sanitizedFirstName} ${sanitizedLastName}`,
+            first_name: sanitizedFirstName,
+            last_name: sanitizedLastName
           }
         }
       })
@@ -139,8 +144,8 @@ function AuthPage() {
         .from('users')
         .insert([{
           email,
-          first_name: firstName,
-          last_name: lastName,
+          first_name: sanitizedFirstName,
+          last_name: sanitizedLastName,
           status: "online", // Ajout du status par défaut
           primary_color: "#F3F4F6", // Blanc grisé
           secondary_color: "#BDBDBD" // Gris plus foncé
@@ -192,7 +197,7 @@ function AuthPage() {
             <Input
               header={'Adresse email'}
               value={email}
-              onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
+              onChange={(e: { target: { value: string } }) => setEmail(removeAccents(e.target.value))}
               disabled={mode !== 'initial'}
             />
             {mode === 'register' && (
@@ -201,12 +206,12 @@ function AuthPage() {
                   <Input
                     header={'Prénom'}
                     value={firstName}
-                    onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
+                    onChange={(e: { target: { value: string } }) => setFirstName(removeAccents(e.target.value))}
                   />
                   <Input
                     header={'Nom'}
                     value={lastName}
-                    onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
+                    onChange={(e: { target: { value: string } }) => setLastName(removeAccents(e.target.value))}
                   />
                 </div>
                 <Input
@@ -253,6 +258,25 @@ function AuthPage() {
             onClick={handleSubmit}
             disabled={isButtonDisabled || loading}
           />
+          {(mode === 'login' || mode === 'register') && (
+            <Button
+              text="Retour"
+              variant="secondary"
+              size='medium'
+              onClick={() => {
+                setMode('initial');
+                setButtonText('Vérifier');
+                setSubtitle('Veuillez renseigner votre email pour vous connecter ou vous inscrire.');
+                setTitle('Connexion / Inscription');
+                setPassword('');
+                setConfirmPassword('');
+                setFirstName('');
+                setLastName('');
+                setError(null);
+              }}
+              style={{ marginTop: 12 }}
+            />
+          )}
         </div>
         <div className="split-right">
           {/* <h2>Partie droite</h2> */}
@@ -274,57 +298,55 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 // Remplace l'export principal :
 function App() {
   return (
-    <BrowserRouter>
-      <UserUpdateProvider>
-        <ProfilePreviewProvider>
-          <ProfilePreviewModal />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div className="app-root">
-                  {/* AuthPage sans sidebar */}
-                  <AuthPage />
-                </div>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <MainLayout>
-                  <Settings />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/relations"
-              element={
-                <MainLayout>
-                  <Relations />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <MainLayout>
-                  <Projects />
-                </MainLayout>
-              }
-            />
-            {/* Ajoute d'autres routes ici si besoin */}
-          </Routes>
-        </ProfilePreviewProvider>
-      </UserUpdateProvider>
-    </BrowserRouter>
+    <UserUpdateProvider>
+      <ProfilePreviewProvider>
+        <ProfilePreviewModal />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="app-root">
+                {/* AuthPage sans sidebar */}
+                <AuthPage />
+              </div>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <MainLayout>
+                <Settings />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/relations"
+            element={
+              <MainLayout>
+                <Relations />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <MainLayout>
+                <Projects />
+              </MainLayout>
+            }
+          />
+          {/* Ajoute d'autres routes ici si besoin */}
+        </Routes>
+      </ProfilePreviewProvider>
+    </UserUpdateProvider>
   );
 }
 

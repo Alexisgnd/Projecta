@@ -14,13 +14,13 @@
   },
   "build": {
     "appId": "com.monapp.electronvite",
-    "productName": "ElectronViteReactTS",
+    "productName": "Projecta",
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/",
-      "main.js",
+      "electron/",
       "package.json"
     ],
     "win": {
