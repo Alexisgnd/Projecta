@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { resolve } from 'path';
-import { autoUpdater } from 'electron-updater';
+
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
