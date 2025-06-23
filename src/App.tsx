@@ -197,7 +197,7 @@ function AuthPage() {
             <Input
               header={'Adresse email'}
               value={email}
-              onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
+              onChange={(e: { target: { value: string } }) => setEmail(removeAccents(e.target.value))}
               disabled={mode !== 'initial'}
             />
             {mode === 'register' && (
@@ -206,12 +206,12 @@ function AuthPage() {
                   <Input
                     header={'Prénom'}
                     value={firstName}
-                    onChange={(e: { target: { value: SetStateAction<string> } }) => setFirstName(e.target.value)}
+                    onChange={(e: { target: { value: string } }) => setFirstName(removeAccents(e.target.value))}
                   />
                   <Input
                     header={'Nom'}
                     value={lastName}
-                    onChange={(e: { target: { value: SetStateAction<string> } }) => setLastName(e.target.value)}
+                    onChange={(e: { target: { value: string } }) => setLastName(removeAccents(e.target.value))}
                   />
                 </div>
                 <Input

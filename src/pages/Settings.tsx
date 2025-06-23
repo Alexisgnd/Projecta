@@ -389,11 +389,19 @@ const Settings: React.FC = () => {
           <form className="settings-form" onSubmit={handleSubmit}>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Prénom</Text></span>
-              <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
+              <input
+                type="text"
+                value={firstName}
+                onChange={e => setFirstName(removeAccents(e.target.value))}
+              />
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Nom</Text></span>
-              <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
+              <input
+                type="text"
+                value={lastName}
+                onChange={e => setLastName(removeAccents(e.target.value))}
+              />
             </div>
             <div className="settings-row">
               <span className="settings-label"><Text size={14} bold>Adresse e-mail</Text></span>
