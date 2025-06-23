@@ -1,13 +1,16 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { resolve } from 'path';
+
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1440,
         height: 900,
         fullscreen: false,
-        frame: true, // When false : Disable or not the window frame (including the toolbar)
-        autoHideMenuBar: false, // When true : Automatically hide the menu bar
+        frame: true, // Affiche les boutons natifs
+        autoHideMenuBar: true, // Masque la barre de menu (File, Edit, ...)
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -19,8 +22,29 @@ function createWindow() {
     if (process.env.VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     } else {
-        mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+        mainWindow.loadFile(resolve(__dirname, '../dist/index.html'));
     }
+
+    mainWindow.webContents.on('did-finish-load', () => {
+        autoUpdater.checkForUpdatesAndNotify();
+    });
+
+    // Bloque tous les raccourcis connus pour ouvrir DevTools
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+        if (
+            input.key === 'F12' ||
+            (input.control && input.shift && input.key.toLowerCase() === 'i') ||
+            (input.meta && input.alt && input.key.toLowerCase() === 'i') ||
+            (input.control && input.alt && input.key.toLowerCase() === 'i')
+        ) {
+            event.preventDefault();
+        }
+    });
+
+    // Bloque toute ouverture programmée des DevTools
+    mainWindow.webContents.on('devtools-opened', () => {
+        mainWindow.webContents.closeDevTools();
+    });
 }
 
 app.whenReady().then(() => {
@@ -37,4 +61,15 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+autoUpdater.on('update-available', () => {
+    // Optionnel : informer l'utilisateur qu'une mise à jour est en cours de téléchargement
+});
+autoUpdater.on('update-downloaded', () => {
+    // Optionnel : demander à l'utilisateur de redémarrer pour appliquer la mise à jour
+});
+
+ipcMain.handle('check-for-updates', async () => {
+    autoUpdater.checkForUpdatesAndNotify();
 });

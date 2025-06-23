@@ -1,0 +1,151 @@
+.project-members-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid #eee;
+    box-shadow: -2px 0 12px 0 rgba(0, 0, 0, 0.04);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+}
+
+.project-members-bar-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3730A3;
+    padding: 0 24px 18px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 12px;
+}
+
+.project-members-bar-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.project-members-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.project-members-bar-item:hover {
+    background: #f3f4f6;
+}
+
+.project-member-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: inline-block;
+}
+
+.project-member-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+    display: block;
+}
+
+.project-member-status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    /* La pastille UserStatusDot fait 12px comme dans Relations/Sidebar */
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.user-status-dot {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: #4ade80;
+    /* Couleur par défaut, écrasée par le composant */
+}
+
+.project-members-bar-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+}
+
+.project-members-bar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.project-members-bar-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #222;
+}
+
+.project-members-bar-role {
+    font-size: 13px;
+    color: #888;
+}
+
+.relation-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.relation-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.user-status-dot-wrapper {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.user-status-dot {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: #4ade80;
+    /* Couleur par défaut, écrasée par le composant */
+}

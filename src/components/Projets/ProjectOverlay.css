@@ -1,0 +1,519 @@
+.project-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
+    overflow: auto;
+    transition: background 0.3s;
+}
+
+.project-overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    min-width: 900px;
+    padding: 32px 48px 24px 48px;
+    box-sizing: border-box;
+    color: #fff;
+    text-align: center;
+    min-height: 400px;
+    overflow: auto;
+    padding-bottom: 120px;
+    /* Ajoute un espace pour les boutons fixes en bas */
+}
+
+.project-overlay-header {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0;
+    margin-top: -12px;
+    margin-left: 0;
+    padding-bottom: 18px;
+}
+
+.project-overlay-tabs {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    /* Ajoute un espace entre chaque tab */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+    margin-bottom: 32px;
+    overflow-y: hidden;
+    background: none;
+    width: fit-content;
+}
+
+.project-overlay-tab {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: background 0.18s, color 0.18s;
+    /* Supprime la bordure et le margin-right */
+    border-right: none;
+    margin-right: 0;
+}
+
+.project-overlay-tab:last-child {
+    border-right: none;
+    margin-right: 0;
+}
+
+.project-overlay-tab.selected,
+.project-overlay-tab:focus {
+    background: #fff;
+    color: #a259ff;
+    outline: none;
+    box-shadow: 0 2px 8px #0001;
+    z-index: 2;
+}
+
+.project-overlay-details {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Formulaire paramètres projet */
+.project-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    /* Augmente l'espacement vertical entre chaque ligne */
+    width: 90%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 36px 32px 28px 32px;
+    color: #222;
+    box-shadow: 0 4px 32px 0 rgba(79, 70, 229, 0.10);
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+.project-settings-form .input-container {
+    margin-bottom: 0;
+}
+
+.project-settings-form .input-header {
+    color: #6b21a8;
+    font-size: 1.05rem;
+}
+
+.project-settings-form select.input-field {
+    background: #F3F4F6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    color: #222;
+    font-size: 1rem;
+    padding: 18px 24px;
+    height: 65px;
+    width: 100%;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.18s;
+}
+
+.project-settings-form select.input-field:focus {
+    border: 1.5px solid #a259ff;
+}
+
+.project-settings-form textarea.input-field {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.project-settings-form .input-field[type="color"] {
+    width: 100%;
+    /* Prend toute la largeur de l'input */
+    height: 65px;
+    /* Même hauteur que les autres inputs */
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .project-settings-form {
+        padding: 18px 6px;
+        max-width: 100vw;
+    }
+}
+
+/* Positionnement du bouton de validation */
+.project-validate-btn {
+    position: fixed;
+    /* <-- change absolute to fixed */
+    right: 48px;
+    bottom: 40px;
+    z-index: 3000;
+    animation: fadeInBtn 0.3s;
+    margin-right: 260px;
+}
+
+@keyframes fadeInBtn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Nouvelle ligne pour aligner couleur et tags */
+.form-row.inline {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.form-row.inline>* {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.form-row>* {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.project-back-btn {
+    position: fixed;
+    left: 48px;
+    bottom: 40px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    animation: fadeInBtn 0.3s;
+    margin-left: 260px;
+}
+
+.project-members-list {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 12px;
+}
+
+.project-member-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: box-shadow 0.2s;
+    position: relative;
+    justify-content: flex-start;
+    min-height: 80px;
+}
+
+.project-member-owner {
+    border-left: 4px solid #a259ff;
+    background: #f6f2ff;
+}
+
+.project-member-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    position: relative;
+    display: inline-block;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.project-member-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+.project-member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+
+.project-member-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #3730A3;
+    /* même bleu que Relations */
+}
+
+.project-member-role {
+    font-size: 0.95rem;
+    color: #757575;
+    /* gris discret */
+    font-weight: 500;
+    opacity: 1;
+}
+
+.project-member-role-left {
+    text-align: left !important;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: flex;
+    width: 100%;
+    padding-left: 0;
+    margin-top: 4px;
+}
+
+/* Danger zone styles */
+.danger-zone {
+    border: 2px solid #e11d48;
+    background: #fff0f3;
+    border-radius: 12px;
+    padding: 24px 20px;
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.danger-zone-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.danger-zone-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+}
+
+.danger-zone-row>.Button,
+.danger-zone-row>button {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.danger-zone .Button,
+.danger-zone button {
+    min-width: 160px;
+}
+
+.project-member-remove-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    border-radius: 50%;
+    border: 2px solid #dc3545;
+    background: #fff;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0;
+    padding: 0;
+    transition: background 0.15s, color 0.15s, border 0.15s;
+    box-sizing: border-box;
+}
+
+.project-member-remove-btn:hover {
+    background: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+}
+
+.project-members-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 12px;
+}
+
+.project-add-member-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.project-add-member-btn:hover {
+    background: #16a34a;
+}
+
+.project-add-member-icon {
+    font-size: 18px;
+}
+
+.add-member-modal-root {
+    min-width: 350px;
+    max-width: 420px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.add-member-search {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.add-member-list {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.add-member-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f9f9f9;
+    border-radius: 14px;
+    padding: 10px 16px;
+    box-shadow: 0 2px 8px 0 rgba(34, 197, 94, 0.06);
+}
+
+.add-member-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+}
+
+.add-member-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.add-member-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #222;
+}
+
+.add-member-role {
+    font-size: 13px;
+    color: #888;
+}
+
+.add-member-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    border-radius: 50%;
+    border: 2px solid #22c55e;
+    background: #fff;
+    color: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background 0.15s, color 0.15s, border 0.15s;
+}
+
+.add-member-btn:hover {
+    background: #22c55e;
+    color: #fff;
+    border-color: #22c55e;
+}
+
+/* Avatar et pastille comme dans Relations */
+.relation-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    position: relative;
+    display: inline-block;
+}
+
+.project-tiles-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    width: 100%;
+    justify-content: flex-start;
+}

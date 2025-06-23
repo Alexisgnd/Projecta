@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=Inter:400,700&display=swap');
+
+.custom-text {
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s;
+}
