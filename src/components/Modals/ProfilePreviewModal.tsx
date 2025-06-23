@@ -72,7 +72,8 @@ const ProfilePreviewModal: React.FC<ProfilePreviewModalProps> = ({ user: userPro
         }}
         onClick={e => e.stopPropagation()}
       >
-        <div className={`settings-card ${cardContrastClass}`}
+        <div
+          className={`settings-card ${cardContrastClass}`}
           style={{
             ['--primary-color' as any]: primaryColor,
             ['--accent-color' as any]: accentColor,
@@ -97,25 +98,29 @@ const ProfilePreviewModal: React.FC<ProfilePreviewModalProps> = ({ user: userPro
             }
           />
           <div className="settings-card-info">
-            <Text size={22} bold className="settings-card-title">
+            <Text size={22} bold className="settings-card-title" color="var(--primary-contrast)">
               {user.first_name} {user.last_name}
             </Text>
             <div className="settings-card-mention">
-              <Text size={15} bold>
+              <Text size={15} bold color="var(--primary-contrast)">
                 {user.special_status || 'Nouvel arrivant'}
               </Text>
             </div>
             <div className="settings-card-bio">
-              <Text size={14} italic>
+              <Text size={14} italic color="var(--primary-contrast)">
                 {user.description || 'Aucune bio renseignée.'}
               </Text>
             </div>
             <div className="settings-card-email">
-              <Text size={13}>
+              <Text size={13} color="var(--primary-contrast)">
                 {user.email}
               </Text>
             </div>
-            <button className="settings-preview-btn" onClick={onClose || close}>
+            <button
+              className="settings-preview-btn"
+              style={{ color: 'var(--accent-contrast)', background: 'var(--accent-color)' }}
+              onClick={onClose || close}
+            >
               Fermer
             </button>
           </div>
