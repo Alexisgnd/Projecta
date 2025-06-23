@@ -258,6 +258,25 @@ function AuthPage() {
             onClick={handleSubmit}
             disabled={isButtonDisabled || loading}
           />
+          {(mode === 'login' || mode === 'register') && (
+            <Button
+              text="Retour"
+              variant="secondary"
+              size='medium'
+              onClick={() => {
+                setMode('initial');
+                setButtonText('Vérifier');
+                setSubtitle('Veuillez renseigner votre email pour vous connecter ou vous inscrire.');
+                setTitle('Connexion / Inscription');
+                setPassword('');
+                setConfirmPassword('');
+                setFirstName('');
+                setLastName('');
+                setError(null);
+              }}
+              style={{ marginTop: 12 }}
+            />
+          )}
         </div>
         <div className="split-right">
           {/* <h2>Partie droite</h2> */}
