@@ -16,6 +16,7 @@ import { ProfilePreviewProvider } from './contexts/ProfilePreviewContext';
 import ProfilePreviewModal from './components/Modals/ProfilePreviewModal';
 import Relations from './pages/Relations';
 import Projects from './pages/Projects';
+import { removeAccents } from './utils/string';
 
 function AuthPage() {
   // États pour les champs du formulaire et l'interface
@@ -118,14 +119,18 @@ function AuthPage() {
       }
     } else if (mode === 'register') {
       setLoading(true)
+      // Dans handleSubmit, avant d'envoyer à Supabase :
+      const sanitizedFirstName = removeAccents(firstName);
+      const sanitizedLastName = removeAccents(lastName);
+
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            display_name: `${firstName} ${lastName}`,
-            first_name: firstName,
-            last_name: lastName
+            display_name: `${sanitizedFirstName} ${sanitizedLastName}`,
+            first_name: sanitizedFirstName,
+            last_name: sanitizedLastName
           }
         }
       })
@@ -139,8 +144,8 @@ function AuthPage() {
         .from('users')
         .insert([{
           email,
-          first_name: firstName,
-          last_name: lastName,
+          first_name: sanitizedFirstName,
+          last_name: sanitizedLastName,
           status: "online", // Ajout du status par défaut
           primary_color: "#F3F4F6", // Blanc grisé
           secondary_color: "#BDBDBD" // Gris plus foncé

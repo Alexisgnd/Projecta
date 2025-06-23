@@ -4,6 +4,7 @@ import Text from '../components/Elements/Text';
 import supabase from '../supabaseClient';
 import { useUserUpdate } from '../UserContext';
 import Alert from '../components/Elements/Alert';
+import { removeAccents } from '../utils/string';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -206,8 +207,8 @@ const Settings: React.FC = () => {
     setUpdating(true);
     showAlert("info", "Sauvegarde...", "Enregistrement des modifications en cours.");
     const updates: any = {
-      first_name: firstName,
-      last_name: lastName,
+      first_name: removeAccents(firstName),
+      last_name: removeAccents(lastName),
       description: bio,
       special_status: mention,
       primary_color: primaryColor,

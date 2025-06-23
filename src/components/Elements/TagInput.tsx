@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./TagInput.css";
+import { removeAccents } from '../../utils/string';
 
 // Détecte si une couleur est au format HSL
 function isHslColor(str: string) {
@@ -107,7 +108,7 @@ const TagInput: React.FC<TagInputProps> = ({
 
     // Ajoute un tag à la liste
     const addTag = (tag: string) => {
-        const clean = tag.trim();
+        const clean = removeAccents(tag.trim());
         if (clean && !tags.includes(clean)) {
             setTags([...tags, clean]);
         }
