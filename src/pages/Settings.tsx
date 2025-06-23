@@ -312,12 +312,12 @@ const Settings: React.FC = () => {
           {/* Avatar et boutons */}
           <div className="settings-avatar-section">
             <div
-              className="settings-avatar"
+              className="settings-avatar avatar-bg"
               style={
                 avatarPreview
-                  ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${avatarPreview})` }
                   : avatarUrl
-                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${avatarUrl})` }
                     : {}
               }
             />
@@ -348,12 +348,12 @@ const Settings: React.FC = () => {
           {/* Bannière */}
           <div className="settings-avatar-section">
             <div
-              className="settings-banner"
+              className="settings-banner banner-bg"
               style={
                 bannerPreview
-                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${bannerPreview})` }
                   : bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${bannerUrl})` }
                     : {}
               }
             />
@@ -428,10 +428,9 @@ const Settings: React.FC = () => {
               <div className="color-picker-group">
                 <input
                   type="color"
-                  className="color-input"
+                  className="color-input color-input-lg"
                   value={primaryColor}
                   onChange={e => setPrimaryColor(e.target.value)}
-                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
                 />
                 <span className="color-hex">{primaryColor}</span>
               </div>
@@ -441,10 +440,9 @@ const Settings: React.FC = () => {
               <div className="color-picker-group">
                 <input
                   type="color"
-                  className="color-input"
+                  className="color-input color-input-lg"
                   value={accentColor}
                   onChange={e => setAccentColor(e.target.value)}
-                  style={{ width: 48, height: 48, borderRadius: 10, border: '2px solid #eee', padding: 0 }}
                 />
                 <span className="color-hex">{accentColor}</span>
               </div>
@@ -468,22 +466,22 @@ const Settings: React.FC = () => {
             }}
           >
             <div
-              className="settings-card-banner"
+              className="settings-card-banner card-banner-bg"
               style={
                 bannerPreview
-                  ? { backgroundImage: `url(${bannerPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${bannerPreview})` }
                   : bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${bannerUrl})` }
                     : {}
               }
             />
             <div
-              className="settings-card-avatar"
+              className="settings-card-avatar card-avatar-bg"
               style={
                 avatarPreview
-                  ? { backgroundImage: `url(${avatarPreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  ? { backgroundImage: `url(${avatarPreview})` }
                   : avatarUrl
-                    ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    ? { backgroundImage: `url(${avatarUrl})` }
                     : {}
               }
             />

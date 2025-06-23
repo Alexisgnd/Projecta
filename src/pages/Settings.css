@@ -10,7 +10,8 @@ body {
     display: flex;
     min-height: 100vh;
     overflow: hidden;
-    margin-left: 260px; /* Ajouté pour décaler le contenu à droite de la sidebar */
+    margin-left: 260px;
+    /* Ajouté pour décaler le contenu à droite de la sidebar */
 }
 
 .settings-container {
@@ -87,12 +88,13 @@ body {
 .settings-row {
     display: flex;
     gap: 12px;
-    align-items: flex-start; /* <-- change from center to flex-start */
+    align-items: flex-start;
+    /* <-- change from center to flex-start */
     margin-bottom: 8px;
 }
 
 .settings-form label,
-.settings-row > .settings-label {
+.settings-row>.settings-label {
     min-width: 120px;
     display: inline-block;
     font-weight: bold;
@@ -182,11 +184,13 @@ body {
     background: #d3d3d3;
     margin-bottom: 24px;
     position: absolute;
-    top: 60px; /* Ajuste pour que l'avatar soit centré sur la bannière */
+    top: 60px;
+    /* Ajuste pour que l'avatar soit centré sur la bannière */
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
-    border: 6px solid #fff; /* Pour un effet "détaché" */
+    border: 6px solid #fff;
+    /* Pour un effet "détaché" */
 }
 
 /* Pour garder le contenu centré verticalement sous l'avatar si besoin */
@@ -252,6 +256,7 @@ body {
     cursor: pointer;
     transition: filter 0.2s;
 }
+
 .settings-preview-btn:hover {
     filter: brightness(0.95);
 }
@@ -300,6 +305,14 @@ body {
     padding: 0;
 }
 
+.color-input-lg {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 10px !important;
+    border: 2px solid #eee !important;
+    padding: 0 !important;
+}
+
 .color-hex {
     font-family: monospace;
     font-size: 14px;
@@ -326,4 +339,24 @@ body {
     border-radius: 10px;
     border: 2px solid #eee;
     margin-bottom: 2px;
+}
+
+.avatar-bg {
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.banner-bg {
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.card-banner-bg {
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.card-avatar-bg {
+    background-size: cover !important;
+    background-position: center !important;
 }
