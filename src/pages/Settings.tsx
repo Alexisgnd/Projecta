@@ -225,6 +225,7 @@ const Settings: React.FC = () => {
       showAlert("error", "Erreur !", "Erreur lors de la sauvegarde des modifications.");
     } else {
       showAlert("success", "Succès !", "Modifications sauvegardées.");
+      refreshUser(); // Rafraîchit les données utilisateur
     }
   };
 
