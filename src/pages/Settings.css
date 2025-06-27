@@ -133,12 +133,6 @@ body {
     resize: vertical;
 }
 
-.settings-actions {
-    display: flex;
-    gap: 18px;
-    margin-top: 12px;
-}
-
 .settings-right {
     flex: 1 1 0;
     min-width: 0;
@@ -359,4 +353,26 @@ body {
 .card-avatar-bg {
     background-size: cover !important;
     background-position: center !important;
+}
+
+.settings-validate-btn {
+    position: fixed;
+    right: 48px;
+    bottom: 40px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    pointer-events: none;
+    /* Pour éviter de bloquer les clics derrière sauf sur le bouton */
+}
+
+.settings-validate-btn .settings-btn {
+    min-width: 220px;
+    min-height: 48px;
+    font-size: 17px;
+    font-weight: 600;
+    pointer-events: auto;
+    /* Pour rendre le bouton cliquable */
+    box-shadow: 0 2px 12px #0002;
 }

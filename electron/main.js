@@ -1,50 +1,64 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { resolve } from 'path';
-
-import pkg from 'electron-updater';
-const { autoUpdater } = pkg;
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1440,
         height: 900,
         fullscreen: false,
-        frame: true, // Affiche les boutons natifs
-        autoHideMenuBar: true, // Masque la barre de menu (File, Edit, ...)
+        frame: true,
+        autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
         },
     });
 
-    // Vérification : si on est en mode dev, on charge le serveur Vite
-    // sinon on charge le build dist
-    if (process.env.VITE_DEV_SERVER_URL) {
+    // Dev ou production ?
+    const isDev = !!process.env.VITE_DEV_SERVER_URL;
+
+    // En dev : serveur Vite
+    if (isDev) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+        mainWindow.webContents.openDevTools(); // outils dev auto en dev
     } else {
-        mainWindow.loadFile(resolve(__dirname, '../dist/index.html'));
+        // En prod : fichier local
+        mainWindow.loadFile(path.resolve(__dirname, '../dist/index.html'));
     }
 
+    // Vérifie les mises à jour après chargement
     mainWindow.webContents.on('did-finish-load', () => {
         autoUpdater.checkForUpdatesAndNotify();
     });
 
-    // Bloque tous les raccourcis connus pour ouvrir DevTools
-    mainWindow.webContents.on('before-input-event', (event, input) => {
-        if (
-            input.key === 'F12' ||
-            (input.control && input.shift && input.key.toLowerCase() === 'i') ||
-            (input.meta && input.alt && input.key.toLowerCase() === 'i') ||
-            (input.control && input.alt && input.key.toLowerCase() === 'i')
-        ) {
-            event.preventDefault();
-        }
-    });
+    // 🚫 Sécurisation stricte des DevTools en prod
+    if (!isDev) {
+        // 1. Bloque raccourcis clavier
+        mainWindow.webContents.on('before-input-event', (event, input) => {
+            const isDevToolsShortcut =
+                input.key === 'F12' ||
+                (input.control && input.shift && ['i', 'c'].includes(input.key.toLowerCase())) ||
+                (input.meta && input.alt && ['i', 'c'].includes(input.key.toLowerCase())) ||
+                (input.control && input.alt && input.key.toLowerCase() === 'i') ||
+                (input.meta && input.key.toLowerCase() === 'k') ||
+                (input.key === 'F10' && input.shift);
 
-    // Bloque toute ouverture programmée des DevTools
-    mainWindow.webContents.on('devtools-opened', () => {
-        mainWindow.webContents.closeDevTools();
-    });
+            if (isDevToolsShortcut) {
+                event.preventDefault();
+            }
+        });
+
+        // 2. Ferme automatiquement DevTools
+        mainWindow.webContents.on('devtools-opened', () => {
+            mainWindow.webContents.closeDevTools();
+        });
+
+        // 3. Bloque menu contextuel (clic droit)
+        mainWindow.webContents.on('context-menu', (e) => {
+            e.preventDefault();
+        });
+    }
 }
 
 app.whenReady().then(() => {
@@ -63,13 +77,7 @@ app.on('window-all-closed', () => {
     }
 });
 
-autoUpdater.on('update-available', () => {
-    // Optionnel : informer l'utilisateur qu'une mise à jour est en cours de téléchargement
-});
-autoUpdater.on('update-downloaded', () => {
-    // Optionnel : demander à l'utilisateur de redémarrer pour appliquer la mise à jour
-});
-
+// IPC : déclenche manuellement la mise à jour (depuis renderer si besoin)
 ipcMain.handle('check-for-updates', async () => {
     autoUpdater.checkForUpdatesAndNotify();
 });

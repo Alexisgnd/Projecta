@@ -32,11 +32,13 @@ const Sidebar: React.FC = () => {
           .eq('email', user.email)
           .single();
 
-        if (data && data.first_name && data.last_name) {
-          setDisplayName(`${data.first_name} ${data.last_name}`);
-        } else {
-          setDisplayName('Loading...');
+        if (data) {
+          const first = data.first_name?.trim() || '';
+          const last = data.last_name?.trim() || '';
+          const fullName = [first, last].filter(Boolean).join(' ');
+          setDisplayName(fullName || 'Utilisateur'); // Si le nom est vide, afficher "Utilisateur"
         }
+
         if (data && data.special_status) {
           setSpecialStatus(data.special_status);
         } else {
@@ -58,11 +60,11 @@ const Sidebar: React.FC = () => {
       if (user && user.email) {
         const { data } = await supabase
           .from('users')
-          .select('status') // <-- corrige ici
+          .select('status')
           .eq('email', user.email)
           .single();
-        if (data && data.status) { // <-- corrige ici
-          setActivityStatus(data.status); // <-- corrige ici
+        if (data && data.status) {
+          setActivityStatus(data.status);
         }
       }
     };

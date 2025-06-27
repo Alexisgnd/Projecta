@@ -225,6 +225,7 @@ const Settings: React.FC = () => {
       showAlert("error", "Erreur !", "Erreur lors de la sauvegarde des modifications.");
     } else {
       showAlert("success", "Succès !", "Modifications sauvegardées.");
+      refreshUser(); // Rafraîchit les données utilisateur
     }
   };
 
@@ -279,19 +280,6 @@ const Settings: React.FC = () => {
     showAlert("success", "Succès !", "Bannière supprimée.");
     refreshUser();
   };
-
-  // Fonction pour obtenir la classe de contraste
-  function getContrastClass(hex: string) {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.5 ? 'contrast-dark' : 'contrast-light';
-  }
-
-  const cardContrastClass = getContrastClass(primaryColor);
-  const accentContrastClass = getContrastClass(accentColor);
 
   if (loading) {
     return <Text size={18} color="secondary">Chargement...</Text>;
@@ -447,69 +435,22 @@ const Settings: React.FC = () => {
                 <span className="color-hex">{accentColor}</span>
               </div>
             </div>
-            <div className="settings-actions">
-              <button className="settings-btn primary" type="submit" disabled={updating}>
-                {updating ? 'Mise à jour en cours...' : 'Valider les changements'}
-              </button>
-            </div>
           </form>
         </div>
         <div className="settings-right">
-          <div
-            className={`settings-card ${cardContrastClass}`}
-            style={{
-              // On injecte UNIQUEMENT les variables CSS ici
-              ['--primary-color' as any]: primaryColor,
-              ['--accent-color' as any]: accentColor,
-              ['--primary-contrast' as any]: cardContrastClass === 'contrast-dark' ? '#111' : '#fff',
-              ['--accent-contrast' as any]: accentContrastClass === 'contrast-dark' ? '#111' : '#fff',
-            }}
-          >
-            <div
-              className="settings-card-banner card-banner-bg"
-              style={
-                bannerPreview
-                  ? { backgroundImage: `url(${bannerPreview})` }
-                  : bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})` }
-                    : {}
-              }
-            />
-            <div
-              className="settings-card-avatar card-avatar-bg"
-              style={
-                avatarPreview
-                  ? { backgroundImage: `url(${avatarPreview})` }
-                  : avatarUrl
-                    ? { backgroundImage: `url(${avatarUrl})` }
-                    : {}
-              }
-            />
-            <div className="settings-card-info">
-              <Text size={22} bold className="settings-card-title">
-                {firstName} {lastName}
-              </Text>
-              <div className="settings-card-mention">
-                <Text size={15} bold>
-                  {mention || 'Nouvel arrivant'}
-                </Text>
-              </div>
-              <div className="settings-card-bio">
-                <Text size={14} italic>
-                  {bio || 'Aucune bio renseignée.'}
-                </Text>
-              </div>
-              <div className="settings-card-email">
-                <Text size={13}>
-                  {email}
-                </Text>
-              </div>
-              <button className="settings-preview-btn">
-                Bouton Exemple
-              </button>
-            </div>
-          </div>
+          {/* ...preview card... */}
         </div>
+      </div>
+      {/* Bouton Valider en bas à droite */}
+      <div className="settings-validate-btn">
+        <button
+          className="settings-btn primary"
+          type="submit"
+          disabled={updating}
+          onClick={handleSubmit}
+        >
+          {updating ? 'Mise à jour en cours...' : 'Valider les changements'}
+        </button>
       </div>
       {/* Affichage de l'alerte flottante */}
       {alert && (
